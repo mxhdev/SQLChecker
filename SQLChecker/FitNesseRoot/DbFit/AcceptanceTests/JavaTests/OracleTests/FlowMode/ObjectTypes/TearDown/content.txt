@@ -1,0 +1,5 @@
+!|Execute Ddl|drop procedure store_person|
+
+!|Execute Ddl|drop table persons|
+
+!|Execute Ddl|drop type person_type|

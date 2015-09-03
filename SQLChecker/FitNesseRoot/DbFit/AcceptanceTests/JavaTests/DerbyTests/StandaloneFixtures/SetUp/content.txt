@@ -1,0 +1,12 @@
+|import fixture|
+|dbfit.fixture|
+
+!|DatabaseEnvironment|EmbeddedDerby|
+|Connect|jdbc:derby:memory:dbfitdb;create=true|
+
+|Execute Ddl|${CREATEUSERTABLE}|
+
+|Execute Ddl|${CREATEMAKEUSERPROC}|
+
+|Database Environment|
+|Commit|

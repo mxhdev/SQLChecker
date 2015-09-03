@@ -1,0 +1,7 @@
+|dbfit.HSQLDBTest|
+
+|Connect|jdbc:hsqldb:mem:dbfit|
+
+|Execute Ddl|${CREATEUSERTABLE}|
+
+|Execute Ddl|${CREATEMAKEUSERPROC}|
