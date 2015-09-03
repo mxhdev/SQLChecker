@@ -66,7 +66,7 @@ values ('big pc', 1500), ('phone', 430);
 				, "<table> <tr><td></td></tr> <tr> <td>x</td> </tr> <tr> <td>test</td> </tr> </table>"
 				});
 		
-		testCases.add(new String[]{"select bezeichnung from Produkte"
+		testCases.add(new String[]{"insert into Produkte values (3,'maus',15)"
 				, "<table> "
 				+ "<tr><td></td></tr> "
 				+ "<tr> <td>bezeichnung</td> </tr> "

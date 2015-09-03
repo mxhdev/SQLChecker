@@ -47,7 +47,7 @@ public abstract class DBFitTest {
 	 * host=localhost, db=dbfit, user=root, pw=
 	 */
 	public DBFitTest() {
-		this("localhost", "dbfit", "root", "");
+		this("localhost", "dbfit", "dbfit_user", "dbfit_pw");
 	}
 	
 	/**
