@@ -7,7 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class TestSimpleStoreProc {
+public class TestSimpleFunction {
 
 
 	private static final String host = "localhost";
@@ -16,7 +16,7 @@ public class TestSimpleStoreProc {
 	private static final String pw = "";
 	
 	
-	public TestSimpleStoreProc() {
+	public TestSimpleFunction() {
 		try {
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
 		} catch (Exception e) {
@@ -38,15 +38,17 @@ public class TestSimpleStoreProc {
 	}
 	
 	
-	private void doProcedure(Connection con) throws SQLException {
+	private void doFunction(Connection con) throws SQLException {
 		String queryDrop =
-		        "DROP PROCEDURE IF EXISTS filterPrices";
-			String createProcedure = "create procedure filterPrices() " +
-			    "begin " +
-		            "select bezeichnung, preis " +
-		            "from produkte " +
-		            "where preis > 200; " +
-		        "end";
+		        "DROP FUNCTION IF EXISTS filterProducts";
+			String createFunction = "CREATE FUNCTION filterProducts (fpid INT) "+
+			    "returns TEXT " +
+		        "begin "+
+		            "declare bez TEXT; " +
+		            "set bez = (select bezeichnung from produkte where pid= fpid); " +
+		            "return bez; " +
+		        "end;; ";
+		        
 			
 			// statements
 		    Statement stmt = null;
@@ -55,7 +57,7 @@ public class TestSimpleStoreProc {
 			// drop old
 			
 		    try {
-		        System.out.println("Calling DROP PROCEDURE (1/3)");
+		        System.out.println("Calling DROP Function (1/3)");
 		        stmtDrop = con.createStatement();
 		        stmtDrop.execute(queryDrop);
 		    } catch (SQLException e) {
@@ -70,9 +72,10 @@ public class TestSimpleStoreProc {
 		    // create new
 		    
 		    try {
-		    	System.out.println("\nCalling CREATE PROCEDURE (2/3)");
+		    	System.out.println("\nCalling CREATE Function (2/3) \n");
+		    	System.out.println(createFunction);
 		        stmt = con.createStatement();
-		        stmt.executeUpdate(createProcedure);
+		        stmt.executeUpdate(createFunction);
 		    } catch (SQLException e) {
 		        e.printStackTrace(System.out);
 		    } finally {
@@ -86,6 +89,7 @@ public class TestSimpleStoreProc {
 
 		Connection conn = null;
 		ResultSet rs = null;
+		Integer fpid = 1;
 		
 		
 		CallableStatement spcall = null;
@@ -93,10 +97,10 @@ public class TestSimpleStoreProc {
 		try {
 			conn = init();
 			
-			doProcedure(conn);
+			doFunction(conn);
 			
-			System.out.println("\nCalling *call* PROCEDURE (3/3)");
-			spcall = conn.prepareCall("{call filterPrices()}");
+			System.out.println("\nCalling *call* FUNCTION (3/3)");
+			spcall = conn.prepareCall("SELECT filterProducts("+fpid+")");
 			rs = spcall.executeQuery();
 			
 			System.out.println("\n\n\n*** RESULTS ***");
@@ -126,7 +130,7 @@ public class TestSimpleStoreProc {
 	
 	
 	public static void main(String[] args) {
-		TestSimpleStoreProc sptest = new TestSimpleStoreProc();
+		TestSimpleFunction sptest = new TestSimpleFunction();
 		sptest.runTest();
 	}
 
