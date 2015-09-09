@@ -50,7 +50,7 @@ values ('big pc', 1500), ('phone', 430);
 		TestExecuter te = new TestExecuter();
 		
 		// amount of test cases
-		int size = 5;
+		int size = 6;
 		
 		// create simple select test cases
 		ArrayList<String[]> testCases = new ArrayList<String[]>();
@@ -85,6 +85,14 @@ values ('big pc', 1500), ('phone', 430);
 				});
 		
 		testCases.add(new String[]{"select sum(preis) from Produkte"
+				, "<table> "
+				+ "<tr><td></td></tr> "
+				+ "<tr> <td>sum(preis)</td> </tr>" 
+				+ "<tr> <td>1930</td> </tr> "
+				+ "</table>"
+				});
+		
+		testCases.add(new String[]{"DROP FUNCTION IF EXISTS filterProducts"
 				, "<table> "
 				+ "<tr><td></td></tr> "
 				+ "<tr> <td>sum(preis)</td> </tr>" 
