@@ -47,7 +47,7 @@ public class SQLChecker2 {
 		System.out.println("\nInitialized class \"MySqlTest\" (2/2) \n");
 
 
-		String statement = "select 'test' as y";
+		String statement = "select 'test' as x";
 		
 		//statement = "<table> <tr> <td>!Query</td> <td>select 'test' as x</td> </tr></table>";
 		
