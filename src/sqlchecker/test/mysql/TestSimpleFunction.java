@@ -47,7 +47,7 @@ public class TestSimpleFunction {
 		            "declare bez TEXT; " +
 		            "set bez = (select bezeichnung from produkte where pid= fpid); " +
 		            "return bez; " +
-		        "end;; ";
+		        "end; ";
 		        
 			
 			// statements
