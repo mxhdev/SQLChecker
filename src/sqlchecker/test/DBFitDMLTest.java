@@ -118,6 +118,10 @@ public class DBFitDMLTest {
 		// index 16
 		tests.add("Drop table if exists DMLTestTable");
 		
+		// index 17 & 18
+		tests.add("DROP FUNCTION IF EXISTS sumab;");
+		tests.add("create function sumab (a decimal(6, 2), b decimal(6, 2)) returns decimal(6, 2) deterministic return a + b;");
+		
 		System.out.println("Connection with values host=" + host + ", db=" + db + ", user=" + dbuser + ", pw=" + dbpw);
 		
 		MySqlTest tester = new MySqlTest();
@@ -198,6 +202,16 @@ public class DBFitDMLTest {
 					+ "</table>\n";
 			
 			compilation += "\n<table><tr><td>Execute Ddl</td> <td>" + tests.get(16) + "</td></tr></table> \n";
+			
+			compilation += "\n<table><tr><td>Execute</td> <td>" + tests.get(17) + "</td></tr></table> \n";
+			
+			compilation += "\n<table><tr><td>Execute</td> <td>" + tests.get(18) + "</td></tr></table> \n";
+			
+			compilation += "\n<table>"
+					+ "<tr> <td>Execute Procedure</td> <td>sumab</td></tr>"
+					+ "<tr> <td>a</td><td>b</td><td>?</td> </tr>"
+					+ "<tr> <td>2</td><td>2</td><td>4</td> </tr>"
+					+ "</table>\n";
 			
 			System.out.println("\n------------------------------\n");
 			System.out.println(compilation);
