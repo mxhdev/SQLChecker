@@ -135,22 +135,79 @@ public class DBFitDMLTest {
 	protected Fixture runQuery(MySqlTest conn) {
 		
 		String compilation = "";
-		for (int i = 0; i < tests.size(); i++) {
-			String tmp = tests.get(i);
-			boolean isTable = tmp.contains("<td>");
-			if (isTable) {
-				compilation += tmp + "\n";
-			} else {
-				compilation += "\n" + tmp + "\n";
-			}
-		}
 		
-		// System.out.println(compilation);
+		compilation += "<table> <tr> <td>dbfit.MySqlTest</td> </tr> </table>\n";
+		
+		compilation += "\n<table> <tr> <td>Connect</td> <td>localhost</td> <td>root</td> <td></td> <td>dbfit</td> </tr> </table>\n";
+		
+		compilation += "\n<table><tr><td>Execute Ddl</td> <td>Drop table if exists DMLTestTable</td></tr></table> \n";
+		
+		compilation += "\n<table><tr><td>Execute Ddl</td> <td>Create table DMLTestTable(col1 VARCHAR(16), col2 INT(16))</td></tr></table> \n";
+		
+		compilation += "\n<table><tr><td>Execute</td> <td>Insert into DMLTestTable(`col1`, `col2`) values ('CD', 5)</td></tr></table> \n";
+		
+		compilation += "\n<table>"
+						+ "<tr> <td>Query</td> <td>Select * from DMLTestTable</td> </tr>"
+						+ "<tr> <td>col1</td> <td>col2</td> </tr>"
+						+ "<tr> <td>CD</td> <td>5</td> </tr>"
+						+ "</table>\n";
+
+		
+		compilation += "\n<table><tr><td>Execute</td> <td>" + tests.get(5) + "</td></tr></table> \n";
+		
+		compilation += "\n<table><tr><td>Execute</td> <td>" + tests.get(6) + "</td></tr></table> \n";
+		
+		compilation += "\n<table><tr><td>Execute</td> <td>" + tests.get(7) + "</td></tr></table> \n";
+		
+		compilation += "\n<table>"
+				+ "<tr> <td>Query</td> <td>" + tests.get(8) + "</td> </tr>"
+				+ "<tr> <td>col1</td> <td>col2</td> </tr>"
+				+ "<tr> <td>CD</td> <td>5</td> </tr>"
+				+ "<tr> <td>tv</td> <td>800</td> </tr>"
+				+ "<tr> <td>chair</td> <td>80</td> </tr>"
+				+ "<tr> <td>big pc</td> <td>1600</td> </tr>"
+				+ "</table>\n";
+		
+		compilation += "\n<table><tr><td>Execute</td> <td>" + tests.get(10) + "</td></tr></table> \n";
+		
+		compilation += "\n<table>"
+				+ "<tr> <td>Query</td> <td>" + tests.get(11) + "</td> </tr>"
+				+ "<tr> <td>col1</td> <td>col2</td> </tr>"
+				+ "<tr> <td>cd</td> <td>5</td> </tr>"
+				+ "<tr> <td>tv</td> <td>2500</td> </tr>" // changed!
+				+ "<tr> <td>chair</td> <td>80</td> </tr>"
+				+ "<tr> <td>big pc</td> <td>1600</td> </tr>"
+				+ "</table>\n";
+		
+		compilation += "\n<table><tr><td>Execute</td> <td>" + tests.get(13) + "</td></tr></table> \n";
+		
+		compilation += "\n<table>"
+				+ "<tr> <td>Query</td> <td>" + tests.get(14) + "</td> </tr>"
+				+ "<tr> <td>col1</td> <td>col2</td> </tr>"
+				+ "<tr> <td>cd</td> <td>5</td> </tr>"
+				+ "<tr> <td>chair</td> <td>80</td> </tr>"
+				+ "<tr> <td>big pc</td> <td>1600</td> </tr>"
+				+ "</table>\n";
+		
+		compilation += "\n<table><tr><td>Execute Ddl</td> <td>" + tests.get(16) + "</td></tr></table> \n";
+		
+		
+		
+		System.out.println("\n------------------------------\n");
+		System.out.println(compilation);
+		System.out.println("\n------------------------------\n\n");
 		try  {
-			conn.doTables(new Parse(compilation));
+			Parse target = new Parse(compilation);
+			conn.doTables(target);
+			System.out.println("==> " + conn.counts);
+
 		} catch (Exception e) {
 			e.printStackTrace(System.err);
 		}
+		
+		
+		
+		
 		conn.executeDdl(tests.get(0));
 		conn.executeDdl(tests.get(1));
 		conn.execute(tests.get(2));
@@ -180,22 +237,87 @@ public class DBFitDMLTest {
 	
 	
 	public void runTest() {
+		
 		MySqlTest tester = null;
+		
+		String compilation = "";
+		
+		
 		
 		try {
 
 			// init connection
 			tester = init();
+
 			
-			// run query
-			Fixture raw = runQuery(tester);
+			// TEST CASES - START
 			
-			// try to match with solution
-			Parse target = getTarget();
-			raw.doTable(target);
+			compilation += "<table> <tr> <td>dbfit.MySqlTest</td> </tr> </table>\n";
 			
-			//show output
-			showResult(raw, target);
+			compilation += "\n<table> <tr> <td>Connect</td> <td>localhost</td> <td>root</td> <td></td> <td>dbfit</td> </tr> </table>\n";
+			
+			compilation += "\n<table><tr><td>Execute Ddl</td> <td>Drop table if exists DMLTestTable</td></tr></table> \n";
+			
+			compilation += "\n<table><tr><td>Execute Ddl</td> <td>Create table DMLTestTable(col1 VARCHAR(16), col2 INT(16))</td></tr></table> \n";
+			
+			compilation += "\n<table><tr><td>Execute</td> <td>Insert into DMLTestTable(`col1`, `col2`) values ('CD', 5)</td></tr></table> \n";
+			
+			compilation += "\n<table>"
+							+ "<tr> <td>Query</td> <td>Select * from DMLTestTable</td> </tr>"
+							+ "<tr> <td>col1</td> <td>col2</td> </tr>"
+							+ "<tr> <td>CD</td> <td>5</td> </tr>"
+							+ "</table>\n";
+
+			
+			compilation += "\n<table><tr><td>Execute</td> <td>" + tests.get(5) + "</td></tr></table> \n";
+			
+			compilation += "\n<table><tr><td>Execute</td> <td>" + tests.get(6) + "</td></tr></table> \n";
+			
+			compilation += "\n<table><tr><td>Execute</td> <td>" + tests.get(7) + "</td></tr></table> \n";
+			
+			compilation += "\n<table>"
+					+ "<tr> <td>Query</td> <td>" + tests.get(8) + "</td> </tr>"
+					+ "<tr> <td>col1</td> <td>col2</td> </tr>"
+					+ "<tr> <td>CD</td> <td>5</td> </tr>"
+					+ "<tr> <td>tv</td> <td>800</td> </tr>"
+					+ "<tr> <td>chair</td> <td>80</td> </tr>"
+					+ "<tr> <td>big pc</td> <td>1600</td> </tr>"
+					+ "</table>\n";
+			
+			compilation += "\n<table><tr><td>Execute</td> <td>" + tests.get(10) + "</td></tr></table> \n";
+			
+			compilation += "\n<table>"
+					+ "<tr> <td>Query</td> <td>" + tests.get(11) + "</td> </tr>"
+					+ "<tr> <td>col1</td> <td>col2</td> </tr>"
+					+ "<tr> <td>CD</td> <td>5</td> </tr>"
+					+ "<tr> <td>tv</td> <td>2500</td> </tr>" // changed!
+					+ "<tr> <td>chair</td> <td>80</td> </tr>"
+					+ "<tr> <td>big pc</td> <td>1600</td> </tr>"
+					+ "</table>\n";
+			
+			compilation += "\n<table><tr><td>Execute</td> <td>" + tests.get(13) + "</td></tr></table> \n";
+			
+			compilation += "\n<table>"
+					+ "<tr> <td>Query</td> <td>" + tests.get(14) + "</td> </tr>"
+					+ "<tr> <td>col1</td> <td>col2</td> </tr>"
+					+ "<tr> <td>CD</td> <td>5</td> </tr>"
+					+ "<tr> <td>chair</td> <td>80</td> </tr>"
+					+ "<tr> <td>big pc</td> <td>1600</td> </tr>"
+					+ "</table>\n";
+			
+			compilation += "\n<table><tr><td>Execute Ddl</td> <td>" + tests.get(16) + "</td></tr></table> \n";
+			
+			System.out.println("\n------------------------------\n");
+			System.out.println(compilation);
+			System.out.println("\n------------------------------\n\n");
+			
+			// TEST CASES - END
+			
+			
+			Parse target = new Parse(compilation);
+			tester.doTables(target);
+			System.out.println("\n\n\n==> " + tester.counts);
+			
 		} catch (SQLException sqle) {
 			sqle.printStackTrace(System.out);
 		} catch (FitParseException fpe) {
