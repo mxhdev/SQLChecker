@@ -1,4 +1,4 @@
-package sqlchecker;
+package sqlchecker.test;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

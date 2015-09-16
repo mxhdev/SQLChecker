@@ -1,4 +1,4 @@
-package sqlchecker;
+package sqlchecker.test;
 
 
 
