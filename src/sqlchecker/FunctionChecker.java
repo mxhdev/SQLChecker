@@ -43,7 +43,7 @@ public class FunctionChecker {
 		String value = "1500";
 		
 		
-		connection.setParameter(para, value);
+		//connection.setParameter(para, value);
 		Fixture dropFunc = connection.execute(dropFunction);
 		Fixture createFunc = connection.execute(createFunction);
 		Fixture f = connection.executeProcedure(procName);
@@ -51,8 +51,10 @@ public class FunctionChecker {
 		
 		
 		try  { 
-			Parse goalDrop = new Parse("<table> <tr><td></td></tr> <tr> <td>Execute</td><td>DROP FUNCTION IF EXISTS filterProducts;</td> </tr></table>");
-			Parse goalCreateFunction = new Parse("<table> <tr><td></td></tr> <tr> <td>Execute</td><td>CREATE FUNCTION filterProducts (gps INT) returns TEXT begin declare bez TEXT; set bez = (select bezeichnung from produkte where preis = gps); return bez;end;</td> </tr></table>");
+			Parse goalDrop = new Parse("<table> <tr><td></td></tr> <tr> <td></td><td></td> </tr></table>");
+			// Parse goalDrop = new Parse("<table> <tr><td></td></tr> <tr> <td>Execute</td><td>DROP FUNCTION IF EXISTS filterProducts;</td> </tr></table>");
+			Parse goalCreateFunction = new Parse("<table> <tr><td></td></tr> <tr> <td></td><td></td> </tr></table>");
+			// Parse goalCreateFunction = new Parse("<table> <tr><td></td></tr> <tr> <td>Execute</td><td>CREATE FUNCTION filterProducts (gps INT) returns TEXT begin declare bez TEXT; set bez = (select bezeichnung from produkte where preis = gps); return bez;end;</td> </tr></table>");
 			Parse goalResult = new Parse("<table> <tr><td></td></tr> <tr> <td>gps</td><td>?</td> </tr> <tr> <td>1500</td><td>big pc</td> </tr> </table>");
 			System.out.println("Drop existing Function 1");
 			dropFunc.doTable(goalDrop);
@@ -107,8 +109,8 @@ public class FunctionChecker {
 		String para2 = "b";
 		String value2 = "13.00";
 		
-		conFun2.setParameter(para1, value1);
-		conFun2.setParameter(para2, value2);
+		//conFun2.setParameter(para1, value1);
+		//conFun2.setParameter(para2, value2);
 		Fixture dropFunction2 = conFun2.execute(dropFunc2);
 		Fixture createFunction2 = conFun2.execute(createFunc2);
 		Fixture f2 = conFun2.executeProcedure(procName2);
@@ -116,9 +118,9 @@ public class FunctionChecker {
 		
 		
 		try  { 
-			Parse goalDrop2 = new Parse("<table> <tr><td></td></tr> <tr> <td>Execute</td><td>DROP FUNCTION IF EXISTS filterProducts;</td> </tr></table>");
-			Parse goalCreateFunction2 = new Parse("<table> <tr><td></td></tr> <tr> <td>Execute</td><td>CREATE FUNCTION filterProducts (gps INT) returns TEXT begin declare bez TEXT; set bez = (select bezeichnung from produkte where preis = gps); return bez;end;</td> </tr></table>");
-			Parse goalResult2 = new Parse("<table> <tr><td>Execute Procedure</td><td>sumab</td>></tr> <tr> <td>?</td><td>a</td><td>b</td> </tr> <tr> <td>15</td><td>a</td><td>b</td> </tr> </table>");
+			Parse goalDrop2 = new Parse("<table> <tr><td></td></tr> <tr> <td></td><td></td> </tr></table>");
+			Parse goalCreateFunction2 = new Parse("<table> <tr><td></td></tr> <tr> <td></td><td></td> </tr></table>");
+			Parse goalResult2 = new Parse("<table> <tr><td></td></tr> <tr> <td>a</td><td>b</td><td>?</td> </tr> <tr> <td>2</td><td>2</td><td>4</td> </tr> </table>");
 			System.out.println("Drop existing Function 2");
 			dropFunction2.doTable(goalDrop2);
 			System.out.println("Creating function 2");
