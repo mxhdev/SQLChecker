@@ -127,114 +127,6 @@ public class DBFitDMLTest {
 	}
 	
 	
-	/**
-	 * Calls either tester.query or tester.execute, or..?
-	 * @param conn The database connection
-	 * @return The result as a fixture
-	 */
-	protected Fixture runQuery(MySqlTest conn) {
-		
-		String compilation = "";
-		
-		compilation += "<table> <tr> <td>dbfit.MySqlTest</td> </tr> </table>\n";
-		
-		compilation += "\n<table> <tr> <td>Connect</td> <td>localhost</td> <td>root</td> <td></td> <td>dbfit</td> </tr> </table>\n";
-		
-		compilation += "\n<table><tr><td>Execute Ddl</td> <td>Drop table if exists DMLTestTable</td></tr></table> \n";
-		
-		compilation += "\n<table><tr><td>Execute Ddl</td> <td>Create table DMLTestTable(col1 VARCHAR(16), col2 INT(16))</td></tr></table> \n";
-		
-		compilation += "\n<table><tr><td>Execute</td> <td>Insert into DMLTestTable(`col1`, `col2`) values ('CD', 5)</td></tr></table> \n";
-		
-		compilation += "\n<table>"
-						+ "<tr> <td>Query</td> <td>Select * from DMLTestTable</td> </tr>"
-						+ "<tr> <td>col1</td> <td>col2</td> </tr>"
-						+ "<tr> <td>CD</td> <td>5</td> </tr>"
-						+ "</table>\n";
-
-		
-		compilation += "\n<table><tr><td>Execute</td> <td>" + tests.get(5) + "</td></tr></table> \n";
-		
-		compilation += "\n<table><tr><td>Execute</td> <td>" + tests.get(6) + "</td></tr></table> \n";
-		
-		compilation += "\n<table><tr><td>Execute</td> <td>" + tests.get(7) + "</td></tr></table> \n";
-		
-		compilation += "\n<table>"
-				+ "<tr> <td>Query</td> <td>" + tests.get(8) + "</td> </tr>"
-				+ "<tr> <td>col1</td> <td>col2</td> </tr>"
-				+ "<tr> <td>CD</td> <td>5</td> </tr>"
-				+ "<tr> <td>tv</td> <td>800</td> </tr>"
-				+ "<tr> <td>chair</td> <td>80</td> </tr>"
-				+ "<tr> <td>big pc</td> <td>1600</td> </tr>"
-				+ "</table>\n";
-		
-		compilation += "\n<table><tr><td>Execute</td> <td>" + tests.get(10) + "</td></tr></table> \n";
-		
-		compilation += "\n<table>"
-				+ "<tr> <td>Query</td> <td>" + tests.get(11) + "</td> </tr>"
-				+ "<tr> <td>col1</td> <td>col2</td> </tr>"
-				+ "<tr> <td>cd</td> <td>5</td> </tr>"
-				+ "<tr> <td>tv</td> <td>2500</td> </tr>" // changed!
-				+ "<tr> <td>chair</td> <td>80</td> </tr>"
-				+ "<tr> <td>big pc</td> <td>1600</td> </tr>"
-				+ "</table>\n";
-		
-		compilation += "\n<table><tr><td>Execute</td> <td>" + tests.get(13) + "</td></tr></table> \n";
-		
-		compilation += "\n<table>"
-				+ "<tr> <td>Query</td> <td>" + tests.get(14) + "</td> </tr>"
-				+ "<tr> <td>col1</td> <td>col2</td> </tr>"
-				+ "<tr> <td>cd</td> <td>5</td> </tr>"
-				+ "<tr> <td>chair</td> <td>80</td> </tr>"
-				+ "<tr> <td>big pc</td> <td>1600</td> </tr>"
-				+ "</table>\n";
-		
-		compilation += "\n<table><tr><td>Execute Ddl</td> <td>" + tests.get(16) + "</td></tr></table> \n";
-		
-		
-		
-		System.out.println("\n------------------------------\n");
-		System.out.println(compilation);
-		System.out.println("\n------------------------------\n\n");
-		try  {
-			Parse target = new Parse(compilation);
-			conn.doTables(target);
-			System.out.println("==> " + conn.counts);
-
-		} catch (Exception e) {
-			e.printStackTrace(System.err);
-		}
-		
-		
-		
-		
-		conn.executeDdl(tests.get(0));
-		conn.executeDdl(tests.get(1));
-		conn.execute(tests.get(2));
-		Fixture f = conn.query(tests.get(3));
-		
-		String xy = PreparedStatements.buildStoredProcedureCall("asdf", 2);
-		System.out.println(xy);
-		
-		
-		
-		//TODO
-		return f;
-	}
-	
-	
-	/**
-	 * For retrieving the target result. This is the result that
-	 * should be returned by the sql query
-	 * @return The (target) result set as a html table
-	 */
-	protected Parse getTarget() throws FitParseException {
-		//TODO
-		Parse p = new Parse(tests.get(4));
-		
-		return p;
-	}
-	
 	
 	public void runTest() {
 		
@@ -248,7 +140,7 @@ public class DBFitDMLTest {
 
 			// init connection
 			tester = init();
-
+			
 			
 			// TEST CASES - START
 			
@@ -316,6 +208,8 @@ public class DBFitDMLTest {
 			
 			Parse target = new Parse(compilation);
 			tester.doTables(target);
+			
+			
 			System.out.println("\n\n\n==> " + tester.counts);
 			
 		} catch (SQLException sqle) {
