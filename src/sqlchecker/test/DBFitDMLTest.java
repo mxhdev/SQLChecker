@@ -182,14 +182,15 @@ public class DBFitDMLTest {
 			
 			compilation += "\n<table><tr><td>Execute</td> <td>" + tests.get(10) + "</td></tr></table> \n";
 			
-			compilation += "\n<table>"
+			compilation += "<table>"
 					+ "<tr> <td>Query</td> <td>" + tests.get(11) + "</td> </tr>"
 					+ "<tr> <td>col1</td> <td>col2</td> </tr>"
 					+ "<tr> <td>CD</td> <td>5</td> </tr>"
 					+ "<tr> <td>tv</td> <td>2500</td> </tr>" // changed!
 					+ "<tr> <td>chair</td> <td>80</td> </tr>"
 					+ "<tr> <td>big pc</td> <td>1600</td> </tr>"
-					+ "</table>\n";
+					+ "</table>";
+			 // \n not required!
 			
 			compilation += "\n<table><tr><td>Execute</td> <td>" + tests.get(13) + "</td></tr></table> \n";
 			
@@ -212,6 +213,7 @@ public class DBFitDMLTest {
 					+ "<tr> <td>a</td><td>b</td><td>?</td> </tr>"
 					+ "<tr> <td>2</td><td>2</td><td>4</td> </tr>"
 					+ "</table>\n";
+			compilation += "<!-- comment test -->";
 			
 			System.out.println("\n------------------------------\n");
 			System.out.println(compilation);

@@ -9,6 +9,10 @@ public class SQLChecker {
 	 * 1. Read solution
 	 * - As string
 	 * - Recognize placeholders (e.g. %q1%)
+	 * a) read solution & its tags
+	 * b) read submission(s)
+	 * c) perform mapping
+	 * d) run
 	 * 
 	 * 2. Read student's submission
 	 * - Recognize query start and query end (let student use template?)

@@ -1,0 +1,113 @@
+tags=1a,1b,1c
+
+
+<table> 
+	<tr> 
+		<td>dbfit.MySqlTest</td> 
+	</tr> 
+</table>
+
+<!-- 
+Do not change the formatting of the following line(spaces, line breaks,...) 
+Format = host,user,pw,db
+These values will also be used by the java program
+-->
+<table> <tr> <td>Connect</td> <td>localhost</td> <td>root</td> <td></td> <td>dbfit</td> </tr> </table>
+
+
+<!-- select bezeichnung, preis from produkte -->
+
+<table>
+	<tr> 
+		<td>Query</td> 
+		<td>/*1a*/</td> 
+	</tr>
+	<tr> 
+		<td>bezeichnung</td> 
+		<td>preis</td> 
+	</tr>
+	<tr> 
+		<td>big pc</td> 
+		<td>1500</td> 
+	</tr>
+	<tr> 
+		<td>phone</td> 
+		<td>430</td> 
+	</tr>
+	<tr> 
+		<td>tv</td> 
+		<td>1200</td>
+	</tr>
+</table>
+
+<!-- INSERT INTO produkte(`bezeichnung`, `preis`) values('chair', 80) -->
+
+<table>
+	<tr> 
+		<td>Execute</td> 
+		<td>/*1b*/</td> 
+	</tr>
+	<tr> 
+		<td>bezeichnung</td> 
+		<td>preis</td> 
+	</tr>
+	<tr> 
+		<td>chair</td> 
+		<td>80</td> 
+	</tr>
+</table>
+
+<!-- select bezeichnung, preis from produkte (only checks if the newly added record exists) -->
+
+<table>
+	<tr> 
+		<td>Query</td> 
+		<td>/*1c*/</td> 
+	</tr>
+	<tr> 
+		<td>bezeichnung</td> 
+		<td>preis</td> 
+	</tr>
+	<tr> 
+		<td>big pc</td> 
+		<td>1500</td> 
+	</tr>
+	<tr> 
+		<td>phone</td> 
+		<td>430</td> 
+	</tr>
+	<tr> 
+		<td>tv</td> 
+		<td>1200</td>
+	</tr>
+	<tr> 
+		<td>chair</td> 
+		<td>80</td> 
+	</tr>
+</table>
+
+<!-- additional test -->
+
+<table>
+	<tr> 
+		<td>Query</td> 
+		<td>SELECT preis from produkte</td> 
+	</tr>
+	<tr> 
+		<td>preis</td> 
+	</tr>
+	<tr> 
+		<td>1500</td> 
+	</tr>
+	<tr> 
+		<td>430</td> 
+	</tr>
+	<tr> 
+		<td>1200</td>
+	</tr>
+	<tr> 
+		<td>80</td> 
+	</tr>
+</table>
+
+
