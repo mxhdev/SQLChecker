@@ -53,7 +53,7 @@ public class SolutionReader extends AbstractFileReader {
 	}
 
 	@Override
-	public void onFileStart(String pathToFile) {
+	public void afterReading(String pathToFile) {
 		// empty html string
 		htmlCode = new StringBuilder("");
 		// default connection properties

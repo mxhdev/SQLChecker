@@ -58,7 +58,7 @@ public class SubmissionReader extends AbstractFileReader {
 	
 	
 	@Override
-	public void onFileStart(String pathToFile) {
+	public void afterReading(String pathToFile) {
 		// init something (here: counter)
 		pos = -1;
 		// clear mappings

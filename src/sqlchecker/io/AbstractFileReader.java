@@ -42,7 +42,7 @@ public abstract class AbstractFileReader {
 	
 	
 	public void loadFile() {
-		onFileStart(fpath);
+		afterReading(fpath);
 		
 		try {
 			readFile();
@@ -54,28 +54,9 @@ public abstract class AbstractFileReader {
 	}
 	
 	
-	
-	/**
-	 * Checks if the current line marks a tag. Tags are used for mapping.
-	 * Each Tag only occurs once per file. The query corresponding to a 
-	 * tag is placed after the tag. A query starts in the line following 
-	 * it's corresponding tag, it ends as soon as the file ends, or a 
-	 * new tag is reached.
-	 * @param line The line which should be checked
-	 * @return True iff this line is a tag corresponding to a task.
-	 * 
-	 * @deprecated Not sure it this is the right place for this
-	 * function
-	 */
-	protected boolean isTagX(String line) {
-		line = line.trim();
-		
-		return false;
-	}
-	
 	public abstract void onReadLine(String line);
 	
-	public abstract void onFileStart(String pathToFile);
+	public abstract void afterReading(String pathToFile);
 	
 	public abstract void onFileEnd(String pathToFile);
 	
