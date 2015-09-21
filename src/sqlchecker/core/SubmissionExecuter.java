@@ -1,5 +1,6 @@
 package sqlchecker.core;
 
+import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,19 +54,52 @@ public class SubmissionExecuter {
 	 * @throws SQLException If the function was unable to close the sql connection
 	 */
 	private void runSubmission(String sqlhtml, String[] connProps) throws SQLException {
+		
 		MySqlTest tester = null;
+		PrintWriter out = null;
+		
+		final boolean DEBUG = true;
+		
 		try {
 			tester = init(connProps[0], connProps[3], connProps[1], connProps[2]);
 			
 			Parse target = new Parse(sqlhtml);
 			tester.doTables(target);
 			
-			System.out.println("\n\n\n==> " + tester.counts);
+			
+			System.out.println("\n\n\n * * * RESULTS * * *");
+			
+			System.out.println("==> " + tester.counts);
+			
+			/*
+			out = new PrintWriter(System.out, true){
+				@Override
+				public void print(String s) {
+					if (s.endsWith("td>"))
+						super.print("\t\t" + s);
+					else if (s.endsWith("tr>"))
+						super.print("\t" + s);
+					else 
+						super.print(s);
+					
+				}
+			};*/
+			if (DEBUG) {
+				out = new PrintWriter(System.out, true);
+				target.print(out);
+			}
+			/*
+			 * ToDo: Improve by adapting the Parse.print() function?
+			 * See
+			 * https://github.com/unclebob/fitnesse/blob/master/src/fit/Parse.java
+			 */
+			
 		} catch (FitParseException fpe) {
 			fpe.printStackTrace();
 		} catch (SQLException sqle) {
 			sqle.printStackTrace();
 		} finally {
+			if (out != null) out.close();
 			if (tester != null) tester.close();
 		}
 	}

@@ -58,7 +58,7 @@ public class SubmissionReader extends AbstractFileReader {
 	
 	
 	@Override
-	public void afterReading(String pathToFile) {
+	public void beforeReading(String pathToFile) {
 		// init something (here: counter)
 		pos = -1;
 		// clear mappings
@@ -70,7 +70,7 @@ public class SubmissionReader extends AbstractFileReader {
 
 
 	@Override
-	public void onFileEnd(String pathToFile) {
+	public void afterReading(String pathToFile) {
 		 //reset everything / print stuff
 		/*
 		System.out.println("\n\t> - - - - - - - - - - <\n");

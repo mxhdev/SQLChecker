@@ -42,7 +42,7 @@ public abstract class AbstractFileReader {
 	
 	
 	public void loadFile() {
-		afterReading(fpath);
+		beforeReading(fpath);
 		
 		try {
 			readFile();
@@ -50,14 +50,14 @@ public abstract class AbstractFileReader {
 			ioe.printStackTrace();
 		}
 		
-		onFileEnd(fpath);
+		afterReading(fpath);
 	}
 	
 	
 	public abstract void onReadLine(String line);
 	
-	public abstract void afterReading(String pathToFile);
+	public abstract void beforeReading(String pathToFile);
 	
-	public abstract void onFileEnd(String pathToFile);
+	public abstract void afterReading(String pathToFile);
 	
 }
