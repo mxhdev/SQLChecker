@@ -6,7 +6,12 @@ import sqlchecker.io.AbstractFileReader;
 import sqlchecker.io.IOUtil;
 
 
-
+/**
+ * Reads a student submission and extracts a TAG->SubmissionSQL mapping
+ * 
+ * @author Max Hofmann
+ *
+ */
 public class SubmissionReader extends AbstractFileReader {
 
 	
