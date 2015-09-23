@@ -46,7 +46,7 @@ public class SolutionReader extends AbstractFileReader {
 				line = line.substring(line.indexOf(CONN_PREFIX) + CONN_PREFIX.length());
 				line = line.substring(0, line.indexOf(CONN_SUFFIX));
 				// parse connect parameters
-				String[] props = line.split("</td> <td>");
+				this.connProps = line.split("</td> <td>").clone();
 			}
 			
 		}

@@ -1,5 +1,6 @@
 package sqlchecker.core;
 
+import java.io.File;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -26,24 +27,49 @@ public class SubmissionExecuter {
 	
 	
 	public void runCheck() {
+		// get list of all submissions
+		File subSrc = new File(submPath);
+		File[] submissions = subSrc.listFiles();
+		
+		// show info
+		System.out.println("Solution: \n\t" + solPath);
+		System.out.println("\n" + submissions.length + " submissions found: ");
+		for (File f : submissions) 
+			System.out.println("\t" + f.getPath());
+		
 		// load tags & solution
 		SolutionReader sr = new SolutionReader(solPath);
 		sr.loadFile();
 		String solution = sr.getHTML().toString();
 		
-		// load a submission
-		SubmissionReader subr = new SubmissionReader(submPath, IOUtil.tags);
-		subr.loadFile();
-		ArrayList<String[]> mapping = subr.getMapping();
+		// Define output writer
+		PrintWriter out = new PrintWriter(System.out, false);
+		String[] connProps = sr.getConnectionProperties();
 		
-		String checkStr = IOUtil.applyMapping(solution, mapping);
+		for (int i = 0; i < submissions.length; i++) {
+			
+			File subm = submissions[i];
+			System.out.println("\n\n[" + (i+1) + "/" + submissions.length + "] Testing: " + subm);
+			
+			// load a submission
+			SubmissionReader subr = new SubmissionReader(subm.getPath(), IOUtil.tags);
+			subr.loadFile();
 
-		try {
-			// try to run the submission
-			runSubmission(checkStr, sr.getConnectionProperties());
-		} catch (SQLException sqle) {
-			sqle.printStackTrace();
+			// get mapping and apply it
+			ArrayList<String[]> mapping = subr.getMapping();
+			String checkStr = IOUtil.applyMapping(solution, mapping);
+			
+			// perform the check
+			try {
+				runSubmission(checkStr, connProps, out);
+			} catch (SQLException sqle) {
+				// unable to close connection
+				sqle.printStackTrace();
+			}
 		}
+		
+		// close output stream
+		out.close();
 	}
 	
 	/**
@@ -53,12 +79,11 @@ public class SubmissionExecuter {
 	 *  (host, user, pw, dbname)
 	 * @throws SQLException If the function was unable to close the sql connection
 	 */
-	private void runSubmission(String sqlhtml, String[] connProps) throws SQLException {
+	private void runSubmission(String sqlhtml, String[] connProps, PrintWriter out) throws SQLException {
 		
 		MySqlTest tester = null;
-		PrintWriter out = null;
 		
-		final boolean DEBUG = true;
+		boolean DEBUG = true;
 		
 		try {
 			tester = init(connProps[0], connProps[3], connProps[1], connProps[2]);
@@ -67,27 +92,17 @@ public class SubmissionExecuter {
 			tester.doTables(target);
 			
 			
-			System.out.println("\n\n\n * * * RESULTS * * *");
+			System.out.println("\n* * * RESULTS * * *");
 			
-			System.out.println("==> " + tester.counts);
+			System.out.println("Counts:\n\t" + tester.counts);
 			
-			/*
-			out = new PrintWriter(System.out, true){
-				@Override
-				public void print(String s) {
-					if (s.endsWith("td>"))
-						super.print("\t\t" + s);
-					else if (s.endsWith("tr>"))
-						super.print("\t" + s);
-					else 
-						super.print(s);
-					
-				}
-			};*/
+			// only show debug output if required
+			int fails = tester.counts.exceptions + tester.counts.ignores + tester.counts.wrong;
+			DEBUG = (fails > 0);
 			if (DEBUG) {
-				out = new PrintWriter(System.out, true);
 				target.print(out);
 			}
+			
 			/*
 			 * ToDo: Improve by adapting the Parse.print() function?
 			 * See
@@ -99,7 +114,9 @@ public class SubmissionExecuter {
 		} catch (SQLException sqle) {
 			sqle.printStackTrace();
 		} finally {
-			if (out != null) out.close();
+			// finish printing informations for this test
+			out.flush();
+			// close connection
 			if (tester != null) tester.close();
 		}
 	}
@@ -139,7 +156,7 @@ public class SubmissionExecuter {
 	 */
 	
 	public static void main(String[] args) {
-		String submissionPath = "data/assignment1/submissions/s1.sql";
+		String submissionPath = "data/assignment1/submissions/";
 		String solutionPath = "data/assignment1/solution.txt";
 		
 		SubmissionExecuter se = new SubmissionExecuter(submissionPath, solutionPath);

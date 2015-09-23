@@ -47,14 +47,6 @@ These values will also be used by the java program
 		<td>Execute</td> 
 		<td>/*1b*/</td> 
 	</tr>
-	<tr> 
-		<td>bezeichnung</td> 
-		<td>preis</td> 
-	</tr>
-	<tr> 
-		<td>chair</td> 
-		<td>80</td> 
-	</tr>
 </table>
 
 <!-- select bezeichnung, preis from produkte (only checks if the newly added record exists) -->
