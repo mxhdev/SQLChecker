@@ -2,14 +2,33 @@ package sqlchecker.io;
 
 import java.util.ArrayList;
 
+
+/**
+ * General I/O Utility class. This class supports various static
+ * utility functions. This class also stores the tags which were
+ * parsed by the SolutionReader class. This field is required for
+ * parsing a correct mapping by using the SubmissionReader class.
+ * 
+ * @author Max Hofmann
+ *
+ */
 public class IOUtil {
 
 	
-	
+	/**
+	 * Prefix of a tag
+	 */
 	public static final String TAG_PREFIX = "/*";
 	
+	/**
+	 * Suffix of a tag 
+	 */
 	public static final String TAG_SUFFIX = "*/";
 	
+	
+	/**
+	 * A static list of the currently valid tags
+	 */
 	public static String[] tags = new String[0];
 	
 	
@@ -44,16 +63,6 @@ public class IOUtil {
 	
 	
 	
-	
-	public static int getContainedTagPos(String line) {
-		// check if the line contains some tag & its position
-		for (int i = 0; i < tags.length; i++) {
-			String tag = tags[i];
-			if (line.contains(TAG_PREFIX + tag + TAG_SUFFIX))
-				return i;
-		}
-		return -1;
-	}
 	
 	
 	/**

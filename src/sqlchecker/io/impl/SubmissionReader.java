@@ -9,12 +9,26 @@ import sqlchecker.io.IOUtil;
 
 public class SubmissionReader extends AbstractFileReader {
 
+	
+	/**
+	 * Index of the currently active tag
+	 */
 	private int pos = -1;
 
-	
+	/**
+	 * Stores the mapping (TAG-->SubmissionSQL)
+	 */
 	private ArrayList<String[]> tagMappings = new ArrayList<String[]>();
 	
 	
+	
+	/**
+	 * Create a submission reader class, store the given path
+	 * and init the mapping by using the given tags
+	 * @param path Path of a submission file
+	 * @param tags The tags which this class should look for
+	 * in the given file
+	 */
 	public SubmissionReader(String path, String[] tags) {
 		super(path);
 		
@@ -30,7 +44,6 @@ public class SubmissionReader extends AbstractFileReader {
 
 	@Override
 	public void onReadLine(String line) {
-		line = line.trim();
 		// check if it is a task tag
 		int tmpPos = IOUtil.getTagPos(line);
 		if (tmpPos >= 0) {
@@ -87,7 +100,8 @@ public class SubmissionReader extends AbstractFileReader {
 	
 	
 	/**
-	 * 
+	 * For receiving the mapping which was extracted from the
+	 * given file
 	 * @return The tag-query mapping which was read from the given
 	 * submission
 	 */

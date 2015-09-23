@@ -6,11 +6,28 @@ import sqlchecker.io.AbstractFileReader;
 import sqlchecker.io.IOUtil;
 
 
+/**
+ * Reads a solution file and parses the connection properties.
+ * 
+ * @author Max Hofmann
+ *
+ */
 public class SolutionReader extends AbstractFileReader {
 
+	
+	/**
+	 * The content of the given file, as string
+	 */
 	private StringBuilder htmlCode = new StringBuilder("");
 	
+	/**
+	 * Prefix of the connection definition in the given file
+	 */
 	private final String CONN_PREFIX = "<table> <tr> <td>Connect</td> <td>";
+	
+	/**
+	 * Suffix of the connection definition in the given file
+	 */
 	private final String CONN_SUFFIX = "</td> </tr> </table>";
 	
 	/**
@@ -25,6 +42,10 @@ public class SolutionReader extends AbstractFileReader {
 	private String[] DEFAULT_PROPS = new String[]{"localhost", "root","","dbfit"};
 	
 	
+	/**
+	 * Create a solution reader class. Stores the given path.
+	 * @param path The (relative) path leading to the solution file
+	 */
 	public SolutionReader(String path) {
 		super(path);
 	}
@@ -67,7 +88,8 @@ public class SolutionReader extends AbstractFileReader {
 
 	
 	/**
-	 * @return The html code inside the given file
+	 * For receiving the content of the given file as a string
+	 * @return The HTML code inside the given file
 	 */
 	public StringBuilder getHTML() {
 		return this.htmlCode;

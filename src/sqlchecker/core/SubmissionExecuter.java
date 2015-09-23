@@ -13,19 +13,44 @@ import sqlchecker.io.IOUtil;
 import sqlchecker.io.impl.SolutionReader;
 import sqlchecker.io.impl.SubmissionReader;
 
+
+/**
+ * Executes the submissions which are stored in the given directory
+ * and prints the result/status
+ * 
+ * @author Max Hofmann
+ *
+ */
 public class SubmissionExecuter {
 
+	/**
+	 * (Relative) Path to the folder which stores all the submissions
+	 * which should be checked
+	 */
+	private String submPath = "";
 	
-	String submPath = "";
-	String solPath = "";
+	/**
+	 * (Relative) Path to the file which contains the solution
+	 */
+	private String solPath = "";
 	
 	
+	/**
+	 * Creates a SubmissionExecuter class and stores the
+	 * given parameters
+	 * @param submissionPath The (relative) path to the folder, which
+	 * stores the student submissions
+	 * @param solutionPath The (relative) path to the solution file
+	 */
 	public SubmissionExecuter(String submissionPath, String solutionPath) {
 		this.submPath = submissionPath;
 		this.solPath = solutionPath;
 	}
 	
 	
+	/**
+	 * Tests all the available submissions
+	 */
 	public void runCheck() {
 		// get list of all submissions
 		File subSrc = new File(submPath);
@@ -86,8 +111,10 @@ public class SubmissionExecuter {
 		boolean DEBUG = true;
 		
 		try {
+			// init connection
 			tester = init(connProps[0], connProps[3], connProps[1], connProps[2]);
 			
+			// parse & execute the submission 
 			Parse target = new Parse(sqlhtml);
 			tester.doTables(target);
 			
@@ -126,7 +153,8 @@ public class SubmissionExecuter {
 	/**
 	 * Creates a database connection for a MySQL endpoint
 	 * @return MySqlTest instance
-	 * @throws SQLException
+	 * @throws SQLException If no database connection could be created
+	 * (This usually happens when the mysql service is not running)
 	 */
 	private MySqlTest init(String host, String db, String dbuser, String dbpw) throws SQLException {
 		// init test
