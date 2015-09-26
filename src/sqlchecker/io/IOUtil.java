@@ -1,6 +1,9 @@
 package sqlchecker.io;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+
+import fit.Parse;
 
 
 /**
@@ -25,6 +28,9 @@ public class IOUtil {
 	 */
 	public static final String TAG_SUFFIX = "*/";
 	
+	private static String[] rElems = new String[0];
+	
+	private static String storage = "";
 	
 	/**
 	 * A static list of the currently valid tags
@@ -87,5 +93,117 @@ public class IOUtil {
 		
 		return result;
 	}
+	
+	
+	public static void printParse(Parse p) {
+		System.out.println("--- printParse - start ---");
+		// printParse(p, 1);
+		// printParseAt(p);
+		
+		storage = "";
+		printParseStr(p, 0);
+		System.out.println(storage);
+		
+		// TODO: omit some fields/not all the data is needed => improved performance
+		
+		/*
+		rElems = new String[15];
+		for (int i = 0; i < 15; i++) {
+			rElems[i] = "";
+		}
+
+
+		 // how does parse work? I dont know 
+		printParseStor(p, 1);
+		
+		for (int i = 0; i < 15; i++) {
+			System.out.println("** " + (i+1));
+			System.out.println(rElems[i]);
+		}
+		*/
+		System.out.println("--- printParse - end ---");
+		
+	}
+	
+
+
+	private static void printParseStr(Parse p, int iter) {
+		
+		// init tis 
+		storage += "[L]" + p.leader + "\n";
+		storage += "[Tag]" + p.tag + "\n";
+
+		if (p.parts != null) {
+			printParseStr(p.parts, iter++);
+		} else {
+			storage += "[B]" + p.body + "\n";
+			// System.out.println("[" + iter + "] body \n\t" + p.body);
+		}
+		
+		storage += "[E]" + p.end + "\n";
+		// System.out.println("[" + iter + "] end \n\t" + p.end);
+		
+		if (p.more != null) {
+			printParseStr(p.more, iter++);
+		} else {
+			storage += "[Tr]" + p.trailer + "\n";
+			// System.out.println("[" + iter + "] trailer \n\t" + p.trailer);
+		}
+
+	}
+	
+	
+	
+	private static void printParseStor(Parse p, int iter) {
+
+		// init tis 
+		rElems[iter] += "[L]" + p.leader + "\n";
+		rElems[iter] += "[Tag]" + p.tag + "\n";
+
+		if (p.parts != null) {
+			printParseStor(p.parts, iter++);
+		} else {
+			rElems[iter] += "[B]" + p.body + "\n";
+			// System.out.println("[" + iter + "] body \n\t" + p.body);
+		}
+		
+		rElems[iter] += "[E]" + p.end + "\n";
+		// System.out.println("[" + iter + "] end \n\t" + p.end);
+		
+		if (p.more != null) {
+			printParseStor(p.more, iter++);
+		} else {
+			rElems[iter] += "[Tr]" + p.trailer + "\n";
+			// System.out.println("[" + iter + "] trailer \n\t" + p.trailer);
+		}
+
+	}
+	
+
+
+	
+	private static void printParse(Parse p, int iter) {
+		System.out.println("** [" + iter + "] **");
+		System.out.println("[" + iter + "] leader \n\t" + p.leader);
+		System.out.println("[" + iter + "] tag \n\t" + p.tag);
+
+		if (p.parts != null) {
+			printParse(p.parts, iter++);
+		} else {
+			System.out.println("[" + iter + "] body \n\t" + p.body);
+		}
+		
+		System.out.println("[" + iter + "] end \n\t" + p.end);
+		
+		if (p.more != null) {
+			printParse(p.more, iter++);
+		} else {
+			System.out.println("[" + iter + "] trailer \n\t" + p.trailer);
+		}
+
+		
+		
+	}
+	
 	
 }

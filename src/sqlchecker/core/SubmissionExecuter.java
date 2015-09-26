@@ -8,6 +8,7 @@ import java.util.Arrays;
 
 import dbfit.MySqlTest;
 import fit.Parse;
+import fit.RowFixture;
 import fit.exception.FitParseException;
 import sqlchecker.io.IOUtil;
 import sqlchecker.io.impl.SolutionReader;
@@ -127,6 +128,7 @@ public class SubmissionExecuter {
 			int fails = tester.counts.exceptions + tester.counts.ignores + tester.counts.wrong;
 			DEBUG = (fails > 0);
 			if (DEBUG) {
+				IOUtil.printParse(target);
 				target.print(out);
 			}
 			
