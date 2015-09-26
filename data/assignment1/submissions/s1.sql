@@ -7,7 +7,14 @@ SELECT bezeichnung, preis FROM produkte
 INSERT INTO 
 	produkte(`bezeichnung`, `preis`) 
 VALUES
-	('chair', 80)
+	('chair', 80);
+-- test1
+/* test2 */
+/*
+test3
+*/
+
+
 
 /*1c*/
 

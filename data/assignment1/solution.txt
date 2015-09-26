@@ -40,6 +40,7 @@ These values will also be used by the java program
 	</tr>
 </table>
 
+
 <!-- INSERT INTO produkte(`bezeichnung`, `preis`) values('chair', 80) -->
 
 <table>
