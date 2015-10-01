@@ -108,9 +108,7 @@ public class IOUtil {
 		storage = "";
 		printParseStr(p, 0);
 		
-		// generate csv
-		String csv = getCSVLine(storage);
-		return csv;
+		return storage;
 		
 	}
 	
@@ -151,47 +149,7 @@ public class IOUtil {
 	}
 	
 	
-	private static String getCSVLine(String raw) {
-		String csvLine = "";
-		
-		
-		// post processing!
-		String[] statements = raw.split("<table>");
-		
-		int start = 0;
-		// skip first empty elem, connection and driver definition
-		if (statements.length > 3) start = 3;
-
-		String status = "";
-		for (int i = start; i < statements.length; i++) {
-			String tmp = statements[i];
-			// parse status
-			
-			if (tmp.contains("class=\"pass\"")) {
-				status += "p";
-			}
-			if (tmp.contains("class=\"ignore\"")) {
-				status += "i";
-			}
-			if (tmp.contains("class=\"fail\"")) {
-				status += "f";
-			}
-			if (tmp.contains("class=\"error\"")) {
-				status += "e";
-			}
-			
-			csvLine += status;
-			// show status
-			status = CSV_DELIMITER;
-			
-			/*
-			//System.out.println("\t status=" + status);
-			if (i > start) {
-				status = CSV_DELIMITER + status; 
-			}*/
-		}
-		return csvLine;
-	}
+	
 	
 	/*
 	public static void main(String[] args) {

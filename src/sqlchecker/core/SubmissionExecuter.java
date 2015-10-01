@@ -1,18 +1,16 @@
 package sqlchecker.core;
 
+
 import java.io.File;
-import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
-
 import dbfit.MySqlTest;
 import fit.Parse;
-import fit.RowFixture;
 import fit.exception.FitParseException;
 import sqlchecker.io.IOUtil;
 import sqlchecker.io.impl.SolutionReader;
 import sqlchecker.io.impl.SubmissionReader;
+
 
 
 /**
@@ -57,6 +55,12 @@ public class SubmissionExecuter {
 		File subSrc = new File(submPath);
 		File[] submissions = subSrc.listFiles();
 		
+		// all lines of the csv file
+		ArrayList<String> csvLines = new ArrayList<String>();
+		// log (contains errors for each submission)
+		ArrayList<String> logContent = new ArrayList<String>();
+		
+		
 		// show info
 		System.out.println("Solution: \n\t" + solPath);
 		System.out.println("\n" + submissions.length + " submissions found: ");
@@ -69,12 +73,14 @@ public class SubmissionExecuter {
 		String solution = sr.getHTML().toString();
 		
 		// Define output writer
-		PrintWriter out = new PrintWriter(System.out, false);
+		//PrintWriter out = new PrintWriter(System.out, false);
 		String[] connProps = sr.getConnectionProperties();
 		
 		for (int i = 0; i < submissions.length; i++) {
 			
 			File subm = submissions[i];
+			String fname = subm.getName();
+			
 			System.out.println("\n\n[" + (i+1) + "/" + submissions.length + "] Testing: " + subm);
 			
 			// load a submission
@@ -86,31 +92,62 @@ public class SubmissionExecuter {
 			String checkStr = IOUtil.applyMapping(solution, mapping);
 			
 			// perform the check
+			String csv = "";
+			ResultStorage rs = null;
 			try {
-				runSubmission(checkStr, connProps, out);
+				rs = runSubmission(fname, checkStr, connProps);
 			} catch (SQLException sqle) {
 				// unable to close connection
 				sqle.printStackTrace();
 			}
+			
+			if (rs == null) {
+				// some sql exception occurred
+				logContent.add("Error for file " + fname);
+				csvLines.add(fname + IOUtil.CSV_DELIMITER + "?");
+				continue;
+			}
+			
+			// add header
+			if (i == 0) {
+				csvLines.add(rs.getCSVHeader());
+			}
+			
+			// add csv line
+			csvLines.add(rs.getCSVLine());
+			// add log entry
+			logContent.add(rs.getLogEntry());
 		}
 		
-		// close output stream
-		out.close();
+		/*
+		 * write/show content
+		 */
+		System.out.println("\n\nWriting content to > CSV < file:\n");
+		for (int i = 0; i < csvLines.size(); i++)  {
+			System.out.println(csvLines.get(i));
+		}
+		
+		System.out.println("\n\nWriting content to > LOG < file:\n");
+		for (int i = 0; i < logContent.size(); i++)  {
+			System.out.println(logContent.get(i));
+		}
+		
+		
 	}
 	
 	/**
 	 * Runs a submission
+	 * @param fileName Name of the file which was loaded
 	 * @param sqlhtml HTML containing the submitted sql statements 
 	 * @param connProps Connection properties in the following order:
 	 *  (host, user, pw, dbname)
 	 * @throws SQLException If the function was unable to close the sql connection
 	 */
-	private void runSubmission(String sqlhtml, String[] connProps, PrintWriter out) throws SQLException {
+	private ResultStorage runSubmission(String fileName, String sqlhtml, String[] connProps) throws SQLException {
 		
 		MySqlTest tester = null;
-		
-		boolean DEBUG = true;
-		
+
+		ResultStorage rs = null;
 		try {
 			// init connection
 			tester = init(connProps[0], connProps[3], connProps[1], connProps[2]);
@@ -122,28 +159,39 @@ public class SubmissionExecuter {
 			
 			System.out.println("\n* * * RESULTS * * *");
 			
+			// right, wrong, ignored, exception
 			System.out.println("Counts:\n\t" + tester.counts);
 			
-			String csv = IOUtil.getParseResult(target);
-			System.out.println("CSV:\n\t" + csv);
+			String result = IOUtil.getParseResult(target);
+			
+			rs = new ResultStorage(fileName, result
+					, tester.counts.right, tester.counts.wrong
+					, tester.counts.ignores, tester.counts.exceptions);
+			
+			// generate csv
+			/*csvOut = IOUtil.getCSVLine(result);
+			
+			// right,wrong,ignored,q_1,...q_i,...q_n
+			csvOut = tester.counts.right + IOUtil.CSV_DELIMITER
+					+ tester.counts.wrong + IOUtil.CSV_DELIMITER
+					+ tester.counts.ignores + IOUtil.CSV_DELIMITER
+					+ tester.counts.exceptions + IOUtil.CSV_DELIMITER
+					+ csvOut;
+			System.out.println("CSV:\n\t" + csvOut);
+			*/
 			
 			
-			/*
-			 * ToDo: Improve by adapting the Parse.print() function?
-			 * See
-			 * https://github.com/unclebob/fitnesse/blob/master/src/fit/Parse.java
-			 */
 			
 		} catch (FitParseException fpe) {
 			fpe.printStackTrace();
 		} catch (SQLException sqle) {
 			sqle.printStackTrace();
 		} finally {
-			// finish printing informations for this test
-			out.flush();
 			// close connection
 			if (tester != null) tester.close();
 		}
+		
+		return rs;
 	}
 	
 	
