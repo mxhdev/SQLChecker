@@ -19,3 +19,8 @@ test3
 /*1c*/
 
 SELECT bezeichnung, preis FROM produkte
+
+/*
+result of this:
+p;;p;p
+*/

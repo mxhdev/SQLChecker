@@ -124,13 +124,9 @@ public class SubmissionExecuter {
 			
 			System.out.println("Counts:\n\t" + tester.counts);
 			
-			// only show debug output if required
-			int fails = tester.counts.exceptions + tester.counts.ignores + tester.counts.wrong;
-			DEBUG = (fails > 0);
-			if (DEBUG) {
-				IOUtil.printParse(target);
-				target.print(out);
-			}
+			String csv = IOUtil.getParseResult(target);
+			System.out.println("CSV:\n\t" + csv);
+			
 			
 			/*
 			 * ToDo: Improve by adapting the Parse.print() function?

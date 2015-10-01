@@ -27,9 +27,16 @@ public class IOUtil {
 	 * Suffix of a tag 
 	 */
 	public static final String TAG_SUFFIX = "*/";
+
+
+	/**
+	 * Delimiter used in all CSV files of this application
+	 */
+	public static final String CSV_DELIMITER = ";";
 	
-	private static String[] rElems = new String[0];
-	
+	/**
+	 * Temporary storage for the results of a submission
+	 */
 	private static String storage = "";
 	
 	/**
@@ -95,115 +102,106 @@ public class IOUtil {
 	}
 	
 	
-	public static void printParse(Parse p) {
-		System.out.println("--- printParse - start ---");
-		// printParse(p, 1);
-		// printParseAt(p);
-		
+	public static String getParseResult(Parse p) {
+
+		// get result as string
 		storage = "";
 		printParseStr(p, 0);
-		System.out.println(storage);
 		
-		// TODO: omit some fields/not all the data is needed => improved performance
-		
-		/*
-		rElems = new String[15];
-		for (int i = 0; i < 15; i++) {
-			rElems[i] = "";
-		}
-
-
-		 // how does parse work? I dont know 
-		printParseStor(p, 1);
-		
-		for (int i = 0; i < 15; i++) {
-			System.out.println("** " + (i+1));
-			System.out.println(rElems[i]);
-		}
-		*/
-		System.out.println("--- printParse - end ---");
+		// generate csv
+		String csv = getCSVLine(storage);
+		return csv;
 		
 	}
 	
 
-
+	/**
+	 * Stores the annotated parse String in a class
+	 * variable. This makes sure that the output is stored
+	 * in the correct order. <br>
+	 * This function was adapted from the Parse.print() function
+	 * in the fitnesse github repository
+	 * @param p Parse object which should be stored
+	 * @param iter Iteration counter, start at 0
+	 * @see https://github.com/unclebob/fitnesse/blob/master/src/fit/Parse.java
+	 */
 	private static void printParseStr(Parse p, int iter) {
 		
-		// init tis 
-		storage += "[L]" + p.leader + "\n";
-		storage += "[Tag]" + p.tag + "\n";
+		// init this 
+		storage += p.leader; //"[L]" + p.leader; // + "\n";
+		storage += p.tag; //"[Tag]" + p.tag; // + "\n";
 
 		if (p.parts != null) {
 			printParseStr(p.parts, iter++);
 		} else {
-			storage += "[B]" + p.body + "\n";
+			storage += p.body; // "[B]" + p.body; // + "\n";
 			// System.out.println("[" + iter + "] body \n\t" + p.body);
 		}
 		
-		storage += "[E]" + p.end + "\n";
+		storage += p.end; // "[E]" + p.end; // + "\n";
 		// System.out.println("[" + iter + "] end \n\t" + p.end);
 		
 		if (p.more != null) {
 			printParseStr(p.more, iter++);
 		} else {
-			storage += "[Tr]" + p.trailer + "\n";
+			storage += p.trailer; //"[Tr]" + p.trailer; // + "\n";
 			// System.out.println("[" + iter + "] trailer \n\t" + p.trailer);
 		}
 
 	}
 	
 	
-	
-	private static void printParseStor(Parse p, int iter) {
-
-		// init tis 
-		rElems[iter] += "[L]" + p.leader + "\n";
-		rElems[iter] += "[Tag]" + p.tag + "\n";
-
-		if (p.parts != null) {
-			printParseStor(p.parts, iter++);
-		} else {
-			rElems[iter] += "[B]" + p.body + "\n";
-			// System.out.println("[" + iter + "] body \n\t" + p.body);
-		}
+	private static String getCSVLine(String raw) {
+		String csvLine = "";
 		
-		rElems[iter] += "[E]" + p.end + "\n";
-		// System.out.println("[" + iter + "] end \n\t" + p.end);
 		
-		if (p.more != null) {
-			printParseStor(p.more, iter++);
-		} else {
-			rElems[iter] += "[Tr]" + p.trailer + "\n";
-			// System.out.println("[" + iter + "] trailer \n\t" + p.trailer);
-		}
+		// post processing!
+		String[] statements = raw.split("<table>");
+		
+		int start = 0;
+		// skip first empty elem, connection and driver definition
+		if (statements.length > 3) start = 3;
 
+		String status = "";
+		for (int i = start; i < statements.length; i++) {
+			String tmp = statements[i];
+			// parse status
+			
+			if (tmp.contains("class=\"pass\"")) {
+				status += "p";
+			}
+			if (tmp.contains("class=\"ignore\"")) {
+				status += "i";
+			}
+			if (tmp.contains("class=\"fail\"")) {
+				status += "f";
+			}
+			if (tmp.contains("class=\"error\"")) {
+				status += "e";
+			}
+			
+			csvLine += status;
+			// show status
+			status = CSV_DELIMITER;
+			
+			/*
+			//System.out.println("\t status=" + status);
+			if (i > start) {
+				status = CSV_DELIMITER + status; 
+			}*/
+		}
+		return csvLine;
 	}
 	
-
-
-	
-	private static void printParse(Parse p, int iter) {
-		System.out.println("** [" + iter + "] **");
-		System.out.println("[" + iter + "] leader \n\t" + p.leader);
-		System.out.println("[" + iter + "] tag \n\t" + p.tag);
-
-		if (p.parts != null) {
-			printParse(p.parts, iter++);
-		} else {
-			System.out.println("[" + iter + "] body \n\t" + p.body);
+	/*
+	public static void main(String[] args) {
+		String test = "<table> x </table> yy <table> x2 </table>";
+		String[] res = test.split("<table>");
+		for(String r : res) {
+			System.out.println("-s-");
+			System.out.println(r);
+			System.out.println("-e-");
 		}
-		
-		System.out.println("[" + iter + "] end \n\t" + p.end);
-		
-		if (p.more != null) {
-			printParse(p.more, iter++);
-		} else {
-			System.out.println("[" + iter + "] trailer \n\t" + p.trailer);
-		}
-
-		
-		
 	}
-	
-	
+	*/
 }

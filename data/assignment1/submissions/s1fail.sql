@@ -1,6 +1,6 @@
 /*1a*/
 
-SELECT bezeichnung, preis FROM produkte
+SELECT bezeichnung FROM produkte
 
 /*1b*/
 
@@ -12,3 +12,8 @@ VALUES
 /*1c*/
 
 SELECT bezeichnung, preis FROM produkte
+
+/*
+result of this:
+pie;e;pf;pf
+*/
