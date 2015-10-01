@@ -2,12 +2,15 @@ package sqlchecker.core;
 
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+
 import dbfit.MySqlTest;
 import fit.Parse;
 import fit.exception.FitParseException;
 import sqlchecker.io.IOUtil;
+import sqlchecker.io.OutputWriter;
 import sqlchecker.io.impl.SolutionReader;
 import sqlchecker.io.impl.SubmissionReader;
 
@@ -33,17 +36,18 @@ public class SubmissionExecuter {
 	 */
 	private String solPath = "";
 	
+	private String agnPath = "";
 	
 	/**
 	 * Creates a SubmissionExecuter class and stores the
 	 * given parameters
-	 * @param submissionPath The (relative) path to the folder, which
-	 * stores the student submissions
-	 * @param solutionPath The (relative) path to the solution file
+	 * @param agnPath The (relative) path to the folder, which
+	 * stores all the assignment-data
 	 */
-	public SubmissionExecuter(String submissionPath, String solutionPath) {
-		this.submPath = submissionPath;
-		this.solPath = solutionPath;
+	public SubmissionExecuter(String assignmentPath) {
+		this.agnPath = assignmentPath;
+		this.submPath = assignmentPath + "/submissions/";
+		this.solPath = assignmentPath + "/solution.txt";
 	}
 	
 	
@@ -92,7 +96,6 @@ public class SubmissionExecuter {
 			String checkStr = IOUtil.applyMapping(solution, mapping);
 			
 			// perform the check
-			String csv = "";
 			ResultStorage rs = null;
 			try {
 				rs = runSubmission(fname, checkStr, connProps);
@@ -123,14 +126,40 @@ public class SubmissionExecuter {
 		 * write/show content
 		 */
 		System.out.println("\n\nWriting content to > CSV < file:\n");
+		String summaryPath = this.agnPath + "summary.csv";
+		summaryPath = OutputWriter.makeUnique(summaryPath);
+		System.out.println("\t" + summaryPath + "\n");
+		/*
 		for (int i = 0; i < csvLines.size(); i++)  {
 			System.out.println(csvLines.get(i));
+		}*/
+		try {
+			OutputWriter summaryWriter = new OutputWriter(summaryPath, csvLines);
+			summaryWriter.writeLines();
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
 		}
 		
+		
 		System.out.println("\n\nWriting content to > LOG < file:\n");
+		String logPath = this.agnPath + "mistakes.log";
+		logPath = OutputWriter.makeUnique(logPath);
+		System.out.println("\t" + logPath + "\n");
+		/*
 		for (int i = 0; i < logContent.size(); i++)  {
 			System.out.println(logContent.get(i));
 		}
+		*/
+		
+		try {
+			OutputWriter logWriter = new OutputWriter(logPath, logContent);
+			logWriter.writeLines();
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		}
+		
+		
+		
 		
 		
 	}
@@ -232,8 +261,9 @@ public class SubmissionExecuter {
 	public static void main(String[] args) {
 		String submissionPath = "data/assignment1/submissions/";
 		String solutionPath = "data/assignment1/solution.txt";
+		String agnPath = "data/assignment1/";
 		
-		SubmissionExecuter se = new SubmissionExecuter(submissionPath, solutionPath);
+		SubmissionExecuter se = new SubmissionExecuter(agnPath);
 		se.runCheck();
 	}
 
