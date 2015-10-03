@@ -20,6 +20,7 @@ be replaced by the sql found in the student submission
 5. Write the results of 4. to files
 
   5.1 Write to a csv file ("summary")
+  
   5.2 Write to a log file ("mistakes)
 
 ## Output
