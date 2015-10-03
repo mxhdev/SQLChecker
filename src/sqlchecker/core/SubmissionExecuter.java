@@ -76,6 +76,11 @@ public class SubmissionExecuter {
 		sr.loadFile();
 		String solution = sr.getHTML().toString();
 		
+
+		// add csv header
+		csvLines.add(IOUtil.generateCSVHeader(sr.getTagMap()));
+		
+		
 		// Define output writer
 		//PrintWriter out = new PrintWriter(System.out, false);
 		String[] connProps = sr.getConnectionProperties();
@@ -109,11 +114,6 @@ public class SubmissionExecuter {
 				logContent.add("Error for file " + fname);
 				csvLines.add(fname + IOUtil.CSV_DELIMITER + "?");
 				continue;
-			}
-			
-			// add header
-			if (i == 0) {
-				csvLines.add(rs.getCSVHeader());
 			}
 			
 			// add csv line
@@ -196,21 +196,7 @@ public class SubmissionExecuter {
 			rs = new ResultStorage(fileName, result
 					, tester.counts.right, tester.counts.wrong
 					, tester.counts.ignores, tester.counts.exceptions);
-			
-			// generate csv
-			/*csvOut = IOUtil.getCSVLine(result);
-			
-			// right,wrong,ignored,q_1,...q_i,...q_n
-			csvOut = tester.counts.right + IOUtil.CSV_DELIMITER
-					+ tester.counts.wrong + IOUtil.CSV_DELIMITER
-					+ tester.counts.ignores + IOUtil.CSV_DELIMITER
-					+ tester.counts.exceptions + IOUtil.CSV_DELIMITER
-					+ csvOut;
-			System.out.println("CSV:\n\t" + csvOut);
-			*/
-			
-			
-			
+
 		} catch (FitParseException fpe) {
 			fpe.printStackTrace();
 		} catch (SQLException sqle) {

@@ -48,15 +48,15 @@ public class IOUtil {
 	/**
 	 * Checks if a tag was found
 	 * @param line The line which should be checked
-	 * @return The index of this tag, -1 if the current line is no (known) 
-	 * tag. This might be because of a typo or because the given
-	 * line is part of a SQL statement
+	 * @return The index of this tag in the IOUtil.tags array,
+	 * -1 if the current line is no (known) tag. This might be because 
+	 * of a typo or because the given line is part of a SQL statement
 	 */
 	public static int getTagPos(String line) {
 		final String TAG_PREFIX = "/*";
 		final String TAG_SUFFIX = "*/";
 		
-		// sample tag: /*a2b*/
+		// sample tags: /*a2b*/, /* a2B*/
 		
 		line = line.replace(" ", "");
 		
@@ -75,7 +75,33 @@ public class IOUtil {
 	}
 	
 	
-	
+	/**
+	 * This function is part of the initialization routine of this
+	 * class and generates the header/first line of the result csv file
+	 * @return The first line of the csv file as String
+	 */
+	public static String generateCSVHeader(ArrayList<String> tagMap) {
+		String csvHead = "Submission" + IOUtil.CSV_DELIMITER
+				+ "Right" + IOUtil.CSV_DELIMITER
+				+ "Wrong" + IOUtil.CSV_DELIMITER
+				+ "Ignored" + IOUtil.CSV_DELIMITER
+				+ "Exceptions";
+		
+		// count amount of queries/statements
+		// csv.split(IOUtil.CSV_DELIMITER).length - 5;
+		int qnum = tagMap.size() - 2;
+		for (int j = 0; j < qnum; j++) {
+			csvHead += IOUtil.CSV_DELIMITER + "Query" + (j+1);
+			// Check if there is a tag for this statement
+			// This means that this statement corresponds to a task
+			// of the assignment
+			if (!tagMap.get(j + 2).isEmpty()) {
+				csvHead += " (" + tagMap.get(j + 2) + ")";
+			}
+		}
+		
+		return csvHead; 
+	}
 	
 	
 	/**

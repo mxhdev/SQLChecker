@@ -1,6 +1,6 @@
 package sqlchecker.io.impl;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 
 import sqlchecker.io.AbstractFileReader;
 import sqlchecker.io.IOUtil;
@@ -19,6 +19,18 @@ public class SolutionReader extends AbstractFileReader {
 	 * The content of the given file, as string
 	 */
 	private StringBuilder htmlCode = new StringBuilder("");
+	
+	/**
+	 * Stores for each statement in the file, if it contains a tag
+	 */
+	private ArrayList<String> tagMap = new ArrayList<String>();
+	
+	/*
+	 * 
+	 * This skips the first two tables because those tables 
+	 * define the SQL driver and the connection properties. Those
+	 * tables will never be influenced by student submissions
+	 */
 	
 	/**
 	 * Prefix of the connection definition in the given file
@@ -61,13 +73,32 @@ public class SolutionReader extends AbstractFileReader {
 			// System.out.println("tag-array:\"" + Arrays.toString(IOUtil.tags) + "\"");
 		} else {
 			htmlCode.append("\n" + line);
-
+			
 			if (line.startsWith(CONN_PREFIX)) {
 				// cut prefix & suffix
-				line = line.substring(line.indexOf(CONN_PREFIX) + CONN_PREFIX.length());
-				line = line.substring(0, line.indexOf(CONN_SUFFIX));
+				String connLine = line.substring(line.indexOf(CONN_PREFIX) + CONN_PREFIX.length());
+				connLine = connLine.substring(0, connLine.indexOf(CONN_SUFFIX));
 				// parse connect parameters
-				this.connProps = line.split("</td> <td>").clone();
+				this.connProps = connLine.split("</td> <td>").clone();
+			}
+			// build tag-map
+			if (line.startsWith("<table>")) {
+				tagMap.add("");
+			} else {
+				// transform the line before doing the check
+				// this removes everything before and after the
+				// tag prefix and suffix
+				String tagLine = "";
+				if (line.contains("/*") && line.contains("*/")) {
+					tagLine = line.substring(line.indexOf("/*"));
+					tagLine = tagLine.substring(0, tagLine.indexOf("*/") + 2);
+					// check the index of this (possible) tag
+					int idx = IOUtil.getTagPos(tagLine);
+					if (idx >= 0) {
+						tagMap.set(tagMap.size() - 1, IOUtil.tags[idx]);
+					}
+				}
+				
 			}
 			
 		}
@@ -77,6 +108,8 @@ public class SolutionReader extends AbstractFileReader {
 	public void beforeReading(String pathToFile) {
 		// empty html string
 		htmlCode = new StringBuilder("");
+		// clear tag map
+		tagMap.clear();
 		// default connection properties
 		connProps = DEFAULT_PROPS.clone();
 	}
@@ -86,6 +119,15 @@ public class SolutionReader extends AbstractFileReader {
 		// System.out.println(htmlCode.toString());
 	}
 
+	/**
+	 * @return The tag map. This is a List which has one element
+	 * for every statement beginning with <table> in the solution file.
+	 * For every statement, this list contains the tag corresponding to 
+	 * this statement (or "") if there was no tag 
+	 */
+	public ArrayList<String> getTagMap() {
+		return this.tagMap;
+	}
 	
 	/**
 	 * For receiving the content of the given file as a string
@@ -116,8 +158,11 @@ public class SolutionReader extends AbstractFileReader {
 		String fpath = "data/assignment1/solution.txt";
 		SolutionReader sr = new SolutionReader(fpath);
 		sr.loadFile();
+		ArrayList<String> tm = sr.getTagMap();
+		for (int i = 0; i < tm.size(); i++) {
+			System.out.println("> " + tm.get(i));
+		}
 
-
-		
+				
 	}
 }

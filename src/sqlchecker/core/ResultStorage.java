@@ -2,28 +2,71 @@ package sqlchecker.core;
 
 import sqlchecker.io.IOUtil;
 
+
+/**
+ * Stores results as raw text and as csv
+ * 
+ * @author Max Hofmann
+ *
+ */
 public class ResultStorage {
 
-	
+	/**
+	 * Raw result text (html with annotations)
+	 */
 	private String raw = "";
 	
 	/**
-	 * right, wrong, ignored, exceptions
+	 * Stores the counts in the following order:
+	 * Right, wrong, ignored, exceptions
 	 */
 	private int[] counts = new int[4];
 	
+	/**
+	 * CSV line corresponding to the results of this submission
+	 */
 	private String csv = "";
-	
-	private String csvHeader = "";
-	
+
+	/**
+	 * Log entry corresponding to the raw results
+	 */
 	private String logEntry = "";
 	
+	
+	/**
+	 * Name of the submission file corresponding to the results
+	 * stored in this class
+	 */
 	private String fileName = "";
 	
+	
+	/**
+	 * Creates a ResultStorage object and sets the counts to -1. 
+	 * It is highly recommended to call the setCounts() function 
+	 * after using this constructor
+	 * @param fname File name of the submission
+	 * @param resultRaw The raw annotated html results for
+	 * this submission
+	 */
 	public ResultStorage(String fname, String resultRaw) {
 		this(fname, resultRaw, -1, -1, -1, -1);
 	}
 	
+	
+	/**
+	 * Creates a ResultStorage object
+	 * @param fname File name of the submission
+	 * @param resultRaw The raw annotated html results for
+	 * this submission
+	 * @param right Amount of correct values (can be taken from 
+	 * the Fixture.counts field)
+	 * @param wrong Amount of wrong values (can be taken from 
+	 * the Fixture.counts field)
+	 * @param ignored Amount of ignored values (can be taken from 
+	 * the Fixture.counts field)
+	 * @param exceptions Amount of error values (can be taken from 
+	 * the Fixture.counts field)
+	 */
 	public ResultStorage(String fname, String resultRaw, int right, int wrong, int ignored, int exceptions) {
 		
 		this.raw = resultRaw;
@@ -33,29 +76,37 @@ public class ResultStorage {
 		
 		// create csv line for this record
 		this.csv = generateCSVLine();
-		// create header (has to be done AFTER generateCSVLine())
-		this.csvHeader = generateCSVHeader();
 		// create log entry (has to be done AFTER generateCSVHeader())
 		this.logEntry = generateLogEntry();
 	}
 	
 	
+	/**
+	 * @return CSV line corresponding to the results of this submission
+	 */
 	public String getCSVLine() {
 		return this.csv;
 	}
 	
-	public String getCSVHeader() {
-		return this.csvHeader;
-	}
-	
+	/**
+	 * @return Log entry corresponding to the raw results
+	 */
 	public String getLogEntry() {
 		return this.logEntry;
 	}
 	
+	/**
+	 * @return The annotated raw text as html
+	 */
 	public String getRawText() {
 		return this.raw;
 	}
 	
+	/**
+	 * Checks if the results indicate, that this submission is 
+	 * completely correct
+	 * @return True iff (WRONG + IGNORED + ERRORS == 0)
+	 */
 	public boolean isPassed() {
 		// passed iff there are no wrong/ignored/exception entries!
 		int problems = counts[1] + counts[2] + counts[3];
@@ -63,7 +114,18 @@ public class ResultStorage {
 	}
 	
 	
-	private void setCounts(int right, int wrong, int ignored, int exceptions) {
+	/**
+	 * Updates the counts field stored in this object
+	 * @param right Amount of correct values (can be taken from 
+	 * the Fixture.counts field)
+	 * @param wrong Amount of wrong values (can be taken from 
+	 * the Fixture.counts field)
+	 * @param ignored Amount of ignored values (can be taken from 
+	 * the Fixture.counts field)
+	 * @param exceptions Amount of error values (can be taken from 
+	 * the Fixture.counts field)
+	 */
+	public void setCounts(int right, int wrong, int ignored, int exceptions) {
 		counts[0] = right;
 		counts[1] = wrong;
 		counts[2] = ignored;
@@ -72,28 +134,13 @@ public class ResultStorage {
 	
 	
 	
-	private String generateCSVHeader() {
-		String csvHead = "Submission" + IOUtil.CSV_DELIMITER
-				+ "Right" + IOUtil.CSV_DELIMITER
-				+ "Wrong" + IOUtil.CSV_DELIMITER
-				+ "Ignored" + IOUtil.CSV_DELIMITER
-				+ "Exceptions";
-		
-		// count amount of queries/statements
-		int qnum = csv.split(IOUtil.CSV_DELIMITER).length - 5;
-		for (int j = 0; j < qnum; j++) {
-			csvHead += IOUtil.CSV_DELIMITER + "Query" + (j+1);
-		}
-		
-		return csvHead; 
-	}
 	
-	
-	
-	
-	
-	
-	
+	/**
+	 * This function is part of the initialization routine of this
+	 * class and generates a csv line corresponding to the
+	 * results stored in this class
+	 * @return CSV line corresponding to the results
+	 */
 	private String generateCSVLine() {
 		String csvLine = fileName + IOUtil.CSV_DELIMITER
 				+ counts[0] + IOUtil.CSV_DELIMITER
@@ -133,7 +180,12 @@ public class ResultStorage {
 	
 	
 	
-	
+	/**
+	 * This function is part of the initialization routine of this
+	 * class and generates a log entry corresponding to the raw
+	 * results. This log entry shows all wrong statements and errors
+	 * @return The log entry corresponding to the results
+	 */
 	private String generateLogEntry() {
 		String logRaw = "";
 
