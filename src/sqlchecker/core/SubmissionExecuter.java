@@ -36,6 +36,9 @@ public class SubmissionExecuter {
 	 */
 	private String solPath = "";
 	
+	/**
+	 * Path for this assignment (e.g. data/assignment1/)
+	 */
 	private String agnPath = "";
 	
 	/**
@@ -236,10 +239,7 @@ public class SubmissionExecuter {
 	 * CURRENT MAIN CLASS
 	 * 
 	 * TODO
-	 * - multiple submissions at once
-	 * - multiple assignments at one? - not required?
-	 * - more info/output
-	 * - write output to file
+	 * - generated solutions.txt automated ?
 	 * - javadoc
 	 * HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 	 */
