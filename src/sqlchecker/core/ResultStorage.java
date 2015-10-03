@@ -80,7 +80,7 @@ public class ResultStorage {
 				+ "Exceptions";
 		
 		// count amount of queries/statements
-		int qnum = csv.split(";").length - 5;
+		int qnum = csv.split(IOUtil.CSV_DELIMITER).length - 5;
 		for (int j = 0; j < qnum; j++) {
 			csvHead += IOUtil.CSV_DELIMITER + "Query" + (j+1);
 		}
