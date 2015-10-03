@@ -5,15 +5,22 @@ Checks student submissions automatically
 ## How it works
 
 1. Read the solutions.txt file
-	1.1 Also read the connection data and the tag list. Each tag corresponds to one task of the assignment.
+
+  1.1 Also read the connection data and the tag list. Each tag corresponds to one task of the assignment.
+
 2. Read all student submissions
-	2.1 Extract the (tag-> submissionSQL) mapping from each student submission
+
+  2.1 Extract the (tag-> submissionSQL) mapping from each student submission
+
 3. Apply each mapping extracted in 2. to the solutions file read in 1. Each tag in the solutions file will 
 be replaced by the sql found in the student submission
+
 4. Execute each "replacement" via Fitnesse and DBFit
+
 5. Write the results of 4. to files
-	5.1 Write to a csv file ("summary")
-	5.2 Write to a log file ("mistakes)
+
+  5.1 Write to a csv file ("summary")
+  5.2 Write to a log file ("mistakes)
 
 ## Output
 
