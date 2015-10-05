@@ -10,7 +10,7 @@ Checks student submissions automatically
 
 2. Read all student submissions
 
-  2.1 Extract the (tag-> submissionSQL) mapping from each student submission
+  2.1 Extract the (tag -> submissionSQL) mapping from each student submission
 
 3. Apply each mapping extracted in 2. to the solutions file read in 1. Each tag in the solutions file will 
 be replaced by the sql found in the student submission
@@ -21,7 +21,7 @@ be replaced by the sql found in the student submission
 
   5.1 Write to a csv file ("summary")
   
-  5.2 Write to a log file ("mistakes)
+  5.2 Write to a log file ("mistakes")
 
 ## Output
 
@@ -44,14 +44,22 @@ column corresponds to a count of correct/wrong/faulty/ignored statements and a s
 In the following columns, the table shows the result of running each individual query. An example for the content
 of a summary file could be:
 ```
-Submission;Right;Wrong;Ignored;Exceptions;Query1 (1a);Query4
+Submission;Right;Wrong;Ignored;Exceptions;Query1 (1a);Query2
 ```
 The first field identifies the submission, the following four fields contain counts which show, how many statements 
 were right, wrong, ignored or caused an error.
+The following columns show the status of each query. These labels can consist of a combination of one of the
+following letters:
+| Letter| Status | Meaning |
+| ------------- | ------------- | ------------- |
+| p | Passed | The result was either partial or completely correct |
+| f | Failed | The result was either partial or completely wrong |
+| i | Ignored | Something of this statement was ignored (possibly due to a previous problem |
+| e | Error | Something caused an error |
 
 ### Log file
-This log contains an entry for each submission. If a submission contains a query which was wrong, ignored or caused an error,
-this statement will be written in this file. This consists of the query, which is called, the command, the
+This log contains one entry per submission. If a submission contains a query which was wrong, ignored or caused an error, 
+then this statement will be written to the log. This consists of the query, which is called, the command, the
 expected results and any Exceptions.
 
 
