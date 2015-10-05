@@ -50,6 +50,7 @@ The first field identifies the submission, the following four fields contain cou
 were right, wrong, ignored or caused an error.
 The following columns show the status of each query. These labels can consist of a combination of one of the
 following letters:
+
 | Letter| Status | Meaning |
 | ------------- | ------------- | ------------- |
 | p | Passed | The result was either partial or completely correct |
