@@ -1,7 +1,0 @@
-|Rollback|
-
-|Execute Ddl|${DROPUSERTABLE}|
-
-|Execute Ddl|${DROPMAKEUSERPROC}|
-
-|Commit|

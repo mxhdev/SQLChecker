@@ -27,7 +27,6 @@ public class IOUtil {
 	 */
 	public static final String TAG_SUFFIX = "*/";
 
-
 	/**
 	 * Delimiter used in all CSV files of this application
 	 */
@@ -52,8 +51,6 @@ public class IOUtil {
 	 * of a typo or because the given line is part of a SQL statement
 	 */
 	public static int getTagPos(String line) {
-		final String TAG_PREFIX = "/*";
-		final String TAG_SUFFIX = "*/";
 		
 		// sample tags: /*a2b*/, /* a2B*/
 		
@@ -71,6 +68,30 @@ public class IOUtil {
 		
 		// no tags were matching
 		return -1;
+	}
+	
+	
+	/**
+	 * 
+	 * @param line The line in which this method should look
+	 * for a tag
+	 * @return The tag which is surrounded by the correct 
+	 * prefix and suffix, null if this line neither starts 
+	 * with the correct prefix not ends with the correct suffix
+	 */
+	public static String getTag(String line) {
+		// sample tags: /*a2b*/, /*a2B*/
+
+		// either tag prefix or suffix is incorrect
+		if (((!line.startsWith(TAG_PREFIX)) || (!line.endsWith(TAG_SUFFIX))))
+			return null;
+		
+		// take the string surrounded by the prefix and suffix
+		line = line.substring(
+				line.indexOf(TAG_PREFIX) + TAG_PREFIX.length(), 
+				line.indexOf(TAG_SUFFIX));
+		
+		return line;
 	}
 	
 	
