@@ -50,7 +50,7 @@ public class SolutionGenerator {
 	/*
 	 * 1) Generate tag->query mapping
 	 * 
-	 * 2) Execute each query
+	 * 2) Execute each query & ROLLBACK!!
 	 * 2.1) Store result of each query
 	 * 
 	 * 3) Write HTML to file
