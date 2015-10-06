@@ -55,7 +55,7 @@ following letters:
 | ------------- | ------------- | ------------- |
 | p | Passed | The result was either partial or completely correct |
 | f | Failed | The result was either partial or completely wrong |
-| i | Ignored | Something of this statement was ignored (possibly due to a previous problem |
+| i | Ignored | Something of this statement was ignored (possibly due to a previous problem) |
 | e | Error | Something caused an error |
 
 ### Log file
