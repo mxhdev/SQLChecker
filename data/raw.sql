@@ -1,4 +1,3 @@
-
 /*1a*/
 
 select 'test' as x;

@@ -34,6 +34,18 @@ public class RawSolutionReader extends AbstractFileReader {
 		} else {
 			// append to last seen tag
 			int idx = sqlMapping.size() - 1;
+			
+			if (idx < 0) {
+				// sql without a tag
+				System.out.println(" - - - - - ");
+				System.out.println("[WARNING] RawSolutionReader: \n"
+						+ "Initial tag missing. Every SQL statement "
+						+ "has to have a tag before it is defined!\n");
+				System.out.println("Problem at: \n\t" + line);
+				System.out.println(" - - - - - \n\n");
+				return;
+			}
+			
 			// append the sql
 			String[] tmp = sqlMapping.get(idx);
 			// append a line break if required
