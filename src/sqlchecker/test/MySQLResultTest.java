@@ -41,6 +41,7 @@ public class MySQLResultTest {
 	
 
 	public MySQLResultTest() {
+		// Try to load the driver class
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 		} catch (ClassNotFoundException e) {
@@ -54,9 +55,6 @@ public class MySQLResultTest {
 		System.out.println("Connection with values host=" + host + ", db=" + db + ", user=" + dbuser + ", pw=" + dbpw);
 		
 		Connection conn = null;
-		
-		String url = "jdbc:mysql://localhost/" + db + "?user=" + dbuser + "?password=" + dbpw;
-		System.out.println("URL: " + url);
 		try {
 			conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/" + db, dbuser, dbpw);
 		} catch (SQLException sqle) {
@@ -139,18 +137,10 @@ public class MySQLResultTest {
 			sqle.printStackTrace(System.out);
 			
 		} finally {
+			// close statement object
 			close(stmt);
+			// close the connection
 			close(conn);
-			/*
-			// close the connection if it was initialized
-			if (conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException sqle2) {
-					sqle2.printStackTrace(System.out);
-				}
-			}
-			*/
 		}
 		
 		
@@ -176,6 +166,7 @@ public class MySQLResultTest {
 		}
 		// close the result set
 		close(rs);
+		// delimiter
 		System.out.println("- - -  - - - -  - -- - - - - ");
 	}
 	
