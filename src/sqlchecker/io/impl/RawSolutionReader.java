@@ -8,22 +8,17 @@ import sqlchecker.io.IOUtil;
 public class RawSolutionReader extends AbstractFileReader {
 
 	
-	
-	private String defTag = "static";
-	
-	
-	ArrayList<String[]> sqlMapping = new ArrayList<String[]>();
+	/**
+	 * Defines a mapping described in the input file
+	 * (tag -> sql)
+	 */
+	private ArrayList<String[]> sqlMapping = new ArrayList<String[]>();
 	
 	
 	public RawSolutionReader(String pathToFile) {
 		super(pathToFile);
 	}
 	
-	public RawSolutionReader(String pathToFile, String defaultTag) {
-		super(pathToFile);
-		// this tag marks non-student submitted (independent) sql
-		this.defTag = defaultTag;
-	}
 	
 	@Override
 	public void onReadLine(String line) {
@@ -59,20 +54,27 @@ public class RawSolutionReader extends AbstractFileReader {
 
 	@Override
 	public void beforeReading(String pathToFile) {
-		// TODO Auto-generated method stub
-
+		// make sure the mapping list is empty
+		sqlMapping.clear();
 	}
 
 	@Override
 	public void afterReading(String pathToFile) {
+		/*
 		for (int i = 0; i < sqlMapping.size(); i++) {
 			String[] tmp = sqlMapping.get(i);
 			System.out.println("[" + (i+1) + "] TAG=" + tmp[0]);
 			System.out.println("[" + (i+1) + "] SQL=");
 			System.out.println(tmp[1]);
 		}
+		*/
 	}
 
+	
+	
+	public ArrayList<String[]> getMapping() {
+		return this.sqlMapping;
+	}
 	
 	public static void main(String[] args) {
 		String path = "data/raw.sql";

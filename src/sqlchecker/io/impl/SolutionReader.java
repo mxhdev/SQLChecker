@@ -47,11 +47,7 @@ public class SolutionReader extends AbstractFileReader {
 	 */
 	private String[] connProps = new String[4];
 	
-	/**
-	 * Default connection properties, in case something went wrong 
-	 * at parsing those
-	 */
-	private String[] DEFAULT_PROPS = new String[]{"localhost", "root","","dbfit"};
+	
 	
 	
 	/**
@@ -111,7 +107,7 @@ public class SolutionReader extends AbstractFileReader {
 		// clear tag map
 		tagMap.clear();
 		// default connection properties
-		connProps = DEFAULT_PROPS.clone();
+		connProps = IOUtil.DEFAULT_PROPS.clone();
 	}
 
 	@Override
