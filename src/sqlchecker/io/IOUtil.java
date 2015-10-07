@@ -270,6 +270,7 @@ public class IOUtil {
 		System.out.println("INPUT-2: \"" + header + "\"");
 		
 		for (int i = 0; i < header.length(); i++) {
+			// charAt is a constant time operation!
 			char c = header.charAt(i);
 			// check the character
 			if (c == '(') {
