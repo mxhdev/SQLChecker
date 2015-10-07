@@ -1,6 +1,9 @@
 package sqlchecker.io;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+
+import org.apache.commons.lang.StringUtils;
 
 import fit.Parse;
 
@@ -202,10 +205,109 @@ public class IOUtil {
 	}
 	
 	
+	public static String parseCallableHeader(String sql) {
+		
+		// see https://dev.mysql.com/doc/refman/5.0/en/create-procedure.html
+		
+		System.out.println("INPUT: \n" + sql);
+		
+		sql = sql.toLowerCase();
+		
+		boolean isFunction = sql.contains(" function ");
+		System.out.println("isFunction=" + isFunction);
+		
+		int headerStartIdx = -1;
+		int headerEndIdx = sql.length();
+		if (isFunction) {
+			headerStartIdx = sql.indexOf(" function ") + " function ".length();
+			// i.e. RETURNS int(8)
+			// returns is also part of a correct mysql function definition
+			headerEndIdx = sql.indexOf(" returns "); 
+		} else {
+			headerStartIdx = sql.indexOf(" procedure ") + " procedure ".length();
+			// check for enclosing brackets!
+			headerEndIdx = sql.indexOf("(") + 1;
+			int count = 1;
+			System.out.println("[ " + headerEndIdx + " >" + sql.substring(0, headerEndIdx));
+			while (count != 0) {
+				if (headerEndIdx == sql.length()) {
+					System.out.println("Reached EndOfLine, possibly malformed query!");
+					break;
+				}
+				if (sql.charAt(headerEndIdx) == ')') count--;
+				if (sql.charAt(headerEndIdx) == '(') count++;
+				headerEndIdx++;
+			}
+			System.out.println("[ " + headerEndIdx + " >" + sql.substring(0, headerEndIdx));
+			
+		}
+		System.out.println("s=" + headerStartIdx + ", e=" + headerEndIdx);
+		String header = sql.substring(headerStartIdx, headerEndIdx);
+		
+		header = header.replace("\n", "").trim();
+		System.out.println("Header(1)=\"" + header + "\"");
+		
+		return header;
+		
+	}
 	
 	
-	/*
+	
+	public static String[] getHeaderTokens(String header) {
+		//Sample Input: functionName({params comma separated})
+		
+		System.out.println("INPUT: " + header);
+		
+		int counter = 0;
+		ArrayList<String> tokens = new ArrayList<String>();
+
+		// method name
+		String name = header.substring(0, header.indexOf('('));
+		System.out.println("NAME=\"" + name + "\"");
+		tokens.add(name);
+		
+		header = header.substring(header.indexOf('(') + 1, header.lastIndexOf(')'));
+		System.out.println("INPUT-2: \"" + header + "\"");
+		
+		for (int i = 0; i < header.length(); i++) {
+			char c = header.charAt(i);
+			// check the character
+			if (c == '(') {
+				counter++;
+			} else if (c == ')') {
+				counter--;
+			} else if (c == ',') { 
+				// new token!
+				if (counter == 0) {
+					tokens.add("");
+				}
+			} 
+			
+			// if ( ((c == ',') && (counter != 0)) || (c != ","))
+			// if ( (c != ',') || (counter != 0) )
+			if ( !((c == ',') && (counter == 0)) ) {
+				// if the list only stores a name
+				if (tokens.size() < 2) tokens.add("");
+				// some other char, add it to the top of the list
+				String t = tokens.get(tokens.size() - 1);
+				t += c;
+				tokens.set(tokens.size() - 1, t);
+			}
+			
+		}
+
+		System.out.println("TOKENS=" + tokens.size());
+		String[] tokenArray = (tokens.toArray(new String[tokens.size()]));
+		for (int i = 0; i < tokens.size(); i++)
+			tokenArray[i] = tokenArray[i].trim();
+		
+		return tokenArray;
+	}
+
+
+	
 	public static void main(String[] args) {
+		System.out.println("Table test");
 		String test = "<table> x </table> yy <table> x2 </table>";
 		String[] res = test.split("<table>");
 		for(String r : res) {
@@ -213,6 +315,47 @@ public class IOUtil {
 			System.out.println(r);
 			System.out.println("-e-");
 		}
+		
+		System.out.println("\n\nFunction/Procedure parse test");
+		String[] tests = new String[]{"CREATE PROCEDURE testproc() BEGIN SELECT bezeichnung FROM produkte; END|",
+				"CREATE PROCEDURE CalcLength(IN name varchar(100), OUT strlength int) set strlength =length(name);",
+				"CREATE PROCEDURE CalcLength(IN name varchar(100)"
+				+ ", OUT strlength int) "
+				+ "set strlength =length(name);",
+				"CREATE PROCEDURE CalcLength(IN name varchar(100)\n"
+				+ ", OUT strlength int) \n"
+				+ "set strlength =length(name);",
+				
+				"CREATE FUNCTION filterProducts (gps INT) returns TEXT begin declare bez TEXT; set bez = (select bezeichnung from produkte where preis = gps); return bez;end;",
+				"create function sumab(a decimal(6, 2), b decimal(6, 2)) returns decimal(6, 4) deterministic return a + b;",
+				"create function sumab(a decimal(6, 2), b decimal(6, 2)) "
+				+ "returns decimal(6, 4) "
+				+ "deterministic "
+				+ "return a + b;",
+				"create function sumab(c decimal(6, 2), d decimal(6, 2)) \n "
+				+ "returns decimal(6, 4) deterministic \n"
+				+ "return c + d;"};
+		
+		for (String t : tests) {
+			IOUtil.parseCallableHeader(t);
+			System.out.println("\n");
+		}
+		
+		System.out.println("\n\nHeader Token parse test");
+		
+		tests = new String[]{"sumab(a decimal(6, 2), b decimal(6, 2))",
+				"CalcLength(IN name varchar(100), OUT strlength int)",
+				"testproc()",
+				"blabla( v1 kappa(a,b) , OUT c cy(x,3), inout bigint(3))"};
+		
+		for (String t : tests) {
+			String[] tmp = IOUtil.getHeaderTokens(t);
+			for (String s : tmp)
+				System.out.print(s + "|");
+			System.out.println("\n");
+		}
+		
+		
 	}
-	*/
+	
 }
