@@ -2,6 +2,7 @@ package sqlchecker.test;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.ParameterMetaData;
 import java.sql.PreparedStatement;
@@ -9,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 
 
 /**
@@ -118,6 +120,8 @@ public class MySQLResultTest {
 			// init connection
 			conn = init();
 			conn.setAutoCommit(false);
+			DatabaseMetaData dmd = conn.getMetaData();
+			System.out.println("(Commit-DDL-automatically) evil=" + dmd.dataDefinitionCausesTransactionCommit());
 			
 			// insert
 			stmt = conn.createStatement();
@@ -138,16 +142,25 @@ public class MySQLResultTest {
 				System.out.println(stmt.getUpdateCount());
 			}
 			
-			stmt.execute("DROP PROCEDURE CalcLength");
+			stmt.execute("DROP PROCEDURE if exists CalcLength");
 			stmt.execute("CREATE PROCEDURE CalcLength(IN name varchar(100), OUT strlength int) set strlength =length(name);");
 			
 			System.out.println("Stored Procedure call! (1 OUT-param)");
 			// hasRes = stmt.execute("{call CalcLength(?, ?)}");
-			CallableStatement stCall = conn.prepareCall("{ call CalcLength(?,?) }");
+			// CallableStatement stCall = conn.prepareCall("{ call CalcLength(?,?) }");
+			CallableStatement stCall = conn.prepareCall("{ call CalcLength('hello', ?) }");
+			// .execute() does not work for this
 			
 			// for checking parameter types without string parsing
 			ParameterMetaData pmd = stCall.getParameterMetaData();
 			int count = pmd.getParameterCount();
+			
+			System.out.println("MODES:");
+			System.out.println("\tIN=" + ParameterMetaData.parameterModeIn);
+			System.out.println("\tOUT=" + ParameterMetaData.parameterModeOut);
+			System.out.println("\tINOUT=" + ParameterMetaData.parameterModeInOut);
+			System.out.println("\tUNKNOWN=" + ParameterMetaData.parameterModeUnknown);
+			
 			for (int i = 1; i <= count; i++) {
 				System.out.println("[" + i + "] type=" + pmd.getParameterType(i));
 				System.out.println("[" + i + "] pmode=" + pmd.getParameterMode(i));
@@ -155,30 +168,112 @@ public class MySQLResultTest {
 				System.out.println("[" + i + "] classname=" + pmd.getParameterClassName(i));
 			}
 			
-			stCall.setString(1, "HelloXy");
+			//stCall.setString(1, "HelloXy");
 			
-			stCall.registerOutParameter(2, java.sql.Types.INTEGER);
+			stCall.registerOutParameter(1, java.sql.Types.INTEGER);
+			
 			hasRes = stCall.execute();
-			
-			System.out.println("X=" + stCall.getInt(2));
+			System.out.println("obj=" + stCall.getObject(1));
+			System.out.println("X=" + stCall.getInt(1));
+			// System.out.println("X=" + stCall.getInt(2));
 			
 			if (hasRes) {
 				printResults(stCall.getResultSet());
 			} else {
 				System.out.println(stCall.getUpdateCount());
 			}
-			//PreparedStatement stmtp = conn.prepareStatement("SELECT usercheck1(?, ?) FROM DUAL");
+			
+
+			stmt.execute("drop function if exists sumab");
+			stmt.execute("create function sumab(a decimal(16, 4), b decimal(16, 4)) returns decimal(16, 4) deterministic return a + b;");
+			
+			
+			System.out.println("FUNCTION TEST");
+			stCall = conn.prepareCall("{? = call sumab(150, 4)}");
+			// geht auch fuer int
+			stCall.registerOutParameter(1, Types.DECIMAL, 1);
+			
+			//stCall.setInt(2, 4);
+			//stCall.setInt(3, 1);
+			
+			stCall.execute();
+			System.out.println(stCall.getInt(1));
+			
+			
+			hasRes = stmt.execute("{? = call sumab(150, 4)}");
+			System.out.println("exec");
+			if (hasRes) {
+				printResults(stmt.getResultSet());
+			} else {
+				System.out.println(stmt.getUpdateCount());
+			}
+	/*
+	 * http://stackoverflow.com/questions/1379146/mysql-jdbc-function-in-out-param
+	 */
+
+			
+			pmd = stCall.getParameterMetaData();
+			count = pmd.getParameterCount();
+			for (int i = 1; i <= count; i++) {
+				System.out.println("[" + i + "] type=" + pmd.getParameterType(i));
+				System.out.println("[" + i + "] pmode=" + pmd.getParameterMode(i));
+				System.out.println("[" + i + "] typename=" + pmd.getParameterTypeName(i));
+				System.out.println("[" + i + "] classname=" + pmd.getParameterClassName(i));
+			}
+			
+			
+			System.out.println("PROCEDURE TEST /w select but not OUT-param");
+			stmt.execute("DROP PROCEDURE if exists testproc");
+			
+			stmt.execute("CREATE PROCEDURE testproc() BEGIN SELECT bezeichnung FROM produkte; END");
+			
+			//stCall = conn.prepareCall("{call testproc()}");
+			hasRes = stmt.execute("{call testproc()}");
+			
+			if (hasRes) {
+				printResults(stmt.getResultSet());
+			} else {
+				System.out.println(stmt.getUpdateCount());
+			}
+			
+			
+			
+			System.out.println("PROCEDURE TEST /w params, but no OUT");
+			stmt.execute("DROP PROCEDURE if exists procInsert");
+			
+			stmt.execute("CREATE PROCEDURE procInsert(in px INT) BEGIN insert into produkte(bezeichnung, preis) values ('tablet', px); END");
+			
+			hasRes = stmt.execute("{ call procInsert(588)}");
+			if (hasRes) {
+				printResults(stmt.getResultSet());
+			} else {
+				System.out.println(stmt.getUpdateCount());
+			}
+			
+			System.out.println("FUNCTION TEST without params");
+			
+			stmt.execute("drop function if exists GiveFive");
+			stmt.execute("create function GiveFive() returns decimal(16, 4) deterministic return 5;");
+			
+			hasRes = stmt.execute("{? = call GiveFive()}");
+			if (hasRes) {
+				printResults(stmt.getResultSet());
+			} else {
+				System.out.println(stmt.getUpdateCount());
+			}
+			
 			
 			// no commit, no persist
-			
+			// except for create table/function/procedure and insert into :(
 			// the following command makes changes persistent!!!!!!!
 			//conn.commit();
 		} catch (SQLException sqle) {
-			// try to undo everything!
-			rollback(conn);
+			
 			sqle.printStackTrace(System.out);
 			
 		} finally {
+			// try to undo everything!
+						rollback(conn);
 			// close statement object
 			close(stmt);
 			// close the connection

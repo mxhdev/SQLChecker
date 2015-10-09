@@ -392,7 +392,7 @@ public class IOUtil {
 		System.out.println("\n\nHeader Token parse test");
 		
 		tests = new String[]{"sumab(a decimal(6, 2), b decimal(6, 2))",
-				"CalcLength(IN name varchar(100), OUT strlength int)",
+				"CalcLength(IN name varchar(100), OUT STRLength int)",
 				"testproc()",
 				"blabla( v1 kappa(a,b) , OUT c cy(x,3), inout bigint(3))"};
 		

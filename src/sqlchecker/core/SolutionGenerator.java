@@ -48,62 +48,22 @@ public class SolutionGenerator {
 	}
 	
 	
-	/**
-	 * 
-	 * @param mapping
-	 * @return All the functions/procedures for which this function added
-	 * a drop statement. (This function adds such a statement for every
-	 * table/function/procedure it encounters) 
-	 */
-	private ArrayList<String> addDropStatements(ArrayList<String[]> mapping) {
+	
+	private ArrayList<SQLCallable> generateCallables(ArrayList<String[]> mapping) {
 		
-		ArrayList<String> callables = new ArrayList<String>();
-		
-		ArrayList<String[]> mappingNew = new ArrayList<String[]>();
-		mappingNew.addAll(mapping);
+		ArrayList<SQLCallable> callables = new ArrayList<SQLCallable>();
 		
 		for (int i = 0; i < mapping.size(); i++) {
 			String sql = mapping.get(i)[1];
 			String sqlTmp = sql.toLowerCase().trim();
-			// drop has to be added
+			
+			// make sure this is a function or procedure
 			if (sqlTmp.startsWith("create ")) {
 				String[] tokens = sqlTmp.split(" ");
-				if (tokens[1].equals("table") || tokens[2].equals("table")) {
-					// add a drop table statement
-					sql = sql.substring(0, sql.indexOf("("));
-					tokens = sql.split(" ");
-					String tname = tokens[tokens.length - 1];
-					// System.out.println("TABLENAME=\"" + tname + "\"");
+				if (!tokens[1].equals("table") && !tokens[2].equals("table")) {
 					
-					mapping.add(new String[]{"static", "DROP TABLE " + tname + ";"});
-				} else {
-					// it is either a function or a procedure
-					int type = IOUtil.isSQLFunction(sql);
-					String dropsql = "DROP ";
-					if (type == 0) {
-						// function
-						dropsql += "FUNCTION ";
-					} else if (type == 1) {
-						// procedure
-						dropsql += "PROCEDURE ";
-					} else {
-						// other
-						System.out.println("[ERROR] Received Query type " 
-							+ type + " (Unknown) from IOUtil.isSQLFunction."
-							+ "\nNo drop statement will be added for this SQL statement");
-						System.out.println(sql);
-						// iterate!
-						continue;
-					}
-					
-					// add the name of the function/procedure
-					String header = IOUtil.parseCallableHeader(sql);
-					String cname = header.substring(0, header.indexOf("(")).trim();
-					dropsql += cname + ";";
-					System.out.println("DROPSQL=" + dropsql);
-					
-					callables.add(cname);
-					mapping.add(new String[]{"static", dropsql});
+					SQLCallable sqlc = new SQLCallable(mapping.get(i)[1]);
+					callables.add(sqlc);
 				}
 			}
 		}
@@ -129,16 +89,23 @@ public class SolutionGenerator {
 		// step 1, Generate tag->query mapping
 		RawSolutionReader rsr = new RawSolutionReader(inputFile);
 		rsr.loadFile();
+		
+		// extract Callables
 		ArrayList<String[]> mapping = rsr.getMapping();
-		ArrayList<String> callables = addDropStatements(mapping);
+		ArrayList<SQLCallable> callables = generateCallables(mapping);
 		for (int i = 0; i < mapping.size(); i++) {
 			System.out.println(mapping.get(i)[1]);
+			System.out.println("=> " + mapping.get(i)[1].split("\n").length + " lines");
 		}
 		System.out.println("\n* Callables:");
 		for (int i = 0; i < callables.size(); i++) {
-			System.out.println(callables.get(i));
+			System.out.println(callables.get(i).getName());
 		}
+		
+		
 		// step 2, Execute each query
+		QueryPipeline qp = new QueryPipeline(mapping, callables);
+		
 	}
 	
 	

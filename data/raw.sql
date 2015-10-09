@@ -55,6 +55,16 @@ filterProducts(814)
 filterProducts(1000)
 filterProducts(999)
 
+/*static*/
+
+doStuff(hello, 1234, teststringg)
+
+doStuff(x1, x2, x3)
+x1, x2, x3
+hello, 1234, teststringg
+world, 1534, teststrasdfgg
+
+
 /*1d*/
 
 select bezeichnung from produkte where preis > 100;
