@@ -204,29 +204,75 @@ public class IOUtil {
 
 	}
 	
+
+
+	/**
+	 * Checks, if the SQL statement is a Function or procedure, or 
+	 * something else
+	 * @param sql The SQL statement which should be checked
+	 * @return 0, if the SQL statement is a function, 
+	 * 1 if it is a procedure, 
+	 * 2 if it is neither of them
+	 */
+	public static int isSQLFunction(String sql) {
+		// this is a safer isFunction check!
+		
+		sql = sql.toLowerCase();
+		String sqlHead = sql.substring(0, sql.indexOf("(")).trim();
+		System.out.println("sqlHead=\"" + sqlHead + "\"");
+		String[] sqlHeadTokens = sqlHead.split(" ");
+		boolean isFunction = sqlHeadTokens[sqlHeadTokens.length - 2].equals("function");
+		boolean isProcedure = sqlHeadTokens[sqlHeadTokens.length - 2].equals("procedure");
+		
+		int status = -1;
+		
+		if (isFunction) {
+			// function
+			status = 0;
+			System.out.println("Marked as \"FUNCTION\"");
+		} else if (isProcedure) {
+			// procedure
+			status = 1;
+			System.out.println("Marked as \"PROCEDURE\"");
+		} else {
+			// neither function, nor procedure
+			status = 2;
+			System.out.println("Marked as \"OTHER\"");
+		}
+		return status;
+	}
+
 	
 	public static String parseCallableHeader(String sql) {
 		
 		// see https://dev.mysql.com/doc/refman/5.0/en/create-procedure.html
 		
 		System.out.println("INPUT: \n" + sql);
+
+		String sqlNew = sql.toLowerCase();
 		
-		sql = sql.toLowerCase();
+		boolean isFunction = (isSQLFunction(sql) == 0);
+		/*
+		// this is a safer isFunction check!
+		String sqlHead = sql.substring(0, sql.indexOf(")"));
+		String[] sqlHeadTokens = sqlHead.split(" ");
+		boolean isFunction = sqlHeadTokens[sqlHeadTokens.length - 2].equals("function");
+		*/
 		
-		boolean isFunction = sql.contains(" function ");
+		// boolean isFunction = sql.contains(" function ");
 		System.out.println("isFunction=" + isFunction);
 		
 		int headerStartIdx = -1;
-		int headerEndIdx = sql.length();
+		int headerEndIdx = sqlNew.length();
 		if (isFunction) {
-			headerStartIdx = sql.indexOf(" function ") + " function ".length();
+			headerStartIdx = sqlNew.indexOf(" function ") + " function ".length();
 			// i.e. RETURNS int(8)
 			// returns is also part of a correct mysql function definition
-			headerEndIdx = sql.indexOf(" returns "); 
+			headerEndIdx = sqlNew.indexOf("returns "); 
 		} else {
-			headerStartIdx = sql.indexOf(" procedure ") + " procedure ".length();
+			headerStartIdx = sqlNew.indexOf(" procedure ") + " procedure ".length();
 			// check for enclosing brackets!
-			headerEndIdx = sql.indexOf("(") + 1;
+			headerEndIdx = sqlNew.indexOf("(") + 1;
 			int count = 1;
 			System.out.println("[ " + headerEndIdx + " >" + sql.substring(0, headerEndIdx));
 			while (count != 0) {
@@ -234,11 +280,11 @@ public class IOUtil {
 					System.out.println("Reached EndOfLine, possibly malformed query!");
 					break;
 				}
-				if (sql.charAt(headerEndIdx) == ')') count--;
-				if (sql.charAt(headerEndIdx) == '(') count++;
+				if (sqlNew.charAt(headerEndIdx) == ')') count--;
+				if (sqlNew.charAt(headerEndIdx) == '(') count++;
 				headerEndIdx++;
 			}
-			System.out.println("[ " + headerEndIdx + " >" + sql.substring(0, headerEndIdx));
+			System.out.println("[ " + headerEndIdx + " >" + sqlNew.substring(0, headerEndIdx));
 			
 		}
 		System.out.println("s=" + headerStartIdx + ", e=" + headerEndIdx);
@@ -318,7 +364,7 @@ public class IOUtil {
 		}
 		
 		System.out.println("\n\nFunction/Procedure parse test");
-		String[] tests = new String[]{"CREATE PROCEDURE testproc() BEGIN SELECT bezeichnung FROM produkte; END|",
+		String[] tests = new String[]{"CREATE PROCEDURE TESTProcUC() BEGIN SELECT bezeichnung FROM produkte; END|",
 				"CREATE PROCEDURE CalcLength(IN name varchar(100), OUT strlength int) set strlength =length(name);",
 				"CREATE PROCEDURE CalcLength(IN name varchar(100)"
 				+ ", OUT strlength int) "
@@ -335,7 +381,8 @@ public class IOUtil {
 				+ "return a + b;",
 				"create function sumab(c decimal(6, 2), d decimal(6, 2)) \n "
 				+ "returns decimal(6, 4) deterministic \n"
-				+ "return c + d;"};
+				+ "return c + d;",
+				"create DEFINER= Max function sumab(a decimal(6, 2), b decimal(6, 2)) returns decimal(6, 4) deterministic return a + b;"};
 		
 		for (String t : tests) {
 			IOUtil.parseCallableHeader(t);

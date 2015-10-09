@@ -71,7 +71,11 @@ public class RawSolutionReader extends AbstractFileReader {
 	}
 
 	
-	
+	/**
+	 * 
+	 * @return The mapping described in the input file
+	 * (tag -> sql)
+	 */
 	public ArrayList<String[]> getMapping() {
 		return this.sqlMapping;
 	}

@@ -1,7 +1,10 @@
 package sqlchecker.test;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ParameterMetaData;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -126,6 +129,45 @@ public class MySQLResultTest {
 			
 			rs = stmt.executeQuery("SELECT bezeichnung, preis from produkte");
 			printResults(rs);
+			
+			System.out.println("Stored Procedure call! (no OUT-param)");
+			boolean hasRes = stmt.execute("{call filterByPrice(50)}");
+			if (hasRes) {
+				printResults(stmt.getResultSet());
+			} else {
+				System.out.println(stmt.getUpdateCount());
+			}
+			
+			stmt.execute("DROP PROCEDURE CalcLength");
+			stmt.execute("CREATE PROCEDURE CalcLength(IN name varchar(100), OUT strlength int) set strlength =length(name);");
+			
+			System.out.println("Stored Procedure call! (1 OUT-param)");
+			// hasRes = stmt.execute("{call CalcLength(?, ?)}");
+			CallableStatement stCall = conn.prepareCall("{ call CalcLength(?,?) }");
+			
+			// for checking parameter types without string parsing
+			ParameterMetaData pmd = stCall.getParameterMetaData();
+			int count = pmd.getParameterCount();
+			for (int i = 1; i <= count; i++) {
+				System.out.println("[" + i + "] type=" + pmd.getParameterType(i));
+				System.out.println("[" + i + "] pmode=" + pmd.getParameterMode(i));
+				System.out.println("[" + i + "] typename=" + pmd.getParameterTypeName(i));
+				System.out.println("[" + i + "] classname=" + pmd.getParameterClassName(i));
+			}
+			
+			stCall.setString(1, "HelloXy");
+			
+			stCall.registerOutParameter(2, java.sql.Types.INTEGER);
+			hasRes = stCall.execute();
+			
+			System.out.println("X=" + stCall.getInt(2));
+			
+			if (hasRes) {
+				printResults(stCall.getResultSet());
+			} else {
+				System.out.println(stCall.getUpdateCount());
+			}
+			//PreparedStatement stmtp = conn.prepareStatement("SELECT usercheck1(?, ?) FROM DUAL");
 			
 			// no commit, no persist
 			
