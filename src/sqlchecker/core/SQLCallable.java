@@ -201,6 +201,84 @@ public class SQLCallable {
 	}
 	
 	
+	
+	/**
+	 * Generates all the required SQL SET statements for the INOUT
+	 * parameters in this call. This function also replaces the
+	 * INOUT data arguments with their appropriate variables. These
+	 * are the variables which are used in the previously generated
+	 * SQL SET statements.
+	 * @param call The call which should be prepared for execution
+	 * @return A list with all the preparing SQL statements.
+	 * The 2nd last element in the list is the call itself with 
+	 * correct variable names. The last element is a SELECT
+	 * statement which queries the value of the INOUT and OUT
+	 * variables which were used in the call
+	 */
+	public ArrayList<String> prepareInOutCall(String call) {
+		// contains SQL set commands for appropriate arguments
+		// ASSUMPTION!! DATA.length == args.length !!!!
+		ArrayList<String> sqlsets = new ArrayList<String>();
+		String[] data = SQLCallable.parseCallData(call);
+		String newCall = this.name + "(";
+		String sqlGetter = "SELECT ";
+		int outputColumns = 0;
+		
+		for (int i = 0; i < args.size(); i++) {
+			// for every argument
+			ParamDescriptor pd = args.get(i);
+			// Check if it an INOUT argument
+			// Only those require to set some variables
+			// before performing the call
+			// Also generate a new call, which contains placeholders
+			// for all INOUT arguments
+			String colId = "";
+			String tmpSQL = "";
+			if (pd.direction == Direction.INPUT_OUTPUT) {
+				String sql = "SET @" + pd.name + " = " + data[i];
+				sqlsets.add(sql);
+				// replace current data value with variable name
+				colId = "@" + pd.name;
+				data[i] = colId;
+			} else {
+				colId = data[i];
+			}
+			// Deal with separators
+			if (i > 0) {
+				colId = ", " + colId;
+			}
+			if (outputColumns > 0) {
+				tmpSQL = ", ";
+			}
+			// Check if the algorithm has encountered a variable
+			// Variable could either be just added (INOUT)
+			// or been there before (OUT). Variables always start 
+			// with @
+			if (data[i].charAt(0) == '@') {
+				tmpSQL += data[i];
+				// append the just created part to the
+				// SELECT statement
+				sqlGetter += tmpSQL;
+				outputColumns++;
+			}
+			// Apply variable replacement in call
+			newCall += colId;
+		}
+		
+		// The 2nd last element is the call itself
+		sqlsets.add("{ call " + newCall + ") }");
+		
+		// The last element is a select and produces the final
+		// result set
+		sqlsets.add(sqlGetter);
+		
+		// if there are no inout arguments, then the list will be empty
+		return sqlsets;
+	}
+
+	
+	
+	
 	public static void main(String[] args) {
 		String[] tests = new String[]{
 				"CREATE FUNCTION filterProducts (gps INT) returns TEXT begin declare bez TEXT; set bez = (select bezeichnung from produkte where preis = gps); return bez;end;",

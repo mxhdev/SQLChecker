@@ -144,7 +144,7 @@ public class QueryPipeline {
 				// procedure with OUT or INOUT parameters
 				// the difficult part
 				for (String sql : sqlStr.split("\n")) {
-					queries.add("idk kev :/");
+					queries.addAll(ca.prepareInOutCall(sql));
 				}
 			}
 		} else {

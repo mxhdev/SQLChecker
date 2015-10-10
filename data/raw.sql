@@ -133,6 +133,7 @@ CREATE PROCEDURE PlusEins(INOUT val int)
 /*static*/
 	
 PlusEins(41)
+PlusEins(887)
 
 
 /*static*/
