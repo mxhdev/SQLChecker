@@ -149,7 +149,7 @@ public class MySQLResultTest {
 			// hasRes = stmt.execute("{call CalcLength(?, ?)}");
 			// CallableStatement stCall = conn.prepareCall("{ call CalcLength(?,?) }");
 			CallableStatement stCall = conn.prepareCall("{ call CalcLength('hello', ?) }");
-			// .execute() does not work for this
+			// .execute() => see below
 			
 			// for checking parameter types without string parsing
 			ParameterMetaData pmd = stCall.getParameterMetaData();
@@ -183,6 +183,16 @@ public class MySQLResultTest {
 				System.out.println(stCall.getUpdateCount());
 			}
 			
+			System.out.println("exec (sp, with in and out)");
+			hasRes = stmt.execute("{call CalcLength('abc', @lenxy)}");
+			if (hasRes) {
+				printResults(stmt.getResultSet());
+			} else {
+				System.out.println(stmt.getUpdateCount());
+			}
+			
+			stmt.execute("DROP PROCEDURE if exists CalcLength");
+			
 
 			stmt.execute("drop function if exists sumab");
 			stmt.execute("create function sumab(a decimal(16, 4), b decimal(16, 4)) returns decimal(16, 4) deterministic return a + b;");
@@ -207,6 +217,7 @@ public class MySQLResultTest {
 			} else {
 				System.out.println(stmt.getUpdateCount());
 			}
+			
 	/*
 	 * http://stackoverflow.com/questions/1379146/mysql-jdbc-function-in-out-param
 	 */
@@ -220,7 +231,7 @@ public class MySQLResultTest {
 				System.out.println("[" + i + "] typename=" + pmd.getParameterTypeName(i));
 				System.out.println("[" + i + "] classname=" + pmd.getParameterClassName(i));
 			}
-			
+			stmt.execute("drop function if exists sumab");
 			
 			System.out.println("PROCEDURE TEST /w select but not OUT-param");
 			stmt.execute("DROP PROCEDURE if exists testproc");
@@ -235,7 +246,7 @@ public class MySQLResultTest {
 			} else {
 				System.out.println(stmt.getUpdateCount());
 			}
-			
+			stmt.execute("DROP PROCEDURE if exists testproc");
 			
 			
 			System.out.println("PROCEDURE TEST /w params, but no OUT");
@@ -249,6 +260,7 @@ public class MySQLResultTest {
 			} else {
 				System.out.println(stmt.getUpdateCount());
 			}
+			stmt.execute("DROP PROCEDURE if exists procInsert");
 			
 			System.out.println("FUNCTION TEST without params");
 			
@@ -261,19 +273,18 @@ public class MySQLResultTest {
 			} else {
 				System.out.println(stmt.getUpdateCount());
 			}
+			stmt.execute("drop function if exists GiveFive");
 			
-			
-			// no commit, no persist
+			// no commit, no persist?
 			// except for create table/function/procedure and insert into :(
 			// the following command makes changes persistent!!!!!!!
 			//conn.commit();
 		} catch (SQLException sqle) {
-			
 			sqle.printStackTrace(System.out);
-			
 		} finally {
 			// try to undo everything!
-						rollback(conn);
+			// NOTE: DDL can not be rolled back :(
+			rollback(conn);
 			// close statement object
 			close(stmt);
 			// close the connection
