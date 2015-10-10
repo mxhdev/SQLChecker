@@ -105,7 +105,7 @@ public class SolutionGenerator {
 		
 		// step 2, Execute each query
 		QueryPipeline qp = new QueryPipeline(mapping, callables);
-		
+		qp.run();
 	}
 	
 	

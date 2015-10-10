@@ -43,6 +43,9 @@ create function sumab(a decimal(16, 4), b decimal(16, 4))
 	
 sumab(150, 4)
 sumab(9, 6)
+sumab(40, 2)
+sumab(400, 2)
+sumab(123, 9)
 
 /*static*/
 

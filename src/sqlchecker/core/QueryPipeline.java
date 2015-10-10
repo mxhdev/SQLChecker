@@ -112,6 +112,83 @@ public class QueryPipeline {
 	}
 	
 	
+	
+	
+	/**
+	 * Generates a series of sql statements which execute the callables
+	 * defined in the currently seen mapping
+	 * @param sqlStr The string/mapping found in the input file
+	 * @param callIdx The index of the callable
+	 * @return A list of sql statements
+	 */
+	private ArrayList<String> generateQueryList(String sqlStr, int callIdx) {
+		ArrayList<String> queries = new ArrayList<String>();
+		SQLCallable ca = calls.get(callIdx);
+		
+		// ASSUMPTION!! each line calls the same function
+		
+		if (ca.isFunction()) {
+			// stored function calls
+			for (String sql : sqlStr.split("\n")) {
+				String newSQL = "{ ? = call " + sql + " }";
+				queries.add(newSQL);
+			}
+		} else if (ca.isProcedure()) {
+			// stored procedure calls
+			if (!ca.hasOutParameter()) {
+				for (String sql : sqlStr.split("\n")) {
+					String newSQL = "{ call " + sql + " }";
+					queries.add(newSQL);
+				}
+			} else {
+				// procedure with OUT or INOUT parameters
+				// the difficult part
+				for (String sql : sqlStr.split("\n")) {
+					queries.add("idk kev :/");
+				}
+			}
+		} else {
+			System.out.println("[ERROR] QueryPipeline.generateQueryList "
+					+ "- Unknown callable type for query \n" + sqlStr 
+					+ "\nNot doing anything!");
+		}
+		
+		return queries;
+	}
+	
+	/**
+	 * Simulates query execution via mysql.execute() without
+	 * actually running the queries. This function only logs, what
+	 * it would run, IF it would be using the MySQL connection
+	 */
+	private void dryRun() {
+		for (int i = 0; i < mapping.size(); i++) {
+			String query = mapping.get(i)[1];
+			System.out.println("\n\n - - - - - - - - - -\n");
+			System.out.println("Executing query: ");
+			System.out.println(query + "\n-EndOfQuery-");
+			System.out.println("\n=> Plan of execution:");
+			// check query type!
+			int idx = isCallable(query);
+			System.out.println("[0/X] Check for callable");
+			// todo!
+			if (idx < 0) {
+				// not a callable statement
+				System.out.println("> Not a callable");
+				System.out.println("[1/1] Run execute(\"\n" + query +"\n\")");
+			} else {
+				System.out.println("> Callable found at index " + idx + ", generating plan");
+				ArrayList<String> queryList = generateQueryList(query, idx);
+				for (int j = 0; j < queryList.size(); j++) {
+					System.out.println("[" + (j+1) + "/" + queryList.size() + "] Run execute:" + queryList.get(j));
+				}
+				// function/procedure call
+			}
+			
+		}
+	}
+	
+	
 	public void runSQL(ArrayList<SQLResultStorage> results) {
 		
 		Connection conn = null;
@@ -130,7 +207,7 @@ public class QueryPipeline {
 				String query = mapping.get(i)[1];
 				// also execute "drop" statements
 				// special parsing for stuff that is a callable
-				SQLResultStorage tmpres = handleQuery(query, conn);
+				SQLResultStorage tmpres = handleQuery(query, conn); // BUG!
 				results.add(tmpres);
 			}
 			
@@ -154,7 +231,7 @@ public class QueryPipeline {
 		SQLResultStorage resultFinal = new SQLResultStorage(sql);
 		Statement stmt = null;
 		try {
-			int idx = isCallable(sql);
+			int idx = isCallable(sql); // BUG -> DOES NOT WORK LIKE THAT
 			// todo!
 			if (idx < 0) {
 				// not a callable statement
@@ -182,11 +259,34 @@ public class QueryPipeline {
 	 * it was not found
 	 */
 	private int isCallable(String sql) {
-
+		
+		//Test 1: Can't be a callable because every callable
+		// has an opening bracket
+		if (!sql.contains("(")) return -1;
+		
+		// Test 2: Starting keyword
+		// Calls can't start with one of the following strings
+		String sqlLower = sql.toLowerCase();
+		if (sqlLower.startsWith("create ") ||
+				sqlLower.startsWith("delete ") || 
+				sqlLower.startsWith("drop ") ||
+				sqlLower.startsWith("insert into ") ||
+				sqlLower.startsWith("select ") ||
+				sqlLower.startsWith("update "))
+			return -1;
+		
+		// extract name
+		sql = sql.substring(0, sql.indexOf("("));
+		
 		for (int i = 0; i < calls.size(); i++) {
-			String callStr = calls.get(i).getStatement();
+			// name comparison!!
+			String callStr = calls.get(i).getName();
+			//System.out.println("\"" + callStr + "\" vs \"" + sql + "\"");
 			if (callStr.equals(sql)) {
+				// System.out.println("\t\tSTATUS=SUCCESS!");
 				return i;
+			} else {
+				//System.out.println("\t\tSTATUS=FAIL!");
 			}
 		}
 
@@ -198,7 +298,8 @@ public class QueryPipeline {
 	public ArrayList<String[]> run() {
 		// step 0 - init
 		ArrayList<SQLResultStorage> results = new ArrayList<SQLResultStorage>();
-		
+		// just do a dry run - for testing purposes
+		dryRun();
 		// step 1 - detect type (is it a callable, or a list of them?)
 		// step 2 - execute & store the results somehow
 		// step 3 - return it
