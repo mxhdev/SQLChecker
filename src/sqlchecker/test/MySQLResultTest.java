@@ -185,6 +185,8 @@ public class MySQLResultTest {
 			
 			System.out.println("exec (sp, with in and out)");
 			hasRes = stmt.execute("{call CalcLength('abc', @lenxy)}");
+			hasRes = stmt.execute("SELECT @lenxy");
+			// hasRes = stmt.execute("SELECT * from (call CalcLength('abc', @strlen))");
 			if (hasRes) {
 				printResults(stmt.getResultSet());
 			} else {
