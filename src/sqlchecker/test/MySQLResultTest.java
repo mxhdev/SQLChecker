@@ -184,8 +184,8 @@ public class MySQLResultTest {
 			}
 			
 			System.out.println("exec (sp, with in and out)");
-			hasRes = stmt.execute("{call CalcLength('abc', @lenxy)}");
-			hasRes = stmt.execute("SELECT @lenxy");
+			hasRes = stmt.execute("{call CalcLength('abc', @strlen)}");
+			hasRes = stmt.execute("SELECT @strlen");
 			// hasRes = stmt.execute("SELECT * from (call CalcLength('abc', @strlen))");
 			if (hasRes) {
 				printResults(stmt.getResultSet());
@@ -276,6 +276,22 @@ public class MySQLResultTest {
 				System.out.println(stmt.getUpdateCount());
 			}
 			stmt.execute("drop function if exists GiveFive");
+			
+			
+			System.out.println("\nProcedure with one INOUT param");
+			
+			stmt.execute("DROP PROCEDURE IF EXISTS PlusEins");
+			stmt.execute("CREATE PROCEDURE PlusEins(INOUT val int) set val = val + 1;");
+			
+			stmt.execute("SET @val = 41");
+			stmt.execute("{call PlusEins(@val)}");
+			hasRes = stmt.execute("SELECT @val");
+			if (hasRes) {
+				printResults(stmt.getResultSet());
+			} else {
+				System.out.println(stmt.getUpdateCount());
+			}
+			stmt.execute("DROP PROCEDURE IF EXISTS PlusEins");
 			
 			// no commit, no persist?
 			// except for create table/function/procedure and insert into :(
