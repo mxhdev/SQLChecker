@@ -136,6 +136,42 @@ public class SQLCallable {
 	}
 	
 	
+	/**
+	 * Generates a result header for the arguments of this
+	 * callable object
+	 * @return A string which contains all arguments (in order)
+	 * INOUT arguments occur twice: Once as an IN argument and
+	 * once as an OUT argument. The first element stores the function
+	 * output and is named "@"
+	 */
+	public String[] generateResultHeader() {
+		ArrayList<String> cols = new ArrayList<String>();
+		
+		// function return value
+		if (isFunction()) cols.add("@");
+		
+		for (int i = 0; i < args.size(); i++) {
+			ParamDescriptor pd = args.get(i);
+			// check for the type of this argument
+			if (pd.direction == Direction.INPUT) {
+				cols.add(pd.name);
+			} else if (pd.direction == Direction.OUTPUT) {
+				cols.add("@" + pd.name);
+			} else if (pd.direction == Direction.INPUT_OUTPUT) {
+				cols.add(pd.name);
+				cols.add("@" + pd.name);
+			}
+		}
+		
+		// convert to array!
+		return (cols.toArray(new String[cols.size()]));
+	}
+	
+	
+	/**
+	 * 
+	 * @return The parameters defined in the definition of callable
+	 */
 	public ArrayList<ParamDescriptor> getParameters() {
 		// avoid references
 		ArrayList<ParamDescriptor> newArgs = new ArrayList<ParamDescriptor>();
@@ -146,6 +182,20 @@ public class SQLCallable {
 	
 	
 	
+	/**
+	 * Parses the data given by the call of this function or stored 
+	 * procedure
+	 * @param call The call itself, this is the name, followed
+	 * by the arguments in brackets. Variables (for OUT parameters)
+	 * start with "@". Examples: <br>
+	 * CalcLength("HelloWorld", @strlength), <br>
+	 * PlusEins(15) <- The one argument of this function
+	 * has the type INOUT <br>
+	 * SumAB(5, 4) <- Two IN parameters, stored function which returns 9
+	 * @return The data/arguments defined in the given call. Examples: <br>
+	 * CalcLength("HelloWorld", @strlength) becomes ["HelloWorld", @strlength] <br>
+	 * SumAB(5, 4) becomes [5, 4]
+	 */
 	public static String[] parseCallData(String call) {
 		ArrayList<String> data = new ArrayList<String>();
 		data.add("");
