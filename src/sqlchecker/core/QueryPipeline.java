@@ -126,7 +126,7 @@ public class QueryPipeline {
 		ArrayList<String> queries = new ArrayList<String>();
 		SQLCallable ca = calls.get(callIdx);
 		
-		// ASSUMPTION!! each line calls the same function
+		
 		
 		if (ca.isFunction()) {
 			// stored function calls
@@ -144,9 +144,7 @@ public class QueryPipeline {
 			} else {
 				// procedure with OUT or INOUT parameters
 				// the difficult part
-				for (String sql : sqlStr.split("\n")) {
-					queries.addAll(ca.prepareInOutCall(sql));
-				}
+				queries.addAll(ca.prepareInOutCall(sqlStr));
 			}
 		} else {
 			System.out.println("[ERROR] QueryPipeline.generateQueryList "
@@ -163,8 +161,10 @@ public class QueryPipeline {
 	 * it would run, IF it would be using the MySQL connection
 	 */
 	private void dryRun() {
+		String html = "";
 		for (int i = 0; i < mapping.size(); i++) {
 			String query = mapping.get(i)[1];
+			// query is one mapping (might have multiple calls)
 			System.out.println("\n\n - - - - - - - - - -\n");
 			System.out.println("Executing query: ");
 			System.out.println(query + "\n-EndOfQuery-");
@@ -180,19 +180,95 @@ public class QueryPipeline {
 				// TODO: Run it
 				// TODO: Build result
 			} else {
+				
+				String[] headerCols = calls.get(idx).generateResultHeader();
+				System.out.println("> Result table header:");
+				System.out.println(Arrays.toString(headerCols));
+				
+				ArrayList<String> queryList = new ArrayList<String>();
 				System.out.println("> Callable found at index " + idx + ", generating plan");
-				ArrayList<String> queryList = generateQueryList(query, idx);
+				// ASSUMPTION!! each line calls the same function
+				String[] qlist = query.split("\n");
+				for (int j = 0; j < qlist.length; j++) {
+					String q = qlist[j];
+					ArrayList<String> planTmp = generateQueryList(q, idx);
+					// TODO: function/procedure call
+					ArrayList<String[]> res = new ArrayList<String[]>();
+					
+					// Build result
+					// Contains a dump of the result (1st line is headers)
+					html += generateHTML(q, calls.get(idx), headerCols, res); // one Callable = 1 line
+					
+					// for debugging
+					queryList.addAll(planTmp);
+					
+				}
+				
+				
+				
+				
 				for (int j = 0; j < queryList.size(); j++) {
 					System.out.println("[" + (j+1) + "/" + queryList.size() + "] Run execute:" + queryList.get(j));
 				}
-				// TODO: function/procedure call
-				// build result
-				System.out.println("> Result table header:");
-				String[] cols = calls.get(idx).generateResultHeader();
-				System.out.println(Arrays.toString(cols));
+				
+				
+				
+				
 			}
 			
 		}
+	}
+	
+	
+	/**
+	 * 
+	 * @param sql One call of a stored procedure or
+	 * function (i.e. PlusEins(51) 
+	 * @param call The SQLCallable, which the SQL statement corresponds
+	 * to
+	 * @param result The result of executing this call
+	 * @return HTML Version of the result merged with the input
+	 */
+	private String generateHTML(String sql, SQLCallable call, String[] header, ArrayList<String[]> result) {
+		String html = "";
+		// all the arguments of the call
+		String[] data = SQLCallable.parseCallData(sql);
+		if (call.isFunction()) {
+			// Function, easy part
+			// print input
+			for (String d : data) {
+				html += ("| " + d);
+			}
+			// Result of running a function is always ONE value
+			// Look at: Second row, First field
+			String output = result.get(1)[0];
+			html += "| " + output + " |";
+			
+		} else if (call.isProcedure()) {
+			// Stored Procedure
+			if ( (!call.getDirection().isOutOrInout()) ) {
+				//TODO: What if there is an empty result
+				// THen this function does not contain a select
+				// and might contain an INSERT INTO statement
+				// see allTests->procInsert PROBLEM
+				
+				// Special Case: No out parameters, but there are still
+				// results because the procedure calls a SELECT statement
+				html += "! | Query | call " + sql + " |\n";
+				// There might be some result
+				// If there is no result then the following loop will
+				// obviously not do anything
+				for (int i = 0; i < result.size(); i++) {
+					String[] row = result.get(i);
+					html += "| ";
+					for (String relem : row) {
+						html += relem + " | ";
+					}
+					html += "\n";
+				}
+			}
+		}
+		return html;
 	}
 	
 	

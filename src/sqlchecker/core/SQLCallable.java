@@ -105,6 +105,10 @@ public class SQLCallable {
 		return this.rawsql;
 	}
 	
+	public Direction getDirection() {
+		return this.getDirection();
+	}
+	
 	/**
 	 * 
 	 * @return The type of this SQL statement. 
@@ -141,14 +145,11 @@ public class SQLCallable {
 	 * callable object
 	 * @return A string which contains all arguments (in order)
 	 * INOUT arguments occur twice: Once as an IN argument and
-	 * once as an OUT argument. The first element stores the function
+	 * once as an OUT argument. The last element stores the function
 	 * output and is named "@"
 	 */
 	public String[] generateResultHeader() {
 		ArrayList<String> cols = new ArrayList<String>();
-		
-		// function return value
-		if (isFunction()) cols.add("@");
 		
 		for (int i = 0; i < args.size(); i++) {
 			ParamDescriptor pd = args.get(i);
@@ -162,6 +163,9 @@ public class SQLCallable {
 				cols.add("@" + pd.name);
 			}
 		}
+
+		// function return value
+		if (isFunction()) cols.add("@");
 		
 		// convert to array!
 		return (cols.toArray(new String[cols.size()]));

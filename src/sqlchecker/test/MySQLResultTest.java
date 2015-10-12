@@ -11,6 +11,8 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 
 /**
@@ -126,18 +128,24 @@ public class MySQLResultTest {
 			// insert
 			stmt = conn.createStatement();
 			
+			System.out.println("| \\/ \\/ |");
 			rs = stmt.executeQuery("SELECT bezeichnung, preis from produkte");
-			printResults(rs);
+			//printResults(rs);
+			storeResultSet(rs);
+			
+			System.out.println("^ ^ ^");
 			
 			stmt.executeUpdate(insertQuery1);
 			
 			rs = stmt.executeQuery("SELECT bezeichnung, preis from produkte");
-			printResults(rs);
+			storeResultSet(rs);
+			// printResults(rs);
 			
 			System.out.println("Stored Procedure call! (no OUT-param)");
 			boolean hasRes = stmt.execute("{call filterByPrice(50)}");
 			if (hasRes) {
-				printResults(stmt.getResultSet());
+				storeResultSet(stmt.getResultSet());
+				// printResults(stmt.getResultSet());
 			} else {
 				System.out.println(stmt.getUpdateCount());
 			}
@@ -178,7 +186,8 @@ public class MySQLResultTest {
 			// System.out.println("X=" + stCall.getInt(2));
 			
 			if (hasRes) {
-				printResults(stCall.getResultSet());
+				storeResultSet(stmt.getResultSet());
+				// printResults(stCall.getResultSet());
 			} else {
 				System.out.println(stCall.getUpdateCount());
 			}
@@ -188,7 +197,8 @@ public class MySQLResultTest {
 			hasRes = stmt.execute("SELECT @strlen");
 			// hasRes = stmt.execute("SELECT * from (call CalcLength('abc', @strlen))");
 			if (hasRes) {
-				printResults(stmt.getResultSet());
+				storeResultSet(stmt.getResultSet());
+				// printResults(stmt.getResultSet());
 			} else {
 				System.out.println(stmt.getUpdateCount());
 			}
@@ -215,7 +225,8 @@ public class MySQLResultTest {
 			hasRes = stmt.execute("{? = call sumab(150, 4)}");
 			System.out.println("exec");
 			if (hasRes) {
-				printResults(stmt.getResultSet());
+				storeResultSet(stmt.getResultSet());
+				//printResults(stmt.getResultSet());
 			} else {
 				System.out.println(stmt.getUpdateCount());
 			}
@@ -244,7 +255,8 @@ public class MySQLResultTest {
 			hasRes = stmt.execute("{call testproc()}");
 			
 			if (hasRes) {
-				printResults(stmt.getResultSet());
+				storeResultSet(stmt.getResultSet());
+				// printResults(stmt.getResultSet());
 			} else {
 				System.out.println(stmt.getUpdateCount());
 			}
@@ -258,9 +270,11 @@ public class MySQLResultTest {
 			
 			hasRes = stmt.execute("{ call procInsert(588)}");
 			if (hasRes) {
-				printResults(stmt.getResultSet());
+				storeResultSet(stmt.getResultSet());
+				// printResults(stmt.getResultSet());
 			} else {
-				System.out.println(stmt.getUpdateCount());
+				// twis is active for the proc. above
+				System.out.println("uCOUNT=" + stmt.getUpdateCount());
 			}
 			stmt.execute("DROP PROCEDURE if exists procInsert");
 			
@@ -271,7 +285,8 @@ public class MySQLResultTest {
 			
 			hasRes = stmt.execute("{? = call GiveFive()}");
 			if (hasRes) {
-				printResults(stmt.getResultSet());
+				storeResultSet(stmt.getResultSet());
+				// printResults(stmt.getResultSet());
 			} else {
 				System.out.println(stmt.getUpdateCount());
 			}
@@ -287,7 +302,8 @@ public class MySQLResultTest {
 			stmt.execute("{call PlusEins(@val)}");
 			hasRes = stmt.execute("SELECT @val");
 			if (hasRes) {
-				printResults(stmt.getResultSet());
+				storeResultSet(stmt.getResultSet());
+				//printResults(stmt.getResultSet());
 			} else {
 				System.out.println(stmt.getUpdateCount());
 			}
@@ -334,6 +350,54 @@ public class MySQLResultTest {
 		close(rs);
 		// delimiter
 		System.out.println("- - -  - - - -  - -- - - - - ");
+	}
+	
+	
+	private void storeResultSet(ResultSet rs) throws SQLException {
+		ArrayList<String[]> rtable = new ArrayList<String[]>();
+		
+		ResultSetMetaData rsmd = rs.getMetaData();
+		int ccount = rsmd.getColumnCount();
+		
+		/*
+		 * TEST:
+		 * SELECT preis as pxy
+		 * ColumnName = preis
+		 * ColumnLabel = pxy
+		 * SELECT preis
+		 * ColumnName = preis
+		 * ColumnLabel = preis
+		 */
+		
+		// header
+		String[] head = new String[ccount];
+		for (int i = 1; i <= ccount; i++) {
+			// head[i-1] = rsmd.getColumnName(i) + " aka " + rsmd.getColumnLabel(i); 
+			head[i-1] = rsmd.getColumnLabel(i);
+		}
+		rtable.add(head);
+		
+		// table content
+		while (rs.next()) {
+			String[] row = new String[ccount];
+		    for (int i = 1; i <= ccount; i++) {
+		    	row[i-1] = rs.getString(i);
+		    }
+		    rtable.add(row);
+		}
+		
+		// close the result set
+		close(rs);
+		
+		
+		System.out.println("- - -  - rstor (start)  - - - - - ");
+		
+		for (int i = 0; i < rtable.size(); i++) {
+			System.out.println(Arrays.toString(rtable.get(i)));
+		}
+		
+		System.out.println("- - -  - rstor (end)  - - - - -\n\n ");
+		
 	}
 	
 	
