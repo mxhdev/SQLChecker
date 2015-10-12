@@ -25,6 +25,6 @@
 	<classpathentry kind="lib" path="lib/mysql-connector-java-5.1.36.jar"/>
 	<classpathentry kind="lib" path="lib/postgresql-9.3-1101-jdbc41.jar"/>
 	<classpathentry kind="lib" path="lib/reflections-0.9.9.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Timo/workspace/SQLCheckerTimo/lib/simmetrics-core-3.2.1.jar"/>
+	<classpathentry kind="lib" path="lib/simmetrics-core-3.2.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

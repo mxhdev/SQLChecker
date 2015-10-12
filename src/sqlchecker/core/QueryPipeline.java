@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import sqlchecker.io.IOUtil;
 
@@ -115,11 +116,11 @@ public class QueryPipeline {
 	
 	
 	/**
-	 * Generates a series of sql statements which execute the callables
+	 * Generates a series of SQL statements which execute the callables
 	 * defined in the currently seen mapping
 	 * @param sqlStr The string/mapping found in the input file
 	 * @param callIdx The index of the callable
-	 * @return A list of sql statements
+	 * @return A list of SQL statements
 	 */
 	private ArrayList<String> generateQueryList(String sqlStr, int callIdx) {
 		ArrayList<String> queries = new ArrayList<String>();
@@ -176,13 +177,19 @@ public class QueryPipeline {
 				// not a callable statement
 				System.out.println("> Not a callable");
 				System.out.println("[1/1] Run execute(\"\n" + query +"\n\")");
+				// TODO: Run it
+				// TODO: Build result
 			} else {
 				System.out.println("> Callable found at index " + idx + ", generating plan");
 				ArrayList<String> queryList = generateQueryList(query, idx);
 				for (int j = 0; j < queryList.size(); j++) {
 					System.out.println("[" + (j+1) + "/" + queryList.size() + "] Run execute:" + queryList.get(j));
 				}
-				// function/procedure call
+				// TODO: function/procedure call
+				// build result
+				System.out.println("> Result table header:");
+				String[] cols = calls.get(idx).generateResultHeader();
+				System.out.println(Arrays.toString(cols));
 			}
 			
 		}
