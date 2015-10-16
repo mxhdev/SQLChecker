@@ -271,12 +271,12 @@ public class QueryPipeline {
 					 * There could be a problem if there is a out/inout param and no output!
 					 */
 					// probably an INSERT INTO statement, use execute!
-					html += "!| X.Execute | call " + sql + " |";
+					html += "!| Execute | call " + sql + " |";
 					// !| Execute | call procInsert(122)|
 				} else {
 					// Special Case: No out parameters, but there are still
 					// results because the procedure calls a SELECT statement
-					html += "!| X.Query | call " + sql + " |\n";
+					html += "!| Query | call " + sql + " |\n";
 					// There might be some result
 					// If there is no result then the following loop will
 					// obviously not do anything
@@ -291,7 +291,7 @@ public class QueryPipeline {
 				}
 			} else {
 				// Print the call
-				html += "!| X.Execute Procedure | " + call.getName() + " |\n";
+				html += "!| Execute Procedure | " + call.getName() + " |\n";
 				// Print the header 
 				html += "| ";
 				for (int i = 0; i < header.length; i++) {
@@ -401,31 +401,38 @@ public class QueryPipeline {
 			System.out.println("Executing query: ");
 			System.out.println(query + "\n-EndOfQuery-");
 			System.out.println("\n=> Plan of execution:");
-			// check query type!
-			int idx = isCallable(query);
+			
+			// check query type! Is it a callable?
 			System.out.println("[0/X] Check for callable");
+			int idx = isCallable(query);
+			
 			// not a callable
 			if (idx < 0) {
 				// not a callable statement
 				System.out.println("> Not a callable");
 				System.out.println("[1/1] Run execute(\"\n" + query +"\n\")");
-				// TODO: Run it
+				
+				// Run it
 				hasRes = stmt.execute(query);
-				// TODO: Build result
+				
+				// Fetch results
 				if (hasRes) {
 					rs = stmt.getResultSet();
 					resRaw = storeResultSet(rs);
 				} else {
 					System.out.println("> " + stmt.getUpdateCount() + " rows affected!");
 				}
-				// store hasRef as htm in the html string
+				
+				// store results in html string
+				// header
 				String queryLower = query.toLowerCase();
 				if (queryLower.startsWith("select ")) {
-					html += "!|Query| " + query + " |";
+					html += "!| Query | " + query + " |";
 				} else {
-					html += "!|Execute| " + query + " |";
+					html += "!| Execute | " + query + " |";
 				}
 				html += "\n";
+				// Actual result table
 				for (int i2 = 0; i2 < resRaw.size(); i2++) {
 					String[] row = resRaw.get(i2);
 					html += "| ";
@@ -435,32 +442,40 @@ public class QueryPipeline {
 					html += "\n";
 				}
 				html += "\n";
-				// print result set array
+
 			} else {
-				// some call
+				// it is a callable statement
 				String[] headerCols = calls.get(idx).generateResultHeader();
+				
 				System.out.println("> Result table header:");
 				System.out.println(Arrays.toString(headerCols));
 				
 				ArrayList<String> queryList = new ArrayList<String>();
 				System.out.println("> Callable found at index " + idx + ", generating plan");
+				
 				// ASSUMPTION!! each line calls the same function
 				SQLCallable sqlc = calls.get(idx);
 				String[] qlist = query.split("\n");
+				
+				// Print function call header already, because
+				// successive function calls are merged into
+				// one table in the solution.txt file
 				if (sqlc.isFunction()) {
 					// functions are put in "one" table
-					html += "!| (> F <) Execute Procedure| " + sqlc.getName() + " |\n";
+					html += "!| Execute Procedure | " + sqlc.getName() + " |\n";
 				}
+				// this is the list of all calls in the current mapping element
 				for (int j = 0; j < qlist.length; j++) {
+					// generate a plan with SET and SELECT statements
 					String q = qlist[j];
 					ArrayList<String> planTmp = generateQueryList(q, idx);
 					
-					
-					// TODO: function/procedure call
+					// Function/procedure and SET/SELECT calls
 					for (int k = 0; k < planTmp.size(); k++) {
 						hasRes = stmt.execute(planTmp.get(k));
 					}
-					// build result!
+					
+					// Fetch result!
 					if (hasRes) {
 						rs = stmt.getResultSet();
 						resRaw = storeResultSet(rs);
@@ -468,33 +483,25 @@ public class QueryPipeline {
 						System.out.println("> " + stmt.getUpdateCount() + " rows affected!");
 					}
 					
-					
-					
 					// Build result
+					// One Callable = 1 line
 					// Contains a dump of the result (1st line is headers)
-					html += generateHTML(q, sqlc, headerCols, resRaw); // one Callable = 1 line
+					// The calls might be split up in multiple test cases
+					html += generateHTML(q, sqlc, headerCols, resRaw); 
 					
-					// for debugging
+					// for debugging, save the complete plan
 					queryList.addAll(planTmp);
 					
 				}
-				
+				// Add a blank line between every test case
 				html += "\n";
 				
-				
-				
-				
+				// Show the complete list of executed SQL queries
 				for (int j = 0; j < queryList.size(); j++) {
 					System.out.println("[" + (j+1) + "/" + queryList.size() + "] Run execute:" + queryList.get(j));
 				}
 				
-				
-				
-				
-				
 			}
-			
-			
 		}
 		
 		return html;
