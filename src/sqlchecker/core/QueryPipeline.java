@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ParameterMetaData;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -188,7 +189,12 @@ public class QueryPipeline {
 				ArrayList<String> queryList = new ArrayList<String>();
 				System.out.println("> Callable found at index " + idx + ", generating plan");
 				// ASSUMPTION!! each line calls the same function
+				SQLCallable sqlc = calls.get(idx);
 				String[] qlist = query.split("\n");
+				if (sqlc.isFunction()) {
+					// functions are put in "one" table
+					html += "!| (> F <) Execute Procedure| " + sqlc.getName() + " |\n";
+				}
 				for (int j = 0; j < qlist.length; j++) {
 					String q = qlist[j];
 					ArrayList<String> planTmp = generateQueryList(q, idx);
@@ -197,12 +203,14 @@ public class QueryPipeline {
 					
 					// Build result
 					// Contains a dump of the result (1st line is headers)
-					html += generateHTML(q, calls.get(idx), headerCols, res); // one Callable = 1 line
+					html += generateHTML(q, sqlc, headerCols, res); // one Callable = 1 line
 					
 					// for debugging
 					queryList.addAll(planTmp);
 					
 				}
+				
+				html += "\n";
 				
 				
 				
@@ -214,9 +222,12 @@ public class QueryPipeline {
 				
 				
 				
+				
 			}
 			
+			
 		}
+		System.out.println("HTML: \n- - - -\n" + html + "\n- - - -\n\n");
 	}
 	
 	
@@ -236,38 +247,100 @@ public class QueryPipeline {
 		if (call.isFunction()) {
 			// Function, easy part
 			// print input
-			for (String d : data) {
-				html += ("| " + d);
+			for (int i = 0; i < data.length; i++) {
+				html += "| " + data[i];
 			}
+			/* for (String d : data) {
+				html += "| " + d;
+			} */
 			// Result of running a function is always ONE value
 			// Look at: Second row, First field
-			String output = result.get(1)[0];
+			String output = "unknown";
+			if (result.size() > 1) output = result.get(1)[0];
 			html += "| " + output + " |";
 			
 		} else if (call.isProcedure()) {
 			// Stored Procedure
-			if ( (!call.getDirection().isOutOrInout()) ) {
-				//TODO: What if there is an empty result
+			if ( (!call.isOutOrInout()) ) {
 				// THen this function does not contain a select
 				// and might contain an INSERT INTO statement
-				// see allTests->procInsert PROBLEM
-				
-				// Special Case: No out parameters, but there are still
-				// results because the procedure calls a SELECT statement
-				html += "! | Query | call " + sql + " |\n";
-				// There might be some result
-				// If there is no result then the following loop will
-				// obviously not do anything
-				for (int i = 0; i < result.size(); i++) {
-					String[] row = result.get(i);
+				// see allTests->procInsert
+				if (result.isEmpty()) {
+					/*
+					 * NOTE:
+					 * There could be a problem if there is a out/inout param and no output!
+					 */
+					// probably an INSERT INTO statement, use execute!
+					html += "!| X.Execute | call " + sql + " |";
+					// !| Execute | call procInsert(122)|
+				} else {
+					// Special Case: No out parameters, but there are still
+					// results because the procedure calls a SELECT statement
+					html += "!| X.Query | call " + sql + " |\n";
+					// There might be some result
+					// If there is no result then the following loop will
+					// obviously not do anything
+					for (int i = 0; i < result.size(); i++) {
+						String[] row = result.get(i);
+						html += "| ";
+						for (String relem : row) {
+							html += relem + " | ";
+						}
+						html += "\n";
+					}
+				}
+			} else {
+				// Print the call
+				html += "!| X.Execute Procedure | " + call.getName() + " |\n";
+				// Print the header 
+				html += "| ";
+				for (int i = 0; i < header.length; i++) {
+					String h = header[i];
+					if (h.startsWith("@")) {
+						// convert mysql syntax to dbfit syntax
+						// @val => val?
+						h = h.substring(1) + "?";
+					}
+					html += h + " |";
+				}
+				html += "\n";
+				// Print the results
+				// the sp/function has at least one out or inout parameter
+				// IF THERE IS A OUT/INOT PARAMETER THEN THERE IS ALSO SOME OUTPUT
+				int imark = 0; // the current position in the input data array
+				int omark = 0; // the current position in the output list
+				// start at pos 1 because the first line is the table header
+				for (int j = 1; j < result.size(); j++) {
+					// for each line...
 					html += "| ";
-					for (String relem : row) {
-						html += relem + " | ";
+					for (int i = 0; i < header.length; i++) {
+						String h = header[i];
+						if (h.startsWith("@")) {
+							// out/input
+							// current line, omark-column
+							System.out.println("(out)rsize=" + result.size());
+							System.out.println("j=" + j);
+							System.out.println("omark=" + omark);
+							html += result.get(j)[omark];
+							omark++;
+						} else {
+							// in
+							System.out.println("(in)dsize=" + data.length);
+							System.out.println("data=" + Arrays.toString(data));
+							System.out.println("j=" + j);
+							System.out.println("imark=" + imark);
+							html += data[imark];
+							imark++;
+						}
+						html += " | ";
 					}
 					html += "\n";
 				}
 			}
+		} else {
+			// a normal query! TODO
 		}
+		html += "\n";
 		return html;
 	}
 	
@@ -275,24 +348,22 @@ public class QueryPipeline {
 	public void runSQL(ArrayList<SQLResultStorage> results) {
 		
 		Connection conn = null;
-		//Statement stmt = null;
-		ResultSet rs = null;
+		Statement stmt = null;
+		
+		
 		
 		try {
 			// init connection
 			conn = init();
 			conn.setAutoCommit(false);
+			stmt = conn.createStatement();
 			
 			// create statement object
 			//stmt = conn.createStatement();
 			
-			for (int i = 0; i < mapping.size(); i++) {
-				String query = mapping.get(i)[1];
-				// also execute "drop" statements
-				// special parsing for stuff that is a callable
-				SQLResultStorage tmpres = handleQuery(query, conn); // BUG!
-				results.add(tmpres);
-			}
+			String html = "";
+			html = runAndBuildHTML(stmt);
+			System.out.println("HTML: \n- - - -\n" + html + "\n- - - -\n\n");
 			
 		} catch (SQLException sqle) {
 			// try to undo everything!
@@ -301,10 +372,184 @@ public class QueryPipeline {
 			
 		} finally {
 			// close statement object
-			//close(stmt);
+			close(stmt);
 			// close the connection
 			close(conn);
 		}
+	}
+	
+	
+	
+	
+	
+	private String runAndBuildHTML(Statement stmt) throws SQLException {
+		// stores result html
+		String html = ""; 
+		
+		boolean hasRes = false;
+		ArrayList<String[]> resRaw = new ArrayList<String[]>();
+		
+		ResultSet rs = null;
+		
+		for (int i = 0; i < mapping.size(); i++) {
+			
+			resRaw = new ArrayList<String[]>();
+			String query = mapping.get(i)[1];
+			
+			// query is one mapping (might have multiple calls)
+			System.out.println("\n\n - - - - - - - - - -\n");
+			System.out.println("Executing query: ");
+			System.out.println(query + "\n-EndOfQuery-");
+			System.out.println("\n=> Plan of execution:");
+			// check query type!
+			int idx = isCallable(query);
+			System.out.println("[0/X] Check for callable");
+			// not a callable
+			if (idx < 0) {
+				// not a callable statement
+				System.out.println("> Not a callable");
+				System.out.println("[1/1] Run execute(\"\n" + query +"\n\")");
+				// TODO: Run it
+				hasRes = stmt.execute(query);
+				// TODO: Build result
+				if (hasRes) {
+					rs = stmt.getResultSet();
+					resRaw = storeResultSet(rs);
+				} else {
+					System.out.println("> " + stmt.getUpdateCount() + " rows affected!");
+				}
+				// store hasRef as htm in the html string
+				String queryLower = query.toLowerCase();
+				if (queryLower.startsWith("select ")) {
+					html += "!|Query| " + query + " |";
+				} else {
+					html += "!|Execute| " + query + " |";
+				}
+				html += "\n";
+				for (int i2 = 0; i2 < resRaw.size(); i2++) {
+					String[] row = resRaw.get(i2);
+					html += "| ";
+					for (String relem : row) {
+						html += relem + " | ";
+					}
+					html += "\n";
+				}
+				html += "\n";
+				// print result set array
+			} else {
+				// some call
+				String[] headerCols = calls.get(idx).generateResultHeader();
+				System.out.println("> Result table header:");
+				System.out.println(Arrays.toString(headerCols));
+				
+				ArrayList<String> queryList = new ArrayList<String>();
+				System.out.println("> Callable found at index " + idx + ", generating plan");
+				// ASSUMPTION!! each line calls the same function
+				SQLCallable sqlc = calls.get(idx);
+				String[] qlist = query.split("\n");
+				if (sqlc.isFunction()) {
+					// functions are put in "one" table
+					html += "!| (> F <) Execute Procedure| " + sqlc.getName() + " |\n";
+				}
+				for (int j = 0; j < qlist.length; j++) {
+					String q = qlist[j];
+					ArrayList<String> planTmp = generateQueryList(q, idx);
+					
+					
+					// TODO: function/procedure call
+					for (int k = 0; k < planTmp.size(); k++) {
+						hasRes = stmt.execute(planTmp.get(k));
+					}
+					// build result!
+					if (hasRes) {
+						rs = stmt.getResultSet();
+						resRaw = storeResultSet(rs);
+					} else {
+						System.out.println("> " + stmt.getUpdateCount() + " rows affected!");
+					}
+					
+					
+					
+					// Build result
+					// Contains a dump of the result (1st line is headers)
+					html += generateHTML(q, sqlc, headerCols, resRaw); // one Callable = 1 line
+					
+					// for debugging
+					queryList.addAll(planTmp);
+					
+				}
+				
+				html += "\n";
+				
+				
+				
+				
+				for (int j = 0; j < queryList.size(); j++) {
+					System.out.println("[" + (j+1) + "/" + queryList.size() + "] Run execute:" + queryList.get(j));
+				}
+				
+				
+				
+				
+				
+			}
+			
+			
+		}
+		
+		return html;
+	}
+	
+	
+	
+	
+	private ArrayList<String[]> storeResultSet(ResultSet rs) throws SQLException {
+		ArrayList<String[]> rtable = new ArrayList<String[]>();
+		
+		ResultSetMetaData rsmd = rs.getMetaData();
+		int ccount = rsmd.getColumnCount();
+		
+		/*
+		 * TEST:
+		 * SELECT preis as pxy
+		 * ColumnName = preis
+		 * ColumnLabel = pxy
+		 * SELECT preis
+		 * ColumnName = preis
+		 * ColumnLabel = preis
+		 */
+		
+		// header
+		String[] head = new String[ccount];
+		for (int i = 1; i <= ccount; i++) {
+			// head[i-1] = rsmd.getColumnName(i) + " aka " + rsmd.getColumnLabel(i); 
+			head[i-1] = rsmd.getColumnLabel(i);
+		}
+		rtable.add(head);
+		
+		// table content
+		while (rs.next()) {
+			String[] row = new String[ccount];
+		    for (int i = 1; i <= ccount; i++) {
+		    	row[i-1] = rs.getString(i);
+		    }
+		    rtable.add(row);
+		}
+		
+		// close the result set
+		close(rs);
+		
+		
+		System.out.println("- - -  - rstor (start)  - - - - - ");
+		
+		for (int i = 0; i < rtable.size(); i++) {
+			System.out.println(Arrays.toString(rtable.get(i)));
+		}
+		
+		System.out.println("- - -  - rstor (end)  - - - - -\n\n ");
+		
+		
+		return rtable;
 	}
 	
 	
@@ -382,7 +627,8 @@ public class QueryPipeline {
 		// step 0 - init
 		ArrayList<SQLResultStorage> results = new ArrayList<SQLResultStorage>();
 		// just do a dry run - for testing purposes
-		dryRun();
+		// dryRun();
+		runSQL(results);
 		// step 1 - detect type (is it a callable, or a list of them?)
 		// step 2 - execute & store the results somehow
 		// step 3 - return it

@@ -105,8 +105,21 @@ public class SQLCallable {
 		return this.rawsql;
 	}
 	
-	public Direction getDirection() {
-		return this.getDirection();
+	/**
+	 * 
+	 * @return True iff at least one of the sp/function parameters
+	 * has the type OUT or INOUT
+	 */
+	public boolean isOutOrInout() {
+		
+		for (int i = 0; i < args.size(); i++) {
+			// For each parameter...
+			if (args.get(i).direction.isOutOrInout())
+				return true;
+		}
+		
+		// No out/inout parameters found
+		return false;
 	}
 	
 	/**
@@ -203,6 +216,10 @@ public class SQLCallable {
 	public static String[] parseCallData(String call) {
 		ArrayList<String> data = new ArrayList<String>();
 		data.add("");
+		
+		// check for empty argument list
+		if (call.indexOf(")") == call.indexOf("(") + 1)
+			return (new String[0]);
 		
 		// X(a,b) => a,b
 		call = call.substring(call.indexOf("(") + 1, call.length()-1);
@@ -350,11 +367,14 @@ public class SQLCallable {
 		
 		tests = new String[]{"Procedure(5, 2, 612)", 
 				"Func1(\"x\", 'e\', 3, '4')",
-				"Func2(\"'hello world!' x\", 'so\"e\', 3, '42')"};
+				"Func2(\"'hello world!' x\", 'so\"e\', 3, '42')",
+				"EmptyFunc1()",
+				"EmptyFunc2(\"\")"};
 		for (int i = 0; i < tests.length; i++) {
 			String[] tmpArgs = SQLCallable.parseCallData(tests[i]);
 			System.out.println("INPUT:\n\t" + tests[i]);
 			System.out.println("OUTPUT:\n\t" + Arrays.toString(tmpArgs));
+			System.out.println("TOKENS FOUND:\n\t" + tmpArgs.length);
 			System.out.println("");
 		}
 		

@@ -8,7 +8,6 @@ select * from Produkte;
 
 
 
-
 /*static*/
 
 DROP PROCEDURE if exists CalcLength
@@ -143,7 +142,15 @@ DROP PROCEDURE IF EXISTS PlusEins
 
 
 
+/*static*/
+
+delete from Produkte where pid > 7;
+
+
 
 /*1b*/
 
 select bezeichnung from produkte where preis > 100;
+
+
+

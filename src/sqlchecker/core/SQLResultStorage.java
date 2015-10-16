@@ -6,7 +6,7 @@ import java.util.ArrayList;
 /**
  * Defines a table with custom captions
  * @author Max Hofmann
- *
+ * @deprecated Not required! Not used!
  */
 public class SQLResultStorage {
 
