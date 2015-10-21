@@ -97,7 +97,7 @@ public class SolutionGenerator {
 		RawSolutionReader rsr = new RawSolutionReader(inputFile);
 		rsr.loadFile();
 		
-		// extract Callables
+		// extract callables
 		ArrayList<String[]> mapping = rsr.getMapping();
 		ArrayList<SQLCallable> callables = generateCallables(mapping);
 		for (int i = 0; i < mapping.size(); i++) {
@@ -114,7 +114,6 @@ public class SolutionGenerator {
 		
 		// step 1.2 - write the header information
 		String html = "";
-		// tags=a,b,c,d
 		// tags
 		html += "tags=" + tagStr + "\n\n";
 		// driver name
@@ -143,14 +142,23 @@ public class SolutionGenerator {
 		System.out.println("H H H H H H H H H H H H H H H H H H H H");
 		System.out.println(html);
 		System.out.println("H H H H H H H H H H H H H H H H H H H H");
+		
+		
 		// step 2, Execute each query
 		QueryPipeline qp = new QueryPipeline(mapping, callables);
-		
 		html += qp.run();
 	}
 	
 	
 	
+	/**
+	 * This function generates a tag-list as string from a mapping
+	 * @param mapping This is a list of (tag, SQL) tuples. This function
+	 * will look at the tags and create a comma separated list
+	 * @return Comma separated list of the tags which can be
+	 * found in the given mapping. Every tag element which
+	 * equals "static" (ignores case) will not be seen as a tag
+	 */
 	public static String extractTags(ArrayList<String[]> mapping) {
 		String tStr = "";
 		ArrayList<String> tags = new ArrayList<String>();

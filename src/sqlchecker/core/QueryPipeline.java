@@ -203,7 +203,7 @@ public class QueryPipeline {
 					
 					// Build result
 					// Contains a dump of the result (1st line is headers)
-					html += generateHTML(q, sqlc, headerCols, res); // one Callable = 1 line
+					html += generateHTML(q, sqlc, headerCols, res, mapping.get(i)); // one Callable = 1 line
 					
 					// for debugging
 					queryList.addAll(planTmp);
@@ -237,18 +237,29 @@ public class QueryPipeline {
 	 * function (i.e. PlusEins(51) 
 	 * @param call The SQLCallable, which the SQL statement corresponds
 	 * to
+	 * @param header The header of the result table (variables are
+	 * annotated with "@varname"
 	 * @param result The result of executing this call
+	 * @param mcurrent Current mapping, this is used for checking if
+	 * the current mapping is static of depends on the student
+	 * submission. This mapping is a (tag, SQL) tuple
 	 * @return HTML Version of the result merged with the input
 	 */
-	private String generateHTML(String sql, SQLCallable call, String[] header, ArrayList<String[]> result) {
+	private String generateHTML(String sql, SQLCallable call
+			, String[] header, ArrayList<String[]> result
+			, String[] mcurrent) {
 		String html = "";
+		boolean isStatic = mcurrent[0].equalsIgnoreCase("static");
+		
 		// all the arguments of the call
 		String[] data = SQLCallable.parseCallData(sql);
 		if (call.isFunction()) {
 			// Function, easy part
 			// print input
+			html += "\n\t<tr>";
 			for (int i = 0; i < data.length; i++) {
-				html += "| " + data[i];
+				html += "\n\t\t<td>" + data[i] + "</td>"; 
+				// html += "| " + data[i];
 			}
 			/* for (String d : data) {
 				html += "| " + d;
@@ -257,7 +268,9 @@ public class QueryPipeline {
 			// Look at: Second row, First field
 			String output = "unknown";
 			if (result.size() > 1) output = result.get(1)[0];
-			html += "| " + output + " |";
+			html += "\n\t\t<td>" + output + "</td>"; 
+			// html += "| " + output + " |";
+			html += "\n\t</tr>"; // TODO=></table>
 			
 		} else if (call.isProcedure()) {
 			// Stored Procedure
@@ -271,29 +284,70 @@ public class QueryPipeline {
 					 * There could be a problem if there is a out/inout param and no output!
 					 */
 					// probably an INSERT INTO statement, use execute!
-					html += "!| Execute | call " + sql + " |";
+					if (isStatic)
+						html += "\n\n<table>"
+								+ "\n\t<tr>"
+								+ "\n\t\t<td>Execute</td>"
+								+ "\n\t\t<td>call " + sql + "</td>"
+								+ "\n\t</tr>";
+					else
+						html += "\n\n<table>"
+								+ "\n\t<tr>"
+								+ "\n\t\t<td>Execute</td>"
+								+ "\n\t\t<td>call " + IOUtil.TAG_PREFIX + mcurrent[1] + IOUtil.TAG_SUFFIX + "</td>"
+								+ "\n\t</tr>";
+					// html += "!| Execute | call " + sql + " |";
 					// !| Execute | call procInsert(122)|
 				} else {
 					// Special Case: No out parameters, but there are still
 					// results because the procedure calls a SELECT statement
-					html += "!| Query | call " + sql + " |\n";
+					if (isStatic)
+						html += "\n\n<table>"
+								+ "\n\t<tr>"
+								+ "\n\t\t<td>Query</td>"
+								+ "\n\t\t<td>call " + sql + "</td>"
+								+ "\n\t</tr>";
+					else
+						html += "\n\n<table>"
+								+ "\n\t<tr>"
+								+ "\n\t\t<td>Query</td>"
+								+ "\n\t\t<td>call " + IOUtil.TAG_PREFIX + mcurrent[1] + IOUtil.TAG_SUFFIX + "</td>"
+								+ "\n\t</tr>";
+					// html += "!| Query | call " + sql + " |\n";
+					
 					// There might be some result
 					// If there is no result then the following loop will
 					// obviously not do anything
 					for (int i = 0; i < result.size(); i++) {
 						String[] row = result.get(i);
-						html += "| ";
+						// html += "| ";
+						html += "\n\t<tr>";
 						for (String relem : row) {
-							html += relem + " | ";
+							// html += relem + " | ";
+							html += "\n\t\t<td>" + relem + "</td>";
 						}
-						html += "\n";
+						html += "\n\t</tr>";
 					}
 				}
+				html += "\n</table>\n";
 			} else {
 				// Print the call
-				html += "!| Execute Procedure | " + call.getName() + " |\n";
+				if (isStatic)
+					html += "\n\n<table>"
+							+ "\n\t<tr>"
+							+ "\n\t\t<td>Execute Procedure</td>"
+							+ "\n\t\t<td>" + call.getName() + "</td>"
+							+ "\n\t</tr>";
+				else
+					html += "\n\n<table>"
+							+ "\n\t<tr>"
+							+ "\n\t\t<td>Execute Procedure</td>"
+							+ "\n\t\t<td>" + IOUtil.TAG_PREFIX + mcurrent[1] + IOUtil.TAG_SUFFIX + "</td>"
+							+ "\n\t</tr>";
+				// html += "!| Execute Procedure | " + call.getName() + " |\n";
 				// Print the header 
-				html += "| ";
+				// html += "| ";
+				html += "\n\t<tr>";
 				for (int i = 0; i < header.length; i++) {
 					String h = header[i];
 					if (h.startsWith("@")) {
@@ -301,9 +355,12 @@ public class QueryPipeline {
 						// @val => val?
 						h = h.substring(1) + "?";
 					}
-					html += h + " |";
+					html += "\n\t\t<td>" + h + "</td>";
+					// html += h + " |";
 				}
-				html += "\n";
+				html += "\n\t</tr>";
+				// html += "\n";
+				
 				// Print the results
 				// the sp/function has at least one out or inout parameter
 				// IF THERE IS A OUT/INOT PARAMETER THEN THERE IS ALSO SOME OUTPUT
@@ -312,7 +369,8 @@ public class QueryPipeline {
 				// start at pos 1 because the first line is the table header
 				for (int j = 1; j < result.size(); j++) {
 					// for each line...
-					html += "| ";
+					html += "\n\t<tr>";
+					// print row while looking at header structure
 					for (int i = 0; i < header.length; i++) {
 						String h = header[i];
 						if (h.startsWith("@")) {
@@ -321,7 +379,8 @@ public class QueryPipeline {
 							System.out.println("(out)rsize=" + result.size());
 							System.out.println("j=" + j);
 							System.out.println("omark=" + omark);
-							html += result.get(j)[omark];
+							// html += result.get(j)[omark];
+							html += "\n\t\t<td>" + result.get(j)[omark] + "</td>";
 							omark++;
 						} else {
 							// in
@@ -329,13 +388,17 @@ public class QueryPipeline {
 							System.out.println("data=" + Arrays.toString(data));
 							System.out.println("j=" + j);
 							System.out.println("imark=" + imark);
-							html += data[imark];
+							// html += data[imark];
+							html += "\n\t\t<td>" + data[imark] + "</td>";
 							imark++;
 						}
-						html += " | ";
+						// html += " | ";
 					}
-					html += "\n";
+					// html += "\n";
+					html += "\n\t</tr>";
 				}
+				
+				html += "\n</table>\n";
 			}
 		} else {
 			// a normal query! TODO
@@ -393,6 +456,8 @@ public class QueryPipeline {
 		for (int i = 0; i < mapping.size(); i++) {
 			
 			resRaw = new ArrayList<String[]>();
+			String qtag = mapping.get(i)[0];
+			boolean isStatic = qtag.equalsIgnoreCase("static");
 			String query = mapping.get(i)[1];
 			
 			// query is one mapping (might have multiple calls)
@@ -426,21 +491,43 @@ public class QueryPipeline {
 				// header
 				String queryLower = query.toLowerCase();
 				if (queryLower.startsWith("select ")) {
-					html += "!| Query | " + query + " |";
+					if (isStatic)  
+						html += "\n\n<table>"
+							+ "\n\t<tr>"
+							+ "\n\t\t<td>Query</td>"
+							+ "\n\t\t<td>" + query + "</td>"
+							+ "\n\t</tr>";
+					else
+						html += "\n\n<table>"
+								+ "\n\t<tr>"
+								+ "\n\t\t<td>Query</td>"
+								+ "\n\t\t<td>" + IOUtil.TAG_PREFIX + qtag + IOUtil.TAG_SUFFIX + "</td>"
+								+ "\n\t</tr>";
 				} else {
-					html += "!| Execute | " + query + " |";
+					if (isStatic)
+						html += "\n\n<table>"
+								+ "\n\t<tr>"
+								+ "\n\t\t<td>Execute</td>"
+								+ "\n\t\t<td>" + query + "</td>"
+								+ "\n\t</tr>";
+					else
+						html += "\n\n<table>"
+								+ "\n\t<tr>"
+								+ "\n\t\t<td>Execute</td>"
+								+ "\n\t\t<td>" + IOUtil.TAG_PREFIX + qtag + IOUtil.TAG_SUFFIX + "</td>"
+								+ "\n\t</tr>";
 				}
-				html += "\n";
+				
 				// Actual result table
 				for (int i2 = 0; i2 < resRaw.size(); i2++) {
 					String[] row = resRaw.get(i2);
-					html += "| ";
+					html += "\n\t<tr>";
 					for (String relem : row) {
-						html += relem + " | ";
+						html +=	"\n\t\t<td>" + relem + "</td>"; //relem + " | ";
 					}
-					html += "\n";
+					html += "\n\t</tr>";
 				}
-				html += "\n";
+				html += "\n</table>\n\n";
 
 			} else {
 				// it is a callable statement
@@ -461,7 +548,19 @@ public class QueryPipeline {
 				// one table in the solution.txt file
 				if (sqlc.isFunction()) {
 					// functions are put in "one" table
-					html += "!| Execute Procedure | " + sqlc.getName() + " |\n";
+					if (isStatic)
+						html += "\n\n<table>"
+								+ "\n\t<tr>"
+								+ "\n\t\t<td>Execute Procedure</td>"
+								+ "\n\t\t<td>" + sqlc.getName() + "</td>"
+								+ "\n\t</tr>";
+					else
+						html += "\n\n<table>"
+								+ "\n\t<tr>"
+								+ "\n\t\t<td>Execute Procedure</td>"
+								+ "\n\t\t<td>" + IOUtil.TAG_PREFIX + qtag + IOUtil.TAG_SUFFIX + "</td>"
+								+ "\n\t</tr>";
+					// html += "!| Execute Procedure | " + sqlc.getName() + " |\n";
 				}
 				// this is the list of all calls in the current mapping element
 				for (int j = 0; j < qlist.length; j++) {
@@ -474,7 +573,8 @@ public class QueryPipeline {
 						hasRes = stmt.execute(planTmp.get(k));
 					}
 					
-					// Fetch result!
+					// Fetch result! The last statement is always the one
+					// which produces the final result
 					if (hasRes) {
 						rs = stmt.getResultSet();
 						resRaw = storeResultSet(rs);
@@ -486,12 +586,14 @@ public class QueryPipeline {
 					// One Callable = 1 line
 					// Contains a dump of the result (1st line is headers)
 					// The calls might be split up in multiple test cases
-					html += generateHTML(q, sqlc, headerCols, resRaw); 
+					html += generateHTML(q, sqlc, headerCols, resRaw, mapping.get(i)); 
 					
 					// for debugging, save the complete plan
 					queryList.addAll(planTmp);
 					
 				}
+				if (sqlc.isFunction()) 
+					html += "\n</table>\n\n";
 				// Add a blank line between every test case
 				html += "\n";
 				
