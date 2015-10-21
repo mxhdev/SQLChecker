@@ -13,6 +13,13 @@ public class SolutionGenerator {
 	
 	private String outputFile = "";
 	
+	/**
+	 * Connection properties in the following order: <br>
+	 * host (default:localhost) <br>
+	 * dbUser (default:root) <br>
+	 * dbUserPw (default:) <br>
+	 * dbName (default:dbfit) <br>
+	 */
 	private String[] connProps = new String[4];
 	
 	
@@ -103,9 +110,69 @@ public class SolutionGenerator {
 		}
 		
 		
+		String tagStr = extractTags(mapping);
+		
+		// step 1.2 - write the header information
+		String html = "";
+		// tags=a,b,c,d
+		// tags
+		html += "tags=" + tagStr + "\n\n";
+		// driver name
+		html += "\n<table>"
+				+ "\n\t<tr>"
+				+ "\n\t\t<td>dbfit.MySqlTest</td>"
+				+ "\n\t</tr>"
+				+ "\n</table>\n";
+		/* Connection properties in the following order: <br>
+	 * host (default:localhost) <br>
+	 * dbUser (default:root) <br>
+	 * dbUserPw (default:) <br>
+	 * dbName (default:dbfit) <br>
+	 */
+		html += "\n<table>"
+				+ "\n\t<tr>"
+				+ "\n\t\t<td>Connect</td>"
+				+ "\n\t\t<td>" + connProps[0] + "</td>"
+				+ "\n\t\t<td>" + connProps[1] + "</td>"
+				+ "\n\t\t<td>" + connProps[2] + "</td>"
+				+ "\n\t\t<td>" + connProps[3] + "</td>"
+				+ "\n\t</tr>"
+				+ "\n</table>\n";
+		
+		System.out.println("HEADER:");
+		System.out.println("H H H H H H H H H H H H H H H H H H H H");
+		System.out.println(html);
+		System.out.println("H H H H H H H H H H H H H H H H H H H H");
 		// step 2, Execute each query
 		QueryPipeline qp = new QueryPipeline(mapping, callables);
-		qp.run();
+		
+		html += qp.run();
+	}
+	
+	
+	
+	public static String extractTags(ArrayList<String[]> mapping) {
+		String tStr = "";
+		ArrayList<String> tags = new ArrayList<String>();
+		String IGNORE = "static";
+		
+		for (int i = 0; i < mapping.size(); i++) {
+			String tagTmp = mapping.get(i)[0];
+			// static will be ignored
+			if (!tagTmp.equalsIgnoreCase(IGNORE)) {
+				// avoid duplicates
+				if (tags.indexOf(tagTmp) < 0) tags.add(tagTmp);
+			}
+		}
+		
+		// build string
+		for (int i = 0; i < tags.size(); i++) {
+			// comma separated tag list
+			tStr += tags.get(i);
+			if (i < (tags.size() - 1)) tStr += ",";
+		}
+		
+		return tStr;
 	}
 	
 	
