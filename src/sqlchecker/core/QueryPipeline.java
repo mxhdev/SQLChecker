@@ -380,7 +380,13 @@ public class QueryPipeline {
 							System.out.println("j=" + j);
 							System.out.println("omark=" + omark);
 							// html += result.get(j)[omark];
-							html += "\n\t\t<td>" + result.get(j)[omark] + "</td>";
+							String resTmp = result.get(j)[omark];
+							// remove leading/trailing " and '
+							if (resTmp.charAt(0) == resTmp.charAt(resTmp.length() - 1)) {
+								if ((resTmp.charAt(0) == '\'') || (resTmp.charAt(0) == '\"'))
+									resTmp = resTmp.substring(1, resTmp.length()-1);
+							}
+							html += "\n\t\t<td>" + resTmp + "</td>";
 							omark++;
 						} else {
 							// in
@@ -388,8 +394,14 @@ public class QueryPipeline {
 							System.out.println("data=" + Arrays.toString(data));
 							System.out.println("j=" + j);
 							System.out.println("imark=" + imark);
+							String dataTmp = data[imark];
+							// remove leading/trailing " and '
+							if (dataTmp.charAt(0) == dataTmp.charAt(dataTmp.length() - 1)) {
+								if ((dataTmp.charAt(0) == '\'') || (dataTmp.charAt(0) == '\"'))
+									dataTmp = dataTmp.substring(1, dataTmp.length()-1);
+							}
 							// html += data[imark];
-							html += "\n\t\t<td>" + data[imark] + "</td>";
+							html += "\n\t\t<td>" + dataTmp + "</td>";
 							imark++;
 						}
 						// html += " | ";
@@ -400,9 +412,9 @@ public class QueryPipeline {
 				
 				html += "\n</table>\n";
 			}
-		} else {
-			// a normal query! TODO
-		}
+		} /* else {
+			// a normal query
+		} */
 		html += "\n";
 		return html;
 	}
