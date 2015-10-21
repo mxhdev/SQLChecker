@@ -345,23 +345,20 @@ public class QueryPipeline {
 	}
 	
 	
-	public void runSQL(ArrayList<SQLResultStorage> results) {
+	public String runSQL() {
 		
 		Connection conn = null;
 		Statement stmt = null;
 		
-		
+		String html = "";
 		
 		try {
 			// init connection
 			conn = init();
 			conn.setAutoCommit(false);
+
 			stmt = conn.createStatement();
-			
-			// create statement object
-			//stmt = conn.createStatement();
-			
-			String html = "";
+
 			html = runAndBuildHTML(stmt);
 			System.out.println("HTML: \n- - - -\n" + html + "\n- - - -\n\n");
 			
@@ -376,6 +373,8 @@ public class QueryPipeline {
 			// close the connection
 			close(conn);
 		}
+		
+		return html;
 	}
 	
 	
@@ -561,32 +560,6 @@ public class QueryPipeline {
 	
 	
 	
-	
-	private SQLResultStorage handleQuery(String sql, Connection conn) {
-		SQLResultStorage resultFinal = new SQLResultStorage(sql);
-		Statement stmt = null;
-		try {
-			int idx = isCallable(sql); // BUG -> DOES NOT WORK LIKE THAT
-			// todo!
-			if (idx < 0) {
-				// not a callable statement
-				stmt = conn.createStatement();
-			} else {
-				// function/procedure call
-			}
-			
-			
-			
-		} catch (SQLException sqle) {
-			sqle.printStackTrace();
-		} finally {
-			close(stmt);
-		}
-		
-		return resultFinal;
-	}
-	
-	
 	/**
 	 * 
 	 * @param sql
@@ -630,16 +603,19 @@ public class QueryPipeline {
 	
 	
 	
-	public ArrayList<String[]> run() {
+	public String run() {
 		// step 0 - init
-		ArrayList<SQLResultStorage> results = new ArrayList<SQLResultStorage>();
+		String compiledHTML = "";
+		
 		// just do a dry run - for testing purposes
 		// dryRun();
-		runSQL(results);
+		
 		// step 1 - detect type (is it a callable, or a list of them?)
 		// step 2 - execute & store the results somehow
+		compiledHTML = runSQL();
+		
 		// step 3 - return it
-		return null;
+		return compiledHTML;
 	}
 	
 	
