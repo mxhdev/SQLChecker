@@ -160,10 +160,39 @@ public class SubmissionExecuter {
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 		}
+		/*
+		 * perform plagiat check
+		 * 
+		 */
 		
+		//generate Testdate until the parsing of the comments isn't implemented
 		
+		PlagiatTest erste = new PlagiatTest(123456, "Dies ist ein Tést-String");
+		PlagiatTest zweite = new PlagiatTest(123459, "dies ist ein                          test-string");
+		PlagiatTest dritte = new PlagiatTest(123458, "Hier steht ein ganz anderer Kommentar");
+		PlagiatTest vierte = new PlagiatTest(123460, "Hier steht ein gan anderer Kommentar");
 		
+		ArrayList<PlagiatTest> list = new ArrayList<PlagiatTest>();
+		list.add(erste);
+		list.add(zweite);
+		list.add(dritte);
+		list.add(vierte);
+		//End of generating test data
 		
+		//calling generatePlagiatList function
+		ArrayList<String> resLis = PlagiatTest.generatePlagiatList(list);
+		// generate unique filename of plagiat reprt
+		String fname = this.agnPath + "PlagiatReport.csv";
+		fname = OutputWriter.makeUnique(fname);
+		
+		System.out.println("Filename of PlagiatReport: "+fname);
+		// write report file 
+		try {
+			OutputWriter plagiatWriter = new OutputWriter(fname, resLis);
+			plagiatWriter.writeLines();
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		}
 		
 	}
 	
