@@ -91,7 +91,6 @@ public class SubmissionReader extends AbstractFileReader {
 
 	@Override
 	public void afterReading(String pathToFile) {
-		
 		//reset everything / print stuff
 		/*
 		System.out.println("\n\t> - - - - - - - - - - <\n");
