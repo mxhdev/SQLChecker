@@ -83,6 +83,8 @@ public class SubmissionExecuter {
 		// add csv header
 		csvLines.add(IOUtil.generateCSVHeader(sr.getTagMap()));
 		
+		//Generate ArrayList for duplicate Submission testing
+		ArrayList<SubmissionReader> subCom = new ArrayList<SubmissionReader>();
 		
 		// Define output writer
 		//PrintWriter out = new PrintWriter(System.out, false);
@@ -98,15 +100,21 @@ public class SubmissionExecuter {
 			// load a submission
 			SubmissionReader subr = new SubmissionReader(subm.getPath(), IOUtil.tags);
 			subr.loadFile();
-
+			
+			//add submission to submission list for duplicate check
+			subCom.add(subr);
+			
 			// get mapping and apply it
 			ArrayList<String[]> mapping = subr.getMapping();
 			String checkStr = IOUtil.applyMapping(solution, mapping);
 			
+			
+			DBFitFacade checker = new DBFitFacade(fname, connProps);
 			// perform the check
 			ResultStorage rs = null;
 			try {
-				rs = runSubmission(fname, checkStr, connProps);
+				// rs = runSubmission(fname, checkStr, connProps);
+				rs = checker.runSubmission(checkStr);
 			} catch (SQLException sqle) {
 				// unable to close connection
 				sqle.printStackTrace();
@@ -161,27 +169,22 @@ public class SubmissionExecuter {
 			ioe.printStackTrace();
 		}
 		/*
-		 * perform plagiat check
+		 * perform plagiat check+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 		 * 
 		 */
+		ArrayList<String> tags = sr.getTagMap();
+		ArrayList<String> exercises = new ArrayList();
+		int qnum = tags.size();
+		for(int o = 0; o < qnum ;o++){
+			if(!tags.get(o).isEmpty()){
+				exercises.add(tags.get(o));
+			}
+		}
+		ArrayList<String> resLis = PlagiatTest.extractComments(subCom, exercises);
 		
-		//generate Testdate until the parsing of the comments isn't implemented
 		
-		PlagiatTest erste = new PlagiatTest(123456, "Dies ist ein Tést-String");
-		PlagiatTest zweite = new PlagiatTest(123459, "dies ist ein                          test-string");
-		PlagiatTest dritte = new PlagiatTest(123458, "Hier steht ein ganz anderer Kommentar");
-		PlagiatTest vierte = new PlagiatTest(123460, "Hier steht ein gan anderer Kommentar");
-		
-		ArrayList<PlagiatTest> list = new ArrayList<PlagiatTest>();
-		list.add(erste);
-		list.add(zweite);
-		list.add(dritte);
-		list.add(vierte);
-		//End of generating test data
-		
-		//calling generatePlagiatList function
-		ArrayList<String> resLis = PlagiatTest.generatePlagiatList(list);
-		// generate unique filename of plagiat reprt
+
+		// generate unique filename of duplicate report
 		String fname = this.agnPath + "PlagiatReport.csv";
 		fname = OutputWriter.makeUnique(fname);
 		
@@ -194,70 +197,6 @@ public class SubmissionExecuter {
 			ioe.printStackTrace();
 		}
 		
-	}
-	
-	/**
-	 * Runs a submission
-	 * @param fileName Name of the file which was loaded
-	 * @param sqlhtml HTML containing the submitted sql statements 
-	 * @param connProps Connection properties in the following order:
-	 *  (host, user, pw, dbname)
-	 * @throws SQLException If the function was unable to close the sql connection
-	 */
-	private ResultStorage runSubmission(String fileName, String sqlhtml, String[] connProps) throws SQLException {
-		
-		MySqlTest tester = null;
-
-		ResultStorage rs = null;
-		try {
-			// init connection
-			tester = init(connProps[0], connProps[3], connProps[1], connProps[2]);
-			
-			// parse & execute the submission 
-			Parse target = new Parse(sqlhtml);
-			tester.doTables(target);
-			
-			
-			System.out.println("\n* * * RESULTS * * *");
-			
-			// right, wrong, ignored, exception
-			System.out.println("Counts:\n\t" + tester.counts);
-			
-			String result = IOUtil.getParseResult(target);
-			
-			rs = new ResultStorage(fileName, result
-					, tester.counts.right, tester.counts.wrong
-					, tester.counts.ignores, tester.counts.exceptions);
-
-		} catch (FitParseException fpe) {
-			fpe.printStackTrace();
-		} catch (SQLException sqle) {
-			sqle.printStackTrace();
-		} finally {
-			// close connection
-			if (tester != null) tester.close();
-		}
-		
-		return rs;
-	}
-	
-	
-	
-	/**
-	 * Creates a database connection for a MySQL endpoint
-	 * @return MySqlTest instance
-	 * @throws SQLException If no database connection could be created
-	 * (This usually happens when the mysql service is not running)
-	 */
-	private MySqlTest init(String host, String db, String dbuser, String dbpw) throws SQLException {
-		// init test
-		
-		System.out.println("Connection with values host=" + host + ", db=" + db + ", user=" + dbuser + ", pw=" + dbpw);
-		
-		MySqlTest tester = new MySqlTest();
-		tester.connect(host, dbuser, dbpw, db);
-		
-		return tester;
 	}
 	
 	

@@ -1,7 +1,13 @@
 package sqlchecker.core;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
+import dbfit.MySqlTest;
+import fit.Parse;
+import fit.exception.FitParseException;
 import sqlchecker.io.IOUtil;
 import sqlchecker.io.OutputWriter;
 import sqlchecker.io.impl.RawSolutionReader;
@@ -12,6 +18,8 @@ public class SolutionGenerator {
 	private String inputFile = "";
 	
 	private String outputFile = "";
+	
+	private String samplePath = "";
 	
 	/**
 	 * Connection properties in the following order: <br>
@@ -27,6 +35,8 @@ public class SolutionGenerator {
 	 * Constructor
 	 * @param inPath Path to the (raw) input file
 	 * @param outPath Path to the file which should be generated
+	 * @param submPath Path at which the sample submission should be
+	 * placed
 	 * @param cProps Connection properties in the following order: <br>
 	 * host (default:localhost) <br>
 	 * dbUser (default:root) <br>
@@ -34,9 +44,10 @@ public class SolutionGenerator {
 	 * dbName (default:dbfit) <br>
 	 * 
 	 */
-	public SolutionGenerator(String inPath, String outPath, String[] cProps) {
+	public SolutionGenerator(String inPath, String outPath, String submPath, String[] cProps) {
 		this.inputFile = inPath;
 		outputFile = OutputWriter.makeUnique(outPath);
+		samplePath = OutputWriter.makeUnique(submPath);
 		// use the setting given
 		this.connProps = cProps.clone();
 	}
@@ -45,13 +56,12 @@ public class SolutionGenerator {
 	 * Constructor using the default connection properties
 	 * @param inPath Path to the (raw) input file
 	 * @param outPath Path to the file which should be generated
+	 * @param submPath Path at which the sample submission should be
+	 * placed
 	 */
-	public SolutionGenerator(String inPath, String outPath) {
-		this.inputFile = inPath;
-		outputFile = OutputWriter.makeUnique(outPath);
-		
-		// default connection settings
-		this.connProps = IOUtil.DEFAULT_PROPS;
+	public SolutionGenerator(String inPath, String outPath, String submPath) {
+		// Use default connection properties!
+		this(inPath, outPath, submPath, IOUtil.DEFAULT_PROPS);
 	}
 	
 	
@@ -147,7 +157,95 @@ public class SolutionGenerator {
 		// step 2, Execute each query
 		QueryPipeline qp = new QueryPipeline(mapping, callables);
 		html += qp.run();
+		
+		
+		// step 3, Write to file
+		System.out.println("\n\nWriting content to > HTML < file:\n");
+		System.out.println("\t" + outputFile + "\n");
+
+		ArrayList<String> htmlLines = new ArrayList<String>();
+		// Using split makes the line breaks 
+		// also work in Windows NotePad
+		htmlLines.addAll(Arrays.asList(html.split("\n")));
+		
+		try {
+			OutputWriter solutionWriter = new OutputWriter(outputFile, htmlLines);
+			solutionWriter.writeLines();
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		}
+		System.out.println("Writing is DONE");
+		
+		
+		// step 4, Verify Solution!
+		ArrayList<String[]> filtered = filterTags(mapping, "static");
+		verify(html, filtered);
+		
+		// step 5, Write Solution to file!
+		ArrayList<String> sampleLines = new ArrayList<String>();
+		for (int i = 0; i < filtered.size(); i++) {
+			String[] tuple = filtered.get(i);
+			sampleLines.add("");
+			sampleLines.add(IOUtil.TAG_PREFIX + tuple[0] + IOUtil.TAG_SUFFIX);
+			sampleLines.add("");
+			sampleLines.add(tuple[1]);
+			sampleLines.add("");
+			sampleLines.add("");
+		}
+		System.out.println("\n\nWriting sample submission as > SQL < file:\n");
+		System.out.println("\t" + samplePath + "\n");
+		try {
+			OutputWriter submWriter = new OutputWriter(samplePath, sampleLines);
+			submWriter.writeLines();
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		}
+		System.out.println("Writing the submission is DONE");
+		
 	}
+	
+	
+	private ArrayList<String[]> filterTags(ArrayList<String[]> raw, String needle) {
+		needle = needle.toLowerCase();
+		// filter all "static" tags
+		ArrayList<String[]> filtered = new ArrayList<String[]>();
+		for (int i = 0; i < raw.size(); i++) {
+			String[] m = raw.get(i);
+			// only add non-static mappings
+			if (!m[0].toLowerCase().equals(needle)) {
+				filtered.add(m.clone());
+			}
+		}
+
+		System.out.println(filtered.size() + " mappings left after (!=static) filter was applied");
+		
+		return filtered;
+	}
+	
+	
+	
+	private void verify(String htmlStr, ArrayList<String[]> mapping) {
+		
+		// apply the solution mapping
+		String checkStr = IOUtil.applyMapping(htmlStr, mapping);
+		
+		DBFitFacade checker = new DBFitFacade(outputFile, connProps);
+		ResultStorage rs = null;
+		try {
+			rs = checker.runSubmission(checkStr);
+		} catch (SQLException sqle) {
+			// unable to close connection
+			sqle.printStackTrace();
+		}
+		
+		if (rs == null) {
+			// some sql exception occurred
+			System.out.println("[VERIFY] An error occured");
+		}
+		
+		System.out.println("[VERIFY] Done");
+	}
+	
 	
 	
 	
@@ -186,9 +284,12 @@ public class SolutionGenerator {
 	
 	public static void main(String[] args) {
 		String inPath = "data/raw.sql";
-		String outPath = "data/solutions.txt";
+		String outPath = "data/solution.txt";
+		String samplePath = "data/sample.sql";
 		
-		SolutionGenerator sg = new SolutionGenerator(inPath, outPath);
+		String[] cProps = new String[]{"localhost", "root", "", "dbfit"};
+		
+		SolutionGenerator sg = new SolutionGenerator(inPath, outPath, samplePath, cProps);
 		sg.generate();
 	}
 

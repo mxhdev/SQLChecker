@@ -24,6 +24,8 @@ public class SubmissionReader extends AbstractFileReader {
 	 * Stores the mapping (TAG-->SubmissionSQL)
 	 */
 	private ArrayList<String[]> tagMappings = new ArrayList<String[]>();
+	private String matrikelnummer;
+	private String name;
 	
 	
 	
@@ -89,7 +91,8 @@ public class SubmissionReader extends AbstractFileReader {
 
 	@Override
 	public void afterReading(String pathToFile) {
-		 //reset everything / print stuff
+		
+		//reset everything / print stuff
 		/*
 		System.out.println("\n\t> - - - - - - - - - - <\n");
 		
@@ -116,6 +119,31 @@ public class SubmissionReader extends AbstractFileReader {
 	
 	
 	
+	
+	public String getMatrikelnummer() {
+		return matrikelnummer;
+	}
+
+
+
+	public void setMatrikelnummer(String matrikelnummer) {
+		this.matrikelnummer = matrikelnummer;
+	}
+
+
+
+	public String getName() {
+		return name;
+	}
+
+
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+
+
 	public static void main(String[] args) {
 		String fpath = "data/assignment1/submissions/s1.sql";
 		String[] tags = new String[]{"1a", "1b", "1c"}; 
