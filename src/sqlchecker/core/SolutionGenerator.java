@@ -1,9 +1,13 @@
 package sqlchecker.core;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import dbfit.MySqlTest;
+import fit.Parse;
+import fit.exception.FitParseException;
 import sqlchecker.io.IOUtil;
 import sqlchecker.io.OutputWriter;
 import sqlchecker.io.impl.RawSolutionReader;
@@ -187,7 +191,91 @@ public class SolutionGenerator {
 		
 		// apply the solution mapping
 		String checkStr = IOUtil.applyMapping(htmlStr, filtered);
+		ResultStorage rs = null;
+		try {
+			rs = runSubmission(outputFile, checkStr, connProps);
+		} catch (SQLException sqle) {
+			// unable to close connection
+			sqle.printStackTrace();
+		}
+		
+		if (rs == null) {
+			// some sql exception occurred
+			System.out.println("[VERIFY] An error occured");
+		}
+		
+		System.out.println("[VERIFY] Done");
 	}
+	
+	
+	
+	
+	/**
+	 * Runs a submission
+	 * @param fileName Name of the file which was loaded
+	 * @param sqlhtml HTML containing the submitted sql statements 
+	 * @param connProps Connection properties in the following order:
+	 *  (host, user, pw, dbname)
+	 * @throws SQLException If the function was unable to close the sql connection
+	 */
+	private ResultStorage runSubmission(String fileName, String sqlhtml, String[] connProps) throws SQLException {
+		
+		MySqlTest tester = null;
+
+		ResultStorage rs = null;
+		try {
+			// init connection
+			tester = init(connProps[0], connProps[3], connProps[1], connProps[2]);
+			
+			// parse & execute the submission 
+			Parse target = new Parse(sqlhtml);
+			tester.doTables(target);
+			
+			
+			System.out.println("\n* * * RESULTS * * *");
+			
+			// right, wrong, ignored, exception
+			System.out.println("Counts:\n\t" + tester.counts);
+			
+			String result = IOUtil.getParseResult(target);
+			
+			rs = new ResultStorage(fileName, result
+					, tester.counts.right, tester.counts.wrong
+					, tester.counts.ignores, tester.counts.exceptions);
+
+		} catch (FitParseException fpe) {
+			fpe.printStackTrace();
+		} catch (SQLException sqle) {
+			sqle.printStackTrace();
+		} finally {
+			// close connection
+			if (tester != null) tester.close();
+		}
+		
+		return rs;
+	}
+	
+	
+	
+	/**
+	 * Creates a database connection for a MySQL endpoint
+	 * @return MySqlTest instance
+	 * @throws SQLException If no database connection could be created
+	 * (This usually happens when the mysql service is not running)
+	 */
+	private MySqlTest init(String host, String db, String dbuser, String dbpw) throws SQLException {
+		// init test
+		
+		System.out.println("Connection with values host=" + host + ", db=" + db + ", user=" + dbuser + ", pw=" + dbpw);
+		
+		MySqlTest tester = new MySqlTest();
+		tester.connect(host, dbuser, dbpw, db);
+		
+		return tester;
+	}
+	
+	
+	
 	
 	/**
 	 * This function generates a tag-list as string from a mapping

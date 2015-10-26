@@ -572,6 +572,15 @@ public class QueryPipeline {
 								+ "\n\t\t<td>Execute Procedure</td>"
 								+ "\n\t\t<td>" + IOUtil.TAG_PREFIX + qtag + IOUtil.TAG_SUFFIX + "</td>"
 								+ "\n\t</tr>";
+					// print header!!
+					html += "\n\t<tr>";
+					for (String hCol : headerCols) {
+						if (!hCol.equals("@"))
+							html += "\n\t\t<td>" + hCol + "</td>";
+						else
+							html += "\n\t\t<td>?</td>";
+					}
+					html += "\n\t</tr>";
 					// html += "!| Execute Procedure | " + sqlc.getName() + " |\n";
 				}
 				// this is the list of all calls in the current mapping element
