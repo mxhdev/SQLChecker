@@ -1,6 +1,8 @@
 package sqlchecker.core;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import sqlchecker.io.IOUtil;
 import sqlchecker.io.OutputWriter;
@@ -47,11 +49,8 @@ public class SolutionGenerator {
 	 * @param outPath Path to the file which should be generated
 	 */
 	public SolutionGenerator(String inPath, String outPath) {
-		this.inputFile = inPath;
-		outputFile = OutputWriter.makeUnique(outPath);
-		
-		// default connection settings
-		this.connProps = IOUtil.DEFAULT_PROPS;
+		// Use default connection properties!
+		this(inPath, outPath, IOUtil.DEFAULT_PROPS);
 	}
 	
 	
@@ -147,9 +146,48 @@ public class SolutionGenerator {
 		// step 2, Execute each query
 		QueryPipeline qp = new QueryPipeline(mapping, callables);
 		html += qp.run();
+		
+		
+		// step 3, Write to file
+		System.out.println("\n\nWriting content to > HTML < file:\n");
+		System.out.println("\t" + outputFile + "\n");
+
+		ArrayList<String> htmlLines = new ArrayList<String>();
+		// Using split makes the line breaks 
+		// also work in Windows NotePad
+		htmlLines.addAll(Arrays.asList(html.split("\n")));
+		
+		try {
+			OutputWriter solutionWriter = new OutputWriter(outputFile, htmlLines);
+			solutionWriter.writeLines();
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		}
+		System.out.println("Writing is DONE");
+		
+		
+		// step 4, Verify Solution!
+		verify(html, mapping);
+		
+		// step 5, Write Solution to file!
 	}
 	
-	
+	private void verify(String htmlStr, ArrayList<String[]> mapping) {
+		// filter all "static" tags
+		ArrayList<String[]> filtered = new ArrayList<String[]>();
+		for (int i = 0; i < mapping.size(); i++) {
+			String[] m = mapping.get(i);
+			// only add non-static mappings
+			if (!m[0].toLowerCase().equals("static")) {
+				filtered.add(m.clone());
+			}
+		}
+
+		System.out.println(filtered.size() + " mappings left after (!=static) filter was applied");
+		
+		// apply the solution mapping
+		String checkStr = IOUtil.applyMapping(htmlStr, filtered);
+	}
 	
 	/**
 	 * This function generates a tag-list as string from a mapping
@@ -186,7 +224,7 @@ public class SolutionGenerator {
 	
 	public static void main(String[] args) {
 		String inPath = "data/raw.sql";
-		String outPath = "data/solutions.txt";
+		String outPath = "data/solution.txt";
 		
 		SolutionGenerator sg = new SolutionGenerator(inPath, outPath);
 		sg.generate();

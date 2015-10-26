@@ -167,7 +167,7 @@ public class SubmissionExecuter {
 		
 		//generate Testdate until the parsing of the comments isn't implemented
 		
-		PlagiatTest erste = new PlagiatTest(123456, "Dies ist ein Tést-String");
+		PlagiatTest erste = new PlagiatTest(123456, "Dies ist ein Tï¿½st-String");
 		PlagiatTest zweite = new PlagiatTest(123459, "dies ist ein                          test-string");
 		PlagiatTest dritte = new PlagiatTest(123458, "Hier steht ein ganz anderer Kommentar");
 		PlagiatTest vierte = new PlagiatTest(123460, "Hier steht ein gan anderer Kommentar");
