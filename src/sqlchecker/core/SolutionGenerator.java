@@ -19,6 +19,8 @@ public class SolutionGenerator {
 	
 	private String outputFile = "";
 	
+	private String samplePath = "";
+	
 	/**
 	 * Connection properties in the following order: <br>
 	 * host (default:localhost) <br>
@@ -33,6 +35,8 @@ public class SolutionGenerator {
 	 * Constructor
 	 * @param inPath Path to the (raw) input file
 	 * @param outPath Path to the file which should be generated
+	 * @param submPath Path at which the sample submission should be
+	 * placed
 	 * @param cProps Connection properties in the following order: <br>
 	 * host (default:localhost) <br>
 	 * dbUser (default:root) <br>
@@ -40,9 +44,10 @@ public class SolutionGenerator {
 	 * dbName (default:dbfit) <br>
 	 * 
 	 */
-	public SolutionGenerator(String inPath, String outPath, String[] cProps) {
+	public SolutionGenerator(String inPath, String outPath, String submPath, String[] cProps) {
 		this.inputFile = inPath;
 		outputFile = OutputWriter.makeUnique(outPath);
+		samplePath = OutputWriter.makeUnique(submPath);
 		// use the setting given
 		this.connProps = cProps.clone();
 	}
@@ -51,10 +56,12 @@ public class SolutionGenerator {
 	 * Constructor using the default connection properties
 	 * @param inPath Path to the (raw) input file
 	 * @param outPath Path to the file which should be generated
+	 * @param submPath Path at which the sample submission should be
+	 * placed
 	 */
-	public SolutionGenerator(String inPath, String outPath) {
+	public SolutionGenerator(String inPath, String outPath, String submPath) {
 		// Use default connection properties!
-		this(inPath, outPath, IOUtil.DEFAULT_PROPS);
+		this(inPath, outPath, submPath, IOUtil.DEFAULT_PROPS);
 	}
 	
 	
@@ -171,26 +178,56 @@ public class SolutionGenerator {
 		
 		
 		// step 4, Verify Solution!
-		verify(html, mapping);
+		ArrayList<String[]> filtered = filterTags(mapping, "static");
+		verify(html, filtered);
 		
 		// step 5, Write Solution to file!
+		ArrayList<String> sampleLines = new ArrayList<String>();
+		for (int i = 0; i < filtered.size(); i++) {
+			String[] tuple = filtered.get(i);
+			sampleLines.add("");
+			sampleLines.add(IOUtil.TAG_PREFIX + tuple[0] + IOUtil.TAG_SUFFIX);
+			sampleLines.add("");
+			sampleLines.add(tuple[1]);
+			sampleLines.add("");
+			sampleLines.add("");
+		}
+		System.out.println("\n\nWriting sample submission as > SQL < file:\n");
+		System.out.println("\t" + samplePath + "\n");
+		try {
+			OutputWriter submWriter = new OutputWriter(samplePath, sampleLines);
+			submWriter.writeLines();
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		}
+		System.out.println("Writing the submission is DONE");
+		
 	}
 	
-	private void verify(String htmlStr, ArrayList<String[]> mapping) {
+	
+	private ArrayList<String[]> filterTags(ArrayList<String[]> raw, String needle) {
+		needle = needle.toLowerCase();
 		// filter all "static" tags
 		ArrayList<String[]> filtered = new ArrayList<String[]>();
-		for (int i = 0; i < mapping.size(); i++) {
-			String[] m = mapping.get(i);
+		for (int i = 0; i < raw.size(); i++) {
+			String[] m = raw.get(i);
 			// only add non-static mappings
-			if (!m[0].toLowerCase().equals("static")) {
+			if (!m[0].toLowerCase().equals(needle)) {
 				filtered.add(m.clone());
 			}
 		}
 
 		System.out.println(filtered.size() + " mappings left after (!=static) filter was applied");
 		
+		return filtered;
+	}
+	
+	
+	
+	private void verify(String htmlStr, ArrayList<String[]> mapping) {
+		
 		// apply the solution mapping
-		String checkStr = IOUtil.applyMapping(htmlStr, filtered);
+		String checkStr = IOUtil.applyMapping(htmlStr, mapping);
 		
 		DBFitFacade checker = new DBFitFacade(outputFile, connProps);
 		ResultStorage rs = null;
@@ -248,8 +285,9 @@ public class SolutionGenerator {
 	public static void main(String[] args) {
 		String inPath = "data/raw.sql";
 		String outPath = "data/solution.txt";
+		String samplePath = "data/sample.sql";
 		
-		SolutionGenerator sg = new SolutionGenerator(inPath, outPath);
+		SolutionGenerator sg = new SolutionGenerator(inPath, outPath, samplePath);
 		sg.generate();
 	}
 
