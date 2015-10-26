@@ -181,10 +181,9 @@ public class SubmissionExecuter {
 			}
 		}
 		ArrayList<String> resLis = PlagiatTest.extractComments(subCom, exercises);
-		
-		
 
 		// generate unique filename of duplicate report
+
 		String fname = this.agnPath + "PlagiatReport.csv";
 		fname = OutputWriter.makeUnique(fname);
 		
