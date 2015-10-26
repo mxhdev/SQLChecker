@@ -287,7 +287,9 @@ public class SolutionGenerator {
 		String outPath = "data/solution.txt";
 		String samplePath = "data/sample.sql";
 		
-		SolutionGenerator sg = new SolutionGenerator(inPath, outPath, samplePath);
+		String[] cProps = new String[]{"localhost", "root", "", "dbfit"};
+		
+		SolutionGenerator sg = new SolutionGenerator(inPath, outPath, samplePath, cProps);
 		sg.generate();
 	}
 
