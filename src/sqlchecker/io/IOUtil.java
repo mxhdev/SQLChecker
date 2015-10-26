@@ -41,12 +41,7 @@ public class IOUtil {
 	 * Delimiter used in all CSV files of this application
 	 */
 	public static final String CSV_DELIMITER = ";";
-	
-	/**
-	 * Temporary storage for the results of a submission
-	 */
-	private static String storage = "";
-	
+
 	/**
 	 * A static list of the currently valid tags
 	 */
@@ -158,53 +153,6 @@ public class IOUtil {
 	}
 	
 	
-	public static String getParseResult(Parse p) {
-
-		// get result as string
-		storage = "";
-		printParseStr(p, 0);
-		
-		return storage;
-		
-	}
-	
-
-	/**
-	 * Stores the annotated parse String in a class
-	 * variable. This makes sure that the output is stored
-	 * in the correct order. <br>
-	 * This function was adapted from the Parse.print() function
-	 * in the fitnesse github repository
-	 * @param p Parse object which should be stored
-	 * @param iter Iteration counter, start at 0
-	 * @see https://github.com/unclebob/fitnesse/blob/master/src/fit/Parse.java
-	 */
-	private static void printParseStr(Parse p, int iter) {
-		
-		// init this 
-		storage += p.leader; //"[L]" + p.leader; // + "\n";
-		storage += p.tag; //"[Tag]" + p.tag; // + "\n";
-
-		if (p.parts != null) {
-			printParseStr(p.parts, iter++);
-		} else {
-			storage += p.body; // "[B]" + p.body; // + "\n";
-			// System.out.println("[" + iter + "] body \n\t" + p.body);
-		}
-		
-		storage += p.end; // "[E]" + p.end; // + "\n";
-		// System.out.println("[" + iter + "] end \n\t" + p.end);
-		
-		if (p.more != null) {
-			printParseStr(p.more, iter++);
-		} else {
-			storage += p.trailer; //"[Tr]" + p.trailer; // + "\n";
-			// System.out.println("[" + iter + "] trailer \n\t" + p.trailer);
-		}
-
-	}
-	
-
 
 	/**
 	 * Checks, if the SQL statement is a Function or procedure, or 
