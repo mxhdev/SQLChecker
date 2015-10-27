@@ -13,28 +13,10 @@ import java.util.Arrays;
 
 import sqlchecker.io.IOUtil;
 
-public class QueryPipeline {
+public class QueryPipeline extends MySQLWrapper {
 
 	
-	/**
-	 * Hostname of the Database endpoint (e.g. localhost)
-	 */
-	private final String host = "localhost";
 	
-	/**
-	 * Name of the database which should be used
-	 */
-	private final String db = "dbfit";
-	
-	/**
-	 * Name of the database user which should be used
-	 */
-	private final String dbuser = "root";
-	
-	/**
-	 * Password of the database user which should be used
-	 */
-	private final String dbpw = "";
 	
 	
 	
@@ -44,74 +26,47 @@ public class QueryPipeline {
 	private ArrayList<SQLCallable> calls = new ArrayList<SQLCallable>();
 	
 	
-	public QueryPipeline(ArrayList<String[]> sqlmapping, ArrayList<SQLCallable> sqlcallables) {
+	/**
+	 * Creates a QueryPipeline object which executes all the queries 
+	 * and creates appropriate HTML strings
+	 * @param sqlmapping The (tag, SQL) mapping list
+	 * @param sqlcallables List of all stores procedures and functions
+	 * that can be called
+	 * @param connProps Connection properties in the following order: <br>
+	 * host (default:localhost) <br>
+	 * dbUser (default:root) <br>
+	 * dbUserPw (default:) <br>
+	 * dbName (default:dbfit) <br>
+	 */
+	public QueryPipeline(ArrayList<String[]> sqlmapping, ArrayList<SQLCallable> sqlcallables, String[] connProps) {
+		
+		// connection properties
+		super(connProps[0], connProps[1], connProps[2], connProps[3]);
+
 		// store the mapping
 		mapping.clear();
 		mapping.addAll(sqlmapping);
+		
 		// store the available callable things
 		calls.clear();
 		calls.addAll(sqlcallables);
-
-		// Try to load the driver class
-		try {
-			Class.forName("com.mysql.jdbc.Driver");
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
 	}
 	
 	
-	
-	
-
-	private Connection init() throws SQLException {
-		
-		System.out.println("Connection with values host=" + host + ", db=" + db + ", user=" + dbuser + ", pw=" + dbpw);
-		
-		Connection conn = null;
-		try {
-			conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/" + db, dbuser, dbpw);
-		} catch (SQLException sqle) {
-			sqle.printStackTrace(System.out);
-		}
-		
-		return conn;
+	/**
+	 * Creates a QueryPipeline object which executes all the queries
+	 * and creates appropriate HTML strings. Using this constructor
+	 * will make the class use the default connection properties
+	 * @param sqlmapping The (tag, SQL) mapping list
+	 * @param sqlcallables List of all stores procedures and functions
+	 * that can be called
+	 */
+	public QueryPipeline(ArrayList<String[]> sqlmapping, ArrayList<SQLCallable> sqlcallables) {
+		this(sqlmapping, sqlcallables, IOUtil.DEFAULT_PROPS);
 	}
 	
 	
 
-	private void rollback(Connection conn) {
-		try {
-			if (conn != null) {
-				if (!conn.isClosed()) {
-					System.out.println("calling rollback!");
-					conn.rollback();
-				} else {
-					System.out.println("Connection already closed");
-				}
-			} else {
-				System.out.println("Connection is null");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-	}
-
-
-	private void close(AutoCloseable ac) {
-		try {
-			if (ac != null) {
-				ac.close();
-			} else {
-				System.out.println("[WARNING] close() "
-						+ "AutoClosable \"ac\" can not be "
-						+ "closed because it is already null");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
 	
 	
 	
@@ -632,56 +587,6 @@ public class QueryPipeline {
 	
 	
 	
-	private ArrayList<String[]> storeResultSet(ResultSet rs) throws SQLException {
-		ArrayList<String[]> rtable = new ArrayList<String[]>();
-		
-		ResultSetMetaData rsmd = rs.getMetaData();
-		int ccount = rsmd.getColumnCount();
-		
-		/*
-		 * TEST:
-		 * SELECT preis as pxy
-		 * ColumnName = preis
-		 * ColumnLabel = pxy
-		 * SELECT preis
-		 * ColumnName = preis
-		 * ColumnLabel = preis
-		 */
-		
-		// header
-		String[] head = new String[ccount];
-		for (int i = 1; i <= ccount; i++) {
-			// head[i-1] = rsmd.getColumnName(i) + " aka " + rsmd.getColumnLabel(i); 
-			head[i-1] = rsmd.getColumnLabel(i);
-		}
-		rtable.add(head);
-		
-		// table content
-		while (rs.next()) {
-			String[] row = new String[ccount];
-		    for (int i = 1; i <= ccount; i++) {
-		    	row[i-1] = rs.getString(i);
-		    }
-		    rtable.add(row);
-		}
-		
-		// close the result set
-		close(rs);
-		
-		
-		System.out.println("- - -  - rstor (start)  - - - - - ");
-		
-		for (int i = 0; i < rtable.size(); i++) {
-			System.out.println(Arrays.toString(rtable.get(i)));
-		}
-		
-		System.out.println("- - -  - rstor (end)  - - - - -\n\n ");
-		
-		
-		return rtable;
-	}
-	
-	
 	
 	/**
 	 * 
@@ -743,9 +648,4 @@ public class QueryPipeline {
 	
 	
 	
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
-	}
-
 }
