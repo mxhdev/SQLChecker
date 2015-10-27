@@ -101,6 +101,10 @@ public class SubmissionExecuter {
 			SubmissionReader subr = new SubmissionReader(subm.getPath(), IOUtil.tags);
 			subr.loadFile();
 			
+			//Set Name and Matrikelnummer of Submission
+			subr.setName(subm.getName());
+			subr.setMatrikelnummer("7654");
+			
 			//add submission to submission list for duplicate check
 			subCom.add(subr);
 			
@@ -173,7 +177,7 @@ public class SubmissionExecuter {
 		 * 
 		 */
 		ArrayList<String> tags = sr.getTagMap();
-		ArrayList<String> exercises = new ArrayList();
+		ArrayList<String> exercises = new ArrayList<String>();
 		int qnum = tags.size();
 		for(int o = 0; o < qnum ;o++){
 			if(!tags.get(o).isEmpty()){
@@ -183,11 +187,10 @@ public class SubmissionExecuter {
 		ArrayList<String> resLis = PlagiatTest.extractComments(subCom, exercises);
 
 		// generate unique filename of duplicate report
-
 		String fname = this.agnPath + "PlagiatReport.csv";
 		fname = OutputWriter.makeUnique(fname);
 		
-		System.out.println("Filename of PlagiatReport: "+fname);
+		System.out.println("Writing content to > PlagiatReport < file: \n \n \t"+fname);
 		// write report file 
 		try {
 			OutputWriter plagiatWriter = new OutputWriter(fname, resLis);

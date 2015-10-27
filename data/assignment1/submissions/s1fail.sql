@@ -9,7 +9,7 @@ INSERT INTO123
 	produkte(`bezeichnung`, `preis`) 
 VALUES
 	('chair', 80)
--- s1fail 1b Kommentar
+-- Hier steht mein Kommentar
 /*1c*/
 
 SELECT bezeichnung, preis FROM produkte

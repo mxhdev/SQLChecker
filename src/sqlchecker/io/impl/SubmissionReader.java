@@ -120,7 +120,7 @@ public class SubmissionReader extends AbstractFileReader {
 	
 	
 	public String getMatrikelnummer() {
-		return matrikelnummer;
+		return this.matrikelnummer;
 	}
 
 
@@ -132,7 +132,7 @@ public class SubmissionReader extends AbstractFileReader {
 
 
 	public String getName() {
-		return name;
+		return this.name;
 	}
 
 
@@ -149,7 +149,6 @@ public class SubmissionReader extends AbstractFileReader {
 		SubmissionReader sr = new SubmissionReader(fpath, tags);
 		sr.loadFile();
 		
-		sr.loadFile();
 	}
 
 

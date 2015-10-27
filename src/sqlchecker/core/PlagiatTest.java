@@ -14,6 +14,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public final class PlagiatTest {
 	
@@ -27,6 +29,7 @@ public final class PlagiatTest {
 	
 	PlagiatTest (String matnummer, String nam, ArrayList<String[]> exer) {
 		this.matrikelnummer = matnummer;
+		this.name = nam;
 		this.comments = exer;
 	}
 	
@@ -52,45 +55,49 @@ public final class PlagiatTest {
 	}
 	
 	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
+		return this.name;
 	}
 
 	public String getCompareName() {
-		return compareName;
-	}
-
-	public void setCompareName(String compareName) {
-		this.compareName = compareName;
+		return this.compareName;
 	}
 
 	public static float similarityStrings(String stringA, String stringB) {
 
-		StringMetric metric = with(new Levenshtein())
-				.simplify(Simplifiers.removeDiacritics())
-				.simplify(Simplifiers.removeNonWord())
-				.simplify(Simplifiers.toLowerCase()).build();
+		if(stringA.equals("")){
+			return -1;
+		}else{
+			StringMetric metric = with(new Levenshtein())
+					.simplify(Simplifiers.removeDiacritics())
+					.simplify(Simplifiers.removeNonWord())
+					.simplify(Simplifiers.toLowerCase()).build();
 
-		return metric.compare(stringA, stringB);
+			return metric.compare(stringA, stringB);			
+		}
 	}
 	
-	public static ArrayList<String> generatePlagiatList(ArrayList<PlagiatTest> com, ArrayList<String> exercises){
+	public static ArrayList<String> generatePlagiatList(ArrayList<PlagiatTest> com, ArrayList<String> SolutionExercises){
 		
 		ArrayList<PlagiatTest> resultList = new ArrayList<PlagiatTest>();
 		ArrayList<Float> simExer = new ArrayList<Float>();
+		String [] compareComment = new String[2]; 
 		// All submissions
 		for(int i = 0; i < com.size(); i++){
 			//Compare with submission i+1
 			for(int j = i + 1; j < com.size(); j++){
 				//Compare each exercises
-				for(int k = 0; k < exercises.size(); k++){
+				for(int k = 0; k < SolutionExercises.size(); k++){
 					// get comment from submission i and exercise k
 					String[] comment = com.get(i).comments.get(k);
-					// get comment from submission i+1 and exercise k
-					String[] compareComment = com.get(j).comments.get(k);
+					// search for exercise k in submission i+1
+					int l = 0;
+					for(String[] commentCompare: com.get(j).comments){
+						if(comment[0].equals(commentCompare[0])){
+							compareComment = com.get(j).comments.get(l);
+						}else{
+							l++;
+						}
+					}
 					//compare similarity of comments
 					float sim = similarityStrings(comment[1], compareComment[1]);
 					simExer.add(sim);
@@ -103,13 +110,13 @@ public final class PlagiatTest {
 		Collections.sort(resultList, Collections.reverseOrder(new SortSimilarity()));
 		ArrayList<String> resultListStringArray = new ArrayList<String>();
 		String plagiatHeader = "Student 1" +IOUtil.CSV_DELIMITER+ "Student 2" +IOUtil.CSV_DELIMITER+ "MaxSimilarity" +IOUtil.CSV_DELIMITER;
-		for(int i = 0; i < exercises.size(); i++){
-			plagiatHeader = plagiatHeader + exercises.get(i).toString() + IOUtil.CSV_DELIMITER;
+		for(int i = 0; i < SolutionExercises.size(); i++){
+			plagiatHeader = plagiatHeader + SolutionExercises.get(i).toString() + IOUtil.CSV_DELIMITER;
 		}
 		resultListStringArray.add(plagiatHeader);
 		String body = "";
 		for(PlagiatTest l: resultList){
-			body = l.matrikelnummer + IOUtil.CSV_DELIMITER + l.compareMatrikelnummer + IOUtil.CSV_DELIMITER + l.simMax + IOUtil.CSV_DELIMITER;
+			body = l.name + IOUtil.CSV_DELIMITER + l.compareName + IOUtil.CSV_DELIMITER + l.simMax + IOUtil.CSV_DELIMITER;
 			for(int i = 0; i < simExer.size(); i++){
 				body = body + simExer.get(i).toString() + IOUtil.CSV_DELIMITER;
 			}
@@ -126,9 +133,12 @@ public final class PlagiatTest {
 			exercise = subs.get(i).getMapping();
 			for(int j = 0; j < exercise.size(); j++){
 				String[] content = exercise.get(j);
+				//extract only the comments and filter the SQL-statement
 				content[1] = returnComment(content[1]);
 			}			
-			PlagiatTest sub = new PlagiatTest(subs.get(i).getMatrikelnummer(), subs.get(i).getName(), exercise);
+			String name = subs.get(i).getName();
+			String matrikelnummer = subs.get(i).getMatrikelnummer();
+			PlagiatTest sub = new PlagiatTest(matrikelnummer, name, exercise);
 			subsExtracted.add(sub);
 		}
 		return generatePlagiatList(subsExtracted, exer);
@@ -136,40 +146,34 @@ public final class PlagiatTest {
 	
 	public static String returnComment (String com){
 		
-		//to implement: remove all non comments
-		return com;
+		String original = com;
+		String cleaned = "";
+		//Find comments in String
+		Pattern p = Pattern.compile("(?m)(?:#|--).*|(/\\*[\\w\\W]*?(?=\\*/)\\*/)");
+		Matcher m = p.matcher(original);
+		
+		while (m.find()) {
+			cleaned = cleaned + m.group();
+		}
+		
+		//Delete comment signs: '#', '--', '/*' and '*/'
+		cleaned = cleaned.replaceAll("(#|--|/\\*|\\*/)", "");
+		return cleaned;
 	}
 	
 	public static void main(String[] args) {
 		
-		for(int x = 0; x < IOUtil.tags.length; x++){
-			System.out.println(IOUtil.tags);
-		}
-		/*
-		PlagiatTest erste = new PlagiatTest(123456, "Dies ist ein Tést-String");
-		PlagiatTest zweite = new PlagiatTest(123459, "dies ist ein                          test-string");
-		PlagiatTest dritte = new PlagiatTest(123458, "Hier steht ein ganz anderer Kommentar");
-		PlagiatTest vierte = new PlagiatTest(123460, "Hier steht ein gan anderer Kommentar");
+		String mitKom = "SELECT bezeichnung, preis FROM produkte; \n"
+						+"-- Dies ist ein Kommentar für s1 1a \n"
+						+"Select dasd from asdasd; \n"
+						+"# Hier steht noch ein Kommentar\n"
+						+"Select dasda from dasd where;"
+						+ "/* Kommentar zeile 1 !,; #*# \n"
+						+"und hier Zeile 2 */";
 		
-		ArrayList<PlagiatTest> list = new ArrayList<PlagiatTest>();
-		list.add(erste);
-		list.add(zweite);
-		list.add(dritte);
-		list.add(vierte);
-	
-		ArrayList<String> resLis = generatePlagiatList(list);
-		for(String l: resLis){
-			System.out.println(l);
-		}
-		String fname = "PlagiatReport.csv";
-		fname = OutputWriter.makeUnique(fname);
-		System.out.println(fname);
-		try {
-			OutputWriter plagiatWriter = new OutputWriter(fname, resLis);
-			plagiatWriter.writeLines();
-		} catch (IOException ioe) {
-			ioe.printStackTrace();
-		}*/
+		System.out.println(mitKom);
+		System.out.println("Magic:.................");
+		System.out.println(returnComment(mitKom));
 	}
 
 }
