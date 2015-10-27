@@ -8,14 +8,40 @@ import sqlchecker.io.IOUtil;
 
 
 
-
+/**
+ * This class reads the given MySQL script file and executes every
+ * query that was found
+ * @author Max Hofmann
+ *
+ */
 public class ScriptReader extends AbstractFileReader {
 
+	
+	/**
+	 * Delimiter string which separates the queries in the script
+	 * file
+	 */
 	private String delim = "/*static*/";
 	
 	
+	/**
+	 * List of queries found in the file
+	 */
 	private ArrayList<String> queryList = new ArrayList<String>();
 	
+	/**
+	 * Connection properties which should be used for
+	 * executing the script after reading it.<br>
+	 * It is recommended to leave the "db" (database name) field 
+	 * empty, because the database which has to be changed will 
+	 * probably be dropped by one of the first queries. Afterwards, 
+	 * the selected database would no longer exist. <br>
+	 * The connection properties are stored in the following order:<br>
+	 * host (default:localhost) <br>
+	 * dbUser (default:root) <br>
+	 * dbUserPw (default:) <br>
+	 * dbName (default:dbfit) <br>
+	 */
 	private String[] conn = new String[4];
 	
 	/**
@@ -123,7 +149,9 @@ public class ScriptReader extends AbstractFileReader {
 		connProps[0] = "localhost";
 		connProps[1] = "root";
 		connProps[2] = "";
-		connProps[3] = ""; // DONT SELECT A DATABASE! "dbfit";
+		// IMPORTANT for index 3: DONT SELECT A DATABASE! 
+		// default="dbfit";
+		connProps[3] = ""; 
 		
 		ScriptReader sr = new ScriptReader(path, delim, connProps);
 		sr.loadFile();
