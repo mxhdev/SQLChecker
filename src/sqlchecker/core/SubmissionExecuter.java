@@ -215,9 +215,9 @@ public class SubmissionExecuter {
 	 */
 	
 	public static void main(String[] args) {
-		String submissionPath = "data/assignment1/submissions/";
-		String solutionPath = "data/assignment1/solution.txt";
-		String agnPath = "data/assignment1/";
+		String submissionPath = "data/assignment2/submissions/";
+		String solutionPath = "data/assignment2/solution.txt";
+		String agnPath = "data/assignment2/";
 		
 		SubmissionExecuter se = new SubmissionExecuter(agnPath);
 		se.runCheck();

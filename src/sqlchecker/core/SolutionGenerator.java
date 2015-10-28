@@ -283,11 +283,11 @@ public class SolutionGenerator {
 	
 	
 	public static void main(String[] args) {
-		String inPath = "data/raw.sql";
-		String outPath = "data/solution.txt";
-		String samplePath = "data/sample.sql";
+		String inPath = "data/assignment2/rawA2.sql";
+		String outPath = "data/assignment2/solutionA2.txt";
+		String samplePath = "data/assignment2/sampleA2.sql";
 		
-		String[] cProps = new String[]{"localhost", "root", "", "dbfit"};
+		String[] cProps = new String[]{"localhost", "root", "", "airport"};
 		
 		SolutionGenerator sg = new SolutionGenerator(inPath, outPath, samplePath, cProps);
 		sg.generate();
