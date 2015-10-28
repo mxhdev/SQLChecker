@@ -138,6 +138,14 @@ public class SolutionGenerator {
 	 * dbUserPw (default:) <br>
 	 * dbName (default:dbfit) <br>
 	 */
+		
+		html += "\n<table> <tr> <td>Connect</td> "
+				+ "<td>" + connProps[0] + "</td> "
+				+ "<td>" + connProps[1] + "</td> "
+				+ "<td>" + connProps[3] + "</td> "
+				+ "<td>" + connProps[3] + "</td> </tr> </table>\n";
+		
+		/*
 		html += "\n<table>"
 				+ "\n\t<tr>"
 				+ "\n\t\t<td>Connect</td>"
@@ -147,7 +155,7 @@ public class SolutionGenerator {
 				+ "\n\t\t<td>" + connProps[3] + "</td>"
 				+ "\n\t</tr>"
 				+ "\n</table>\n";
-		
+		*/
 		System.out.println("HEADER:");
 		System.out.println("H H H H H H H H H H H H H H H H H H H H");
 		System.out.println(html);
