@@ -79,13 +79,13 @@ public final class PlagiatTest {
 	public static ArrayList<String> generatePlagiatList(ArrayList<PlagiatTest> com, ArrayList<String> SolutionExercises){
 		
 		ArrayList<PlagiatTest> resultList = new ArrayList<PlagiatTest>();
-		ArrayList<Float> simExer = new ArrayList<Float>();
 		String [] compareComment = new String[2]; 
 		// All submissions
 		for(int i = 0; i < com.size(); i++){
 			//Compare with submission i+1
 			for(int j = i + 1; j < com.size(); j++){
 				//Compare each exercises
+				ArrayList<Float> simExer = new ArrayList<Float>();
 				for(int k = 0; k < SolutionExercises.size(); k++){
 					// get comment from submission i and exercise k
 					String[] comment = com.get(i).comments.get(k);
@@ -117,8 +117,14 @@ public final class PlagiatTest {
 		String body = "";
 		for(PlagiatTest l: resultList){
 			body = l.name + IOUtil.CSV_DELIMITER + l.compareName + IOUtil.CSV_DELIMITER + l.simMax + IOUtil.CSV_DELIMITER;
-			for(int i = 0; i < simExer.size(); i++){
-				body = body + simExer.get(i).toString() + IOUtil.CSV_DELIMITER;
+			for(int i = 0; i < l.similarities.size(); i++){
+				String value = "";
+				if(l.similarities.get(i)== -1){
+					value = "no Comment found for "+ l.name;
+				}else{
+					value = l.similarities.get(i).toString();
+				}				
+				body = body + value + IOUtil.CSV_DELIMITER;
 			}
 			resultListStringArray.add(body);
 		}
