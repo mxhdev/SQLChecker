@@ -66,6 +66,8 @@ public class MySQLQueryExecuter extends MySQLWrapper {
 	}
 	
 	
+	
+	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 

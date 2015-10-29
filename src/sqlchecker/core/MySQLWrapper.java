@@ -59,6 +59,7 @@ public class MySQLWrapper {
 
 
 
+	
 
 	protected Connection init() throws SQLException {
 
@@ -72,6 +73,7 @@ public class MySQLWrapper {
 		} catch (SQLException sqle) {
 			sqle.printStackTrace(System.out);
 		}
+
 
 		return conn;
 	}
