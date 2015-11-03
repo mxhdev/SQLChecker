@@ -102,8 +102,9 @@ public class SubmissionExecuter {
 			subr.loadFile();
 			
 			//Set Name and Matrikelnummer of Submission
-			subr.setName(subm.getName());
-			subr.setMatrikelnummer("7654");
+			subr.setFilePath(fname);
+			//subr.setName();
+			//subr.setMatrikelnummer();
 			
 			//add submission to submission list for duplicate check
 			subCom.add(subr);

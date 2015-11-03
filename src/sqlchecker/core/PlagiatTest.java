@@ -19,34 +19,39 @@ import java.util.regex.Pattern;
 
 public final class PlagiatTest {
 	
-	private String matrikelnummer = "";
-	private String name = "";
-	private String compareMatrikelnummer = "";
-	private String compareName = "";
-	private float simMax = -1;
+	private ArrayList<String> matrikelnummer;
+	private ArrayList<String> name;
+	private ArrayList<String> compareMatrikelnummer;
+	private ArrayList<String> compareName;
+	private float simMax = -2;
 	private ArrayList<String[]> comments = new ArrayList<String[]>();
 	private ArrayList<Float> similarities = new ArrayList<Float>();
+	private String filePath = "";
+	private String compareFilePath = "";
 	
-	PlagiatTest (String matnummer, String nam, ArrayList<String[]> exer) {
+	PlagiatTest (ArrayList<String> matnummer, ArrayList<String> nam, ArrayList<String[]> exer, String fiPa) {
 		this.matrikelnummer = matnummer;
 		this.name = nam;
 		this.comments = exer;
+		this.filePath = fiPa;
 	}
 	
-	PlagiatTest (String matnummer, String compareNum, String nam, String compName, ArrayList<Float> exSim, float sim){
+	PlagiatTest (ArrayList<String> matnummer, ArrayList<String> compareNum, ArrayList<String> nam, ArrayList<String> compName, ArrayList<Float> exSim, float sim, String fiPa, String coFiPa){
 		this.matrikelnummer = matnummer;
 		this.name = nam;
 		this.compareMatrikelnummer = compareNum;
 		this.compareName = compName;
 		this.similarities = exSim;
 		this.simMax = sim;
+		this.filePath = fiPa;
+		this.compareFilePath = coFiPa;
 	}
 	
-	public String getMatrikelnummer() {
+	public ArrayList<String> getMatrikelnummer() {
 		return this.matrikelnummer;
 	}
 
-	public String getCompareMatrikelnummer() {
+	public ArrayList<String> getCompareMatrikelnummer() {
 		return this.compareMatrikelnummer;
 	}
 
@@ -54,12 +59,20 @@ public final class PlagiatTest {
 		return this.simMax;
 	}
 	
-	public String getName() {
+	public ArrayList<String> getName() {
 		return this.name;
 	}
 
-	public String getCompareName() {
+	public ArrayList<String> getCompareName() {
 		return this.compareName;
+	}
+	
+	public String getFilePath() {
+		return filePath;
+	}
+
+	public String getCompareFilePath() {
+		return compareFilePath;
 	}
 
 	public static float similarityStrings(String stringA, String stringB) {
@@ -103,24 +116,24 @@ public final class PlagiatTest {
 					simExer.add(sim);
 				}
 				Float simMax = Collections.max(simExer);
-				PlagiatTest result = new PlagiatTest(com.get(i).getMatrikelnummer(), com.get(j).getMatrikelnummer(), com.get(i).getName(), com.get(j).getName(), simExer, simMax);
+				PlagiatTest result = new PlagiatTest(com.get(i).getMatrikelnummer(), com.get(j).getMatrikelnummer(), com.get(i).getName(), com.get(j).getName(), simExer, simMax, com.get(i).getFilePath(), com.get(j).getFilePath());
 				resultList.add(result);
 			}
 		}
 		Collections.sort(resultList, Collections.reverseOrder(new SortSimilarity()));
 		ArrayList<String> resultListStringArray = new ArrayList<String>();
-		String plagiatHeader = "Student 1" +IOUtil.CSV_DELIMITER+ "Student 2" +IOUtil.CSV_DELIMITER+ "MaxSimilarity" +IOUtil.CSV_DELIMITER;
+		String plagiatHeader = "Submission 1" +IOUtil.CSV_DELIMITER+ "Submission 2" +IOUtil.CSV_DELIMITER+ "MaxSimilarity" +IOUtil.CSV_DELIMITER;
 		for(int i = 0; i < SolutionExercises.size(); i++){
 			plagiatHeader = plagiatHeader + SolutionExercises.get(i).toString() + IOUtil.CSV_DELIMITER;
 		}
 		resultListStringArray.add(plagiatHeader);
 		String body = "";
 		for(PlagiatTest l: resultList){
-			body = l.name + IOUtil.CSV_DELIMITER + l.compareName + IOUtil.CSV_DELIMITER + l.simMax + IOUtil.CSV_DELIMITER;
+			body = l.filePath + IOUtil.CSV_DELIMITER + l.compareFilePath + IOUtil.CSV_DELIMITER + l.simMax + IOUtil.CSV_DELIMITER;
 			for(int i = 0; i < l.similarities.size(); i++){
 				String value = "";
-				if(l.similarities.get(i)== -1){
-					value = "no Comment found for "+ l.name;
+				if(l.similarities.get(i) == -1){
+					value = "no Comment found for "+ l.filePath;
 				}else{
 					value = l.similarities.get(i).toString();
 				}				
@@ -142,9 +155,10 @@ public final class PlagiatTest {
 				//extract only the comments and filter the SQL-statement
 				content[1] = returnComment(content[1]);
 			}			
-			String name = subs.get(i).getName();
-			String matrikelnummer = subs.get(i).getMatrikelnummer();
-			PlagiatTest sub = new PlagiatTest(matrikelnummer, name, exercise);
+			ArrayList<String> name = subs.get(i).getName();
+			ArrayList<String> matrikelnummer = subs.get(i).getMatrikelnummer();
+			String filePath = subs.get(i).getFilePath();
+			PlagiatTest sub = new PlagiatTest(matrikelnummer, name, exercise, filePath);
 			subsExtracted.add(sub);
 		}
 		return generatePlagiatList(subsExtracted, exer);
