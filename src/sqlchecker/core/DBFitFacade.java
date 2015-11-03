@@ -2,6 +2,7 @@ package sqlchecker.core;
 
 import java.sql.SQLException;
 
+import sqlchecker.io.impl.ScriptReader;
 import dbfit.MySqlTest;
 import fit.Parse;
 import fit.exception.FitParseException;
@@ -31,16 +32,21 @@ public class DBFitFacade {
 	 */
 	private String storage = "";
 	
+	private String resetPath = "";
 	
 	/**
 	 * Initialize a DBFit facade object
 	 * @param fName File name of the submission that should be checked
+	 * @param resetScript Path to the reset script which should be executed
+	 * before running any of the actual queries. If the given file does 
+	 * not exist, then there will be no reset queries executed
 	 * @param cProps Connection properties in the following order:
 	 *  (host, user, pw, dbname)
 	 */
-	public DBFitFacade(String fName, String[] cProps) {
+	public DBFitFacade(String fName, String resetScript, String[] cProps) {
 		this.fileName = fName;
 		this.connProps = cProps.clone();
+		this.resetPath = resetScript;
 	}
 	
 	
@@ -106,7 +112,12 @@ public class DBFitFacade {
 		String dbuser = connProps[1];
 		String dbpw = connProps[2];
 		
-		System.out.println("Connection with values host=" + host + ", db=" + db + ", user=" + dbuser + ", pw=" + dbpw);
+		System.out.println("Executing reset with values \n\thost=" + host + "\n\tdb=" + db + "\n\tuser=" + dbuser + "\n\tpw=" + dbpw + "\n\tscript=" + resetPath);;
+		
+		ScriptReader sr = new ScriptReader(resetPath, ScriptReader.DEFAULT_DELIM, connProps);
+		sr.loadFile();
+		
+		System.out.println("Connection with values \n\thost=" + host + "\n\tdb=" + db + "\n\tuser=" + dbuser + "\n\tpw=" + dbpw);
 		
 		MySqlTest tester = new MySqlTest();
 		tester.connect(host, dbuser, dbpw, db);

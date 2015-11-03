@@ -11,6 +11,7 @@ import fit.exception.FitParseException;
 import sqlchecker.io.IOUtil;
 import sqlchecker.io.OutputWriter;
 import sqlchecker.io.impl.RawSolutionReader;
+import sqlchecker.io.impl.ScriptReader;
 
 public class SolutionGenerator {
 
@@ -30,6 +31,7 @@ public class SolutionGenerator {
 	 */
 	private String[] connProps = new String[4];
 	
+	private String resetScript = "";
 	
 	/**
 	 * Constructor
@@ -37,6 +39,8 @@ public class SolutionGenerator {
 	 * @param outPath Path to the file which should be generated
 	 * @param submPath Path at which the sample submission should be
 	 * placed
+	 * @param resetPath The path to the reset script which should
+	 * be executed before the solution gets generated
 	 * @param cProps Connection properties in the following order: <br>
 	 * host (default:localhost) <br>
 	 * dbUser (default:root) <br>
@@ -44,10 +48,11 @@ public class SolutionGenerator {
 	 * dbName (default:dbfit) <br>
 	 * 
 	 */
-	public SolutionGenerator(String inPath, String outPath, String submPath, String[] cProps) {
+	public SolutionGenerator(String inPath, String outPath, String submPath, String resetPath, String[] cProps) {
 		this.inputFile = inPath;
 		outputFile = OutputWriter.makeUnique(outPath);
 		samplePath = OutputWriter.makeUnique(submPath);
+		this.resetScript = resetPath;
 		// use the setting given
 		this.connProps = cProps.clone();
 	}
@@ -58,10 +63,12 @@ public class SolutionGenerator {
 	 * @param outPath Path to the file which should be generated
 	 * @param submPath Path at which the sample submission should be
 	 * placed
+	 * @param resetPath The path to the reset script which should
+	 * be executed before the solution gets generated
 	 */
-	public SolutionGenerator(String inPath, String outPath, String submPath) {
+	public SolutionGenerator(String inPath, String outPath, String submPath, String resetPath) {
 		// Use default connection properties!
-		this(inPath, outPath, submPath, IOUtil.DEFAULT_PROPS);
+		this(inPath, outPath, submPath, resetPath, IOUtil.DEFAULT_PROPS);
 	}
 	
 	
@@ -103,6 +110,11 @@ public class SolutionGenerator {
 	 */
 	
 	public void generate() {
+		
+		// step 0, reset the database
+		ScriptReader sr = new ScriptReader(resetScript, ScriptReader.DEFAULT_DELIM, connProps);
+		sr.loadFile();
+		
 		// step 1, Generate tag->query mapping
 		RawSolutionReader rsr = new RawSolutionReader(inputFile);
 		rsr.loadFile();
@@ -237,7 +249,7 @@ public class SolutionGenerator {
 		// apply the solution mapping
 		String checkStr = IOUtil.applyMapping(htmlStr, mapping);
 		
-		DBFitFacade checker = new DBFitFacade(outputFile, connProps);
+		DBFitFacade checker = new DBFitFacade(outputFile, resetScript, connProps);
 		ResultStorage rs = null;
 		try {
 			rs = checker.runSubmission(checkStr);
@@ -294,10 +306,10 @@ public class SolutionGenerator {
 		String inPath = "data/assignment2/rawA2.sql";
 		String outPath = "data/assignment2/solutionA2.txt";
 		String samplePath = "data/assignment2/sampleA2.sql";
-		
+		String resetPath = "";
 		String[] cProps = new String[]{"localhost", "root", "", "airport"};
 		
-		SolutionGenerator sg = new SolutionGenerator(inPath, outPath, samplePath, cProps);
+		SolutionGenerator sg = new SolutionGenerator(inPath, outPath, samplePath, resetPath, cProps);
 		sg.generate();
 	}
 

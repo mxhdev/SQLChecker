@@ -1,6 +1,7 @@
 package sqlchecker.io;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -68,18 +69,27 @@ public abstract class AbstractFileReader {
 	/**
 	 * Calls the readFile function. Before calling this function,
 	 * this method will call beforeReading(FILEPATH). After reading
-	 * the file, this method will call afterReading(FPATH)
+	 * the file, this method will call afterReading(FPATH). This function
+	 * will do nothing if the given file does not exist
 	 */
 	public void loadFile() {
-		beforeReading(fpath);
+
+		// only read the file if it exists!
+		if ( (new File(fpath)).exists() ) {
+			
+			beforeReading(fpath);
+			
+			try {
+				readFile();
+			} catch (IOException ioe) {
+				ioe.printStackTrace();
+			}
+			
+			afterReading(fpath);
 		
-		try {
-			readFile();
-		} catch (IOException ioe) {
-			ioe.printStackTrace();
+		} else {
+			System.out.println("WARNING: [AbstractFileReader] File \"" + fpath + "\" does not exist!");
 		}
-		
-		afterReading(fpath);
 	}
 	
 	
