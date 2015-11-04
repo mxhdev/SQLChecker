@@ -456,36 +456,39 @@ public class QueryPipeline extends MySQLWrapper {
 				
 				// store results in html string
 				// header
-				String queryLower = query.toLowerCase();
+				String queryLower = query.toLowerCase().trim();
+				// determine which command should be used
+				String command = "Execute";
 				if (queryLower.startsWith("select ")) {
-					if (isStatic)  
-						html += "\n\n<table>"
-							+ "\n\t<tr>"
-							+ "\n\t\t<td>Query</td>"
-							+ "\n\t\t<td>" + query + "</td>"
-							+ "\n\t</tr>";
-					else
-						html += "\n\n<table>"
-								+ "\n\t<tr>"
-								+ "\n\t\t<td>Query</td>"
-								+ "\n\t\t<td>" + IOUtil.TAG_PREFIX + qtag + IOUtil.TAG_SUFFIX + "</td>"
-								+ "\n\t</tr>";
+					// check for ordered query
+					if (queryLower.contains(" order by ") 
+							|| queryLower.contains(" group by ")) {
+						command = "Ordered Query";
+					} else {
+						command = "Query";
+					}
 				} else {
-					if (isStatic)
-						html += "\n\n<table>"
-								+ "\n\t<tr>"
-								+ "\n\t\t<td>Execute</td>"
-								+ "\n\t\t<td>" + query + "</td>"
-								+ "\n\t</tr>";
-					else
-						html += "\n\n<table>"
-								+ "\n\t<tr>"
-								+ "\n\t\t<td>Execute</td>"
-								+ "\n\t\t<td>" + IOUtil.TAG_PREFIX + qtag + IOUtil.TAG_SUFFIX + "</td>"
-								+ "\n\t</tr>";
+					// some other kind of query, probably a DDL / DBL
+					// statement which does not produce a result set
+					command = "Execute";
 				}
 				
-				// Actual result table
+				// Print the header with the command
+				// and the query or its corresponding tag
+				if (isStatic)  
+					html += "\n\n<table>"
+						+ "\n\t<tr>"
+						+ "\n\t\t<td>" + command + "</td>"
+						+ "\n\t\t<td>" + query + "</td>"
+						+ "\n\t</tr>";
+				else
+					html += "\n\n<table>"
+							+ "\n\t<tr>"
+							+ "\n\t\t<td>" + command + "</td>"
+							+ "\n\t\t<td>" + IOUtil.TAG_PREFIX + qtag + IOUtil.TAG_SUFFIX + "</td>"
+							+ "\n\t</tr>";
+				
+				// Print result table
 				for (int i2 = 0; i2 < resRaw.size(); i2++) {
 					String[] row = resRaw.get(i2);
 					html += "\n\t<tr>";
