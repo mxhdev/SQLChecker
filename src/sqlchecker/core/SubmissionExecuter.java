@@ -161,10 +161,6 @@ public class SubmissionExecuter {
 			SubmissionReader subr = new SubmissionReader(subm.getPath(), IOUtil.tags);
 			subr.loadFile();
 			
-			
-			// NOTE: setFilePath is not needed because this info could be
-			// taken from the super class (see Constructor of SubmissionReader)
-			subr.setFilePath(fname);
 			// Set Name and Matrikelnummer of Submission
 			subr = generateMetadata(subr);
 			

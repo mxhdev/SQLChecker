@@ -159,15 +159,6 @@ public class SubmissionReader extends AbstractFileReader {
 	}
 
 
-	public String getFilePath() {
-		return filePath;
-	}
-
-
-
-	public void setFilePath(String filePath) {
-		this.filePath = filePath;
-	}
 
 
 

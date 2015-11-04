@@ -94,6 +94,13 @@ public abstract class AbstractFileReader {
 	
 	
 	/**
+	 * @return The path of the file which will be read or was already read
+	 */
+	public String getFilePath() {
+		return this.fpath;
+	}
+	
+	/**
 	 * Gets called for every non-empty line which is read
 	 * @param line The currently read line
 	 */
