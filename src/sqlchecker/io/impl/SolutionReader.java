@@ -68,7 +68,7 @@ public class SolutionReader extends AbstractFileReader {
 	
 
 	@Override
-	public void onReadLine(String line) {
+	protected void onReadLine(String line) {
 		if (line.startsWith("tags=")) {
 			// parse tag-list and store it in IOUtil
 			line = line.substring(line.indexOf("=") + 1).replace(" ", "");
@@ -114,7 +114,7 @@ public class SolutionReader extends AbstractFileReader {
 	}
 
 	@Override
-	public void beforeReading(String pathToFile) {
+	protected void beforeReading(String pathToFile) {
 		// empty html string
 		htmlCode = new StringBuilder("");
 		// clear tag map
@@ -124,7 +124,7 @@ public class SolutionReader extends AbstractFileReader {
 	}
 
 	@Override
-	public void afterReading(String pathToFile) {
+	protected void afterReading(String pathToFile) {
 		// System.out.println(htmlCode.toString());
 	}
 

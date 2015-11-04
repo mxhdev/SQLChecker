@@ -104,18 +104,18 @@ public abstract class AbstractFileReader {
 	 * Gets called for every non-empty line which is read
 	 * @param line The currently read line
 	 */
-	public abstract void onReadLine(String line);
+	protected abstract void onReadLine(String line);
 	
 	/**
 	 * Gets called before the reading process starts
 	 * @param pathToFile Path of the file which will be read
 	 */
-	public abstract void beforeReading(String pathToFile);
+	protected abstract void beforeReading(String pathToFile);
 	
 	/**
 	 * Gets called after the reading process ended
 	 * @param pathToFile Path of the file which was read
 	 */
-	public abstract void afterReading(String pathToFile);
+	protected abstract void afterReading(String pathToFile);
 	
 }

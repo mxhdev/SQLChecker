@@ -87,7 +87,7 @@ public class ScriptReader extends AbstractFileReader {
 
 
 	@Override
-	public void onReadLine(String line) {
+	protected void onReadLine(String line) {
 		if (line.equals(delim)) {
 			queryList.add("");
 		} else {
@@ -105,13 +105,13 @@ public class ScriptReader extends AbstractFileReader {
 
 
 	@Override
-	public void beforeReading(String pathToFile) {
+	protected void beforeReading(String pathToFile) {
 		queryList.clear();
 	}
 
 
 	@Override
-	public void afterReading(String pathToFile) {
+	protected void afterReading(String pathToFile) {
 		
 		System.out.println("> " + queryList.size() + " queries found!");
 		for (int i = 0; i < queryList.size(); i++) {

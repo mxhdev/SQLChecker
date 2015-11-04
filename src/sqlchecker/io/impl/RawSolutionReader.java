@@ -21,7 +21,7 @@ public class RawSolutionReader extends AbstractFileReader {
 	
 	
 	@Override
-	public void onReadLine(String line) {
+	protected void onReadLine(String line) {
 		String tag = IOUtil.getTag(line);
 		// check if a tag was found
 		if (tag != null) {
@@ -53,13 +53,13 @@ public class RawSolutionReader extends AbstractFileReader {
 	}
 
 	@Override
-	public void beforeReading(String pathToFile) {
+	protected void beforeReading(String pathToFile) {
 		// make sure the mapping list is empty
 		sqlMapping.clear();
 	}
 
 	@Override
-	public void afterReading(String pathToFile) {
+	protected void afterReading(String pathToFile) {
 		/*
 		for (int i = 0; i < sqlMapping.size(); i++) {
 			String[] tmp = sqlMapping.get(i);

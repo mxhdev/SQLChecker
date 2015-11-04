@@ -53,7 +53,7 @@ public class SubmissionReader extends AbstractFileReader {
 
 
 	@Override
-	public void onReadLine(String line) {
+	protected void onReadLine(String line) {
 		// check if it is a task tag
 		int tmpPos = IOUtil.getTagPos(line);
 		if (tmpPos >= 0) {
@@ -81,7 +81,7 @@ public class SubmissionReader extends AbstractFileReader {
 	
 	
 	@Override
-	public void beforeReading(String pathToFile) {
+	protected void beforeReading(String pathToFile) {
 		// init something (here: counter)
 		pos = -1;
 		// clear mappings
@@ -93,7 +93,7 @@ public class SubmissionReader extends AbstractFileReader {
 
 
 	@Override
-	public void afterReading(String pathToFile) {
+	protected void afterReading(String pathToFile) {
 		
 		for(int i = 0; i < tagMappings.size(); i++){
 			String[] content = tagMappings.get(i);
