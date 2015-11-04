@@ -63,6 +63,57 @@ public class SubmissionExecuter {
 	}
 	
 	
+	
+	/**
+	 * Generates meta data for a student submission. It expects that 
+	 * the meta data is marked with the tag defined in 
+	 * SolutionReader.METADATA_TAG. The data corresponding
+	 * to this tag is a list of students who worked on this submission.
+	 * There should be exactly one student name and id per line. The
+	 * student name and id are separated with the delimiter defined
+	 * in IOUtil.CSV_DELIMITER. The first field is the name, the
+	 * second name is the student id
+	 * @param sr The submission reader which contains the tags and
+	 * which should receive meta data from its meta data tag
+	 * @return The updated version of the given submission. This
+	 * contains the name and student id of all contributors of every
+	 * student which has worked on this submission
+	 */
+	private SubmissionReader generateMetadata(SubmissionReader sr) {
+		ArrayList<String[]> mapping = sr.getMapping();
+		String rawMd = "";
+		// look up the data which corresponds to the meta data tag
+		for (int i = 0; i < mapping.size(); i++) {
+			String[] m = mapping.get(i);
+			if (m[0].equals(SolutionReader.METADATA_TAG)) {
+				rawMd = m[1];
+				break;
+			}
+		}
+		
+		// initialize name and student id list
+		ArrayList<String> names = new ArrayList<String>();
+		ArrayList<String> studentIds = new ArrayList<String>();
+		
+		// read the lines of the meta data of this submission
+		String[] mdLines = rawMd.split("\n");
+		for (String md : mdLines) {
+			String[] data = md.split(IOUtil.CSV_DELIMITER);
+			// if there is a name AND a studentId
+			if (data.length > 1) {
+				names.add(data[0]);
+				studentIds.add(data[1]);
+			}
+		}
+		
+		// store the meta data
+		sr.setMatrikelnummer(studentIds);
+		sr.setName(names);
+		
+		// return new version of this object
+		return sr;
+	}
+	
 	/**
 	 * Tests all the available submissions
 	 */
@@ -110,10 +161,12 @@ public class SubmissionExecuter {
 			SubmissionReader subr = new SubmissionReader(subm.getPath(), IOUtil.tags);
 			subr.loadFile();
 			
-			//Set Name and Matrikelnummer of Submission
+			
+			// NOTE: setFilePath is not needed because this info could be
+			// taken from the super class (see Constructor of SubmissionReader)
 			subr.setFilePath(fname);
-			//subr.setName();
-			//subr.setMatrikelnummer();
+			// Set Name and Matrikelnummer of Submission
+			subr = generateMetadata(subr);
 			
 			//add submission to submission list for duplicate check
 			subCom.add(subr);

@@ -42,6 +42,13 @@ public class SolutionReader extends AbstractFileReader {
 	 */
 	private final String CONN_SUFFIX = "</td> </tr> </table>";
 	
+	
+	/**
+	 * This tag indicates which tag marks the metadata
+	 */
+	public static final String METADATA_TAG = "metadata";
+	
+	
 	/**
 	 * Connection properties parsed from the solution
 	 */
@@ -65,7 +72,13 @@ public class SolutionReader extends AbstractFileReader {
 		if (line.startsWith("tags=")) {
 			// parse tag-list and store it in IOUtil
 			line = line.substring(line.indexOf("=") + 1).replace(" ", "");
-			IOUtil.tags = line.split(",");
+			String[] rawTags = line.split(",");
+			// add the meta data tag as the first element
+			IOUtil.tags = new String[rawTags.length + 1];
+			IOUtil.tags[0] = METADATA_TAG;
+			for (int i = 0; i < rawTags.length; i++) {
+				IOUtil.tags[i+1] = rawTags[i];
+			}
 			// System.out.println("tag-array:\"" + Arrays.toString(IOUtil.tags) + "\"");
 		} else {
 			htmlCode.append("\n" + line);
