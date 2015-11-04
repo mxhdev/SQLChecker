@@ -112,7 +112,7 @@ public class SolutionGenerator {
 	public void generate() {
 		
 		// step 0, reset the database
-		ScriptReader sr = new ScriptReader(resetScript, ScriptReader.DEFAULT_DELIM, connProps);
+		ScriptReader sr = new ScriptReader(resetScript, resetScript, connProps);
 		sr.loadFile();
 		
 		// step 1, Generate tag->query mapping
@@ -249,7 +249,7 @@ public class SolutionGenerator {
 		// apply the solution mapping
 		String checkStr = IOUtil.applyMapping(htmlStr, mapping);
 		
-		DBFitFacade checker = new DBFitFacade(outputFile, resetScript, connProps);
+		DBFitFacade checker = new DBFitFacade(outputFile, connProps);
 		ResultStorage rs = null;
 		try {
 			rs = checker.runSubmission(checkStr);
