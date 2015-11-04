@@ -303,8 +303,6 @@ public class SolutionGenerator {
 	
 	
 	public static void main(String[] args) {
-		/*
-		 * test
 		String inPath = "data/assignment2/rawA2.sql";
 		String outPath = "data/assignment2/solutionA2.txt";
 		String samplePath = "data/assignment2/sampleA2.sql";
@@ -313,7 +311,6 @@ public class SolutionGenerator {
 		
 		SolutionGenerator sg = new SolutionGenerator(inPath, outPath, samplePath, resetPath, cProps);
 		sg.generate();
-		*/
 	}
 
 }

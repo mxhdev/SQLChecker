@@ -42,15 +42,24 @@ public class SubmissionExecuter {
 	private String agnPath = "";
 	
 	/**
+	 * Path leading to the reset script
+	 */
+	private String resetScript = "";
+	
+	/**
 	 * Creates a SubmissionExecuter class and stores the
 	 * given parameters
 	 * @param agnPath The (relative) path to the folder, which
 	 * stores all the assignment-data
+	 * @param resetPath Path to the reset script which should be executed
+	 * before running any of the actual queries. If the given file does 
+	 * not exist, then there will be no reset queries executed
 	 */
-	public SubmissionExecuter(String assignmentPath) {
+	public SubmissionExecuter(String assignmentPath, String resetPath) {
 		this.agnPath = assignmentPath;
 		this.submPath = assignmentPath + "/submissions/";
 		this.solPath = assignmentPath + "/solution.txt";
+		this.resetScript = resetPath;
 	}
 	
 	
@@ -114,7 +123,7 @@ public class SubmissionExecuter {
 			String checkStr = IOUtil.applyMapping(solution, mapping);
 			
 			
-			DBFitFacade checker = new DBFitFacade(fname, connProps);
+			DBFitFacade checker = new DBFitFacade(fname, resetScript, connProps);
 			// perform the check
 			ResultStorage rs = null;
 			try {
@@ -218,9 +227,11 @@ public class SubmissionExecuter {
 	public static void main(String[] args) {
 		String submissionPath = "data/assignment2/submissions/";
 		String solutionPath = "data/assignment2/solution.txt";
-		String agnPath = "data/assignment2/";
 		
-		SubmissionExecuter se = new SubmissionExecuter(agnPath);
+		String agnPath = "data/assignment2/";
+		String resetPath = "";
+		
+		SubmissionExecuter se = new SubmissionExecuter(agnPath, resetPath);
 		se.runCheck();
 	}
 

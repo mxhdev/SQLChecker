@@ -17,6 +17,8 @@ import sqlchecker.io.IOUtil;
 public class ScriptReader extends AbstractFileReader {
 
 	
+	public static final String DEFAULT_DELIM = "/*static*/";
+	
 	/**
 	 * Delimiter string which separates the queries in the script
 	 * file
@@ -59,11 +61,14 @@ public class ScriptReader extends AbstractFileReader {
 	public ScriptReader(String sPath, String delimiter, String[] connProps) {
 		// store path
 		super(sPath);
+		
 		// store query delimiter
 		this.delim = delimiter;
+		
 		// save connection properties
 		this.conn = connProps.clone();
-		
+		// dbname has to be empty!
+		this.conn[3] = "";
 	}
 	
 	
