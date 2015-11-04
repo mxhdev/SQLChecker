@@ -1,6 +1,8 @@
 package sqlchecker.io.impl;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import sqlchecker.io.AbstractFileReader;
 import sqlchecker.io.IOUtil;
@@ -44,7 +46,7 @@ public class SubmissionReader extends AbstractFileReader {
 		
 		// initialize mapping
 		for (String tag : tags) {
-			tagMappings.add(new String[]{tag, ""});
+			tagMappings.add(new String[]{tag, "", ""});
 		}
 	}
 
@@ -92,18 +94,34 @@ public class SubmissionReader extends AbstractFileReader {
 
 	@Override
 	public void afterReading(String pathToFile) {
-		//reset everything / print stuff
-		/*
-		System.out.println("\n\t> - - - - - - - - - - <\n");
 		
-		for (int i = 0; i < tagMappings.size(); i++) {
-			String[] mapping = tagMappings.get(i);
-			System.out.println("> tag=\"" + mapping[0] + "\"");
-			System.out.println(mapping[1]);
+		for(int i = 0; i < tagMappings.size(); i++){
+			String[] content = tagMappings.get(i);
+			String allText = "";
+			String comment = "";
+			StringBuffer cleanedSQL = new StringBuffer();
+			allText = content[1];
+			//Get Text of exercise
+			Pattern p = Pattern.compile("(?m)(?:#|--).*|(/\\*[\\w\\W]*?(?=\\*/)\\*/)");
+			//find all comments which have the tags '#' or '--' or '/* Comment */'
+			Matcher mComment = p.matcher(allText);
+			
+			while (mComment.find()) {
+				comment = comment + mComment.group();
+			}
+			//Extract all the comments
+			Matcher mSQL = p.matcher(allText);
+			
+			while(mSQL.find()){
+				mSQL.appendReplacement(cleanedSQL, "");
+			}
+			//Extract the SQL Statement without the comments
+			mSQL.appendTail(cleanedSQL);
+			content[1] = cleanedSQL.toString();
+			content[2] = comment.replaceAll("(#|--|/\\*|\\*/)", "");
+			//Delete all the comment tags
+			tagMappings.set(i, content);
 		}
-		
-		System.out.println("\n\t> - - - - - - - - - - <\n");
-		*/
 	}
 	
 	
@@ -154,8 +172,8 @@ public class SubmissionReader extends AbstractFileReader {
 
 
 	public static void main(String[] args) {
-		String fpath = "data/assignment1/submissions/s1.sql";
-		String[] tags = new String[]{"1a", "1b", "1c"}; 
+		String fpath = "data/assignment2/submissions/AA_Musterloesung.sql";
+		String[] tags = new String[]{"1a", "1b", "1c", "1d"}; 
 		SubmissionReader sr = new SubmissionReader(fpath, tags);
 		sr.loadFile();
 		

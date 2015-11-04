@@ -92,7 +92,7 @@ public final class PlagiatTest {
 	public static ArrayList<String> generatePlagiatList(ArrayList<PlagiatTest> com, ArrayList<String> SolutionExercises){
 		
 		ArrayList<PlagiatTest> resultList = new ArrayList<PlagiatTest>();
-		String [] compareComment = new String[2]; 
+		String [] compareComment = new String[3]; 
 		// All submissions
 		for(int i = 0; i < com.size(); i++){
 			//Compare with submission i+1
@@ -112,7 +112,7 @@ public final class PlagiatTest {
 						}
 					}
 					//compare similarity of comments
-					float sim = similarityStrings(comment[1], compareComment[1]);
+					float sim = similarityStrings(comment[2], compareComment[2]);
 					simExer.add(sim);
 				}
 				Float simMax = Collections.max(simExer);
@@ -146,39 +146,17 @@ public final class PlagiatTest {
 	
 	public static ArrayList<String> extractComments (ArrayList<SubmissionReader> subs, ArrayList<String> exer){
 		
-		ArrayList<String[]> exercise = new ArrayList<String[]>(); 
+		ArrayList<String[]> exercises = new ArrayList<String[]>(); 
 		ArrayList<PlagiatTest> subsExtracted = new ArrayList<PlagiatTest>();
 		for(int i = 0; i < subs.size(); i++){
-			exercise = subs.get(i).getMapping();
-			for(int j = 0; j < exercise.size(); j++){
-				String[] content = exercise.get(j);
-				//extract only the comments and filter the SQL-statement
-				content[1] = returnComment(content[1]);
-			}			
+			exercises = subs.get(i).getMapping();			
 			ArrayList<String> name = subs.get(i).getName();
 			ArrayList<String> matrikelnummer = subs.get(i).getMatrikelnummer();
 			String filePath = subs.get(i).getFilePath();
-			PlagiatTest sub = new PlagiatTest(matrikelnummer, name, exercise, filePath);
+			PlagiatTest sub = new PlagiatTest(matrikelnummer, name, exercises, filePath);
 			subsExtracted.add(sub);
 		}
 		return generatePlagiatList(subsExtracted, exer);
-	}
-	
-	public static String returnComment (String com){
-		
-		String original = com;
-		String cleaned = "";
-		//Find comments in String
-		Pattern p = Pattern.compile("(?m)(?:#|--).*|(/\\*[\\w\\W]*?(?=\\*/)\\*/)");
-		Matcher m = p.matcher(original);
-		
-		while (m.find()) {
-			cleaned = cleaned + m.group();
-		}
-		
-		//Delete comment signs: '#', '--', '/*' and '*/'
-		cleaned = cleaned.replaceAll("(#|--|/\\*|\\*/)", "");
-		return cleaned;
 	}
 	
 	public static void main(String[] args) {
@@ -193,7 +171,6 @@ public final class PlagiatTest {
 		
 		System.out.println(mitKom);
 		System.out.println("Magic:.................");
-		System.out.println(returnComment(mitKom));
 	}
 
 }
