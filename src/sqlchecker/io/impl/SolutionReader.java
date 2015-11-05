@@ -46,7 +46,7 @@ public class SolutionReader extends AbstractFileReader {
 	/**
 	 * This tag indicates which tag marks the metadata
 	 */
-	public static final String METADATA_TAG = "metadata";
+	public static final String METADATA_TAG = "authors";
 	
 	
 	/**
