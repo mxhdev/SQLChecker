@@ -6,9 +6,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import dbfit.MySqlTest;
-import fit.Parse;
-import fit.exception.FitParseException;
 import sqlchecker.io.IOUtil;
 import sqlchecker.io.OutputWriter;
 import sqlchecker.io.impl.SolutionReader;
@@ -119,8 +116,8 @@ public class SubmissionExecuter {
 	 */
 	public void runCheck() {
 		// get list of all submissions
-		File subSrc = new File(submPath);
-		File[] submissions = subSrc.listFiles();
+		ArrayList<File> submFileList = IOUtil.fetchFiles(submPath);
+		File[] submissions = submFileList.toArray(new File[submFileList.size()]);
 		
 		// all lines of the csv file
 		ArrayList<String> csvLines = new ArrayList<String>();

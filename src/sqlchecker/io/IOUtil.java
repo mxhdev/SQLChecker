@@ -1,7 +1,12 @@
 package sqlchecker.io;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.function.Predicate;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -299,6 +304,41 @@ public class IOUtil {
 		return tokenArray;
 	}
 
+	
+	
+	/**
+	 * Searches for all the files in the given directory and all of
+	 * its sub-directories. Note: This function uses features which
+	 * were introduced in Java 8/1.8 <br>
+	 * @see https://docs.oracle.com/javase/8/docs/api/java/util/function/Predicate.html <br>
+	 * @see https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html <br>
+	 * @see https://docs.oracle.com/javase/8/docs/api/java/nio/file/Files.html#walk-java.nio.file.Path-java.nio.file.FileVisitOption...- <br>
+	 * @see https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html#filter-java.util.function.Predicate-
+	 * @param path The path which will be the root node of the file
+	 * tree
+	 * @return A list of all non-folder files in the given directory
+	 * and all of its sub-directories. This function does not guarantee
+	 * any order of the returned list.
+	 */
+	public static ArrayList<File> fetchFiles(String path) {
+		ArrayList<Path> pathList = new ArrayList<Path>();
+		
+		// search for all files
+		Predicate<Path> isDir = Files::isDirectory;
+		try {
+			Files.walk(Paths.get(path)).filter(isDir.negate()).forEach(pathList::add);
+		} catch (Exception e) {
+			e.printStackTrace(System.out);
+		}
+		
+		// convert
+		ArrayList<File> fileList = new ArrayList<File>();
+		for (int i = 0; i < pathList.size(); i++) {
+			fileList.add(pathList.get(i).toFile());
+		}
+		
+		return fileList;
+	}
 
 	
 	public static void main(String[] args) {
@@ -351,6 +391,18 @@ public class IOUtil {
 			System.out.println("\n");
 		}
 		
+		
+		// test fetchFile
+		final String path = "data/";
+		ArrayList<File> allFiles = IOUtil.fetchFiles(path);//new ArrayList<Path>();
+		
+		System.out.println("Fetching files from \"" + path + "\"");
+		System.out.println(allFiles.size() + " file(s) found:");
+		
+		for (int i = 0; i < allFiles.size(); i++) {
+			File f = allFiles.get(i);
+			System.out.println("> " + f.getPath());
+		}
 		
 	}
 	
