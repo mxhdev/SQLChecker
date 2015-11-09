@@ -74,7 +74,17 @@ public final class PlagiatTest {
 	public String getCompareFilePath() {
 		return compareFilePath;
 	}
-
+	
+	/**
+	 * Calculate the similarity of two strings. At the moment Levenshtein 
+	 * distance is used for that. The returned float value is limited to
+	 * 0 all characters different and 1 all are the same. -1 is returned if
+	 * stringA is empty. 
+	 * @param stringA
+	 * @param stringB
+	 * @return The returned float value is limited to 0 all characters
+	 * different and 1 all are the same. -1 is returned if stringA is empty.
+	 */
 	public static float similarityStrings(String stringA, String stringB) {
 
 		if(stringA.equals("")){
@@ -89,6 +99,15 @@ public final class PlagiatTest {
 		}
 	}
 	
+	/**
+	 * Gets the list of PlagiatTest objects for all submissions and calculate each
+	 * similarity for the exercises of the submission i and i+1.  
+	 * @param com List of PlagiatTest objects
+	 * @param SolutionExercises List of exercises (defined in the raw.sql file)
+	 * @return ArrayList<String> ordered by maximum similarity score. The list contain
+	 * the filePath of each submission, the maximum similarity and the similarity of 
+	 * each exercise.
+	 */
 	public static ArrayList<String> generatePlagiatList(ArrayList<PlagiatTest> com, ArrayList<String> SolutionExercises){
 		
 		ArrayList<PlagiatTest> resultList = new ArrayList<PlagiatTest>();
@@ -144,6 +163,16 @@ public final class PlagiatTest {
 		return resultListStringArray;
 	}
 	
+	/**
+	 * Gets the List of submissions and exercises transform each submission to
+	 * a PlagiatTest object by getting the name, the studentID, and the solution
+	 * Array of the exercises.
+	 * Call Function generatePlagiatList with the list of PlagiatTest objects and the 
+	 * exercise list.
+	 * @param subs ArrayList of SubmissionReader
+	 * @param exer ArrayList<String> of exercises
+	 * @return ArrayList<String> 
+	 */
 	public static ArrayList<String> extractComments (ArrayList<SubmissionReader> subs, ArrayList<String> exer){
 		
 		ArrayList<String[]> exercises = new ArrayList<String[]>(); 
