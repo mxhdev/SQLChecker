@@ -1,0 +1,30 @@
+/*1a*/
+
+SELECT c.Matrikelnummer, c.LastName, c.FirstName
+  FROM customer c, reservation r
+ WHERE c.Matrikelnummer = r.Matrikelnummer
+  group by r.Matrikelnummer
+  having sum(r.NoReservedSeats) = 4;
+
+/*1b*/
+SELECT count(distinct r.Matrikelnummer) as BerlinerStudenten
+  FROM customer c, reservation r, address a
+ WHERE c.AddressID = a.AddressID and a.Town = "Berlin"
+   and c.Matrikelnummer = r.Matrikelnummer;
+ 
+/*1c*/
+SELECT  sum(r.NoReservedSeats) as ReserviertePlätze
+  FROM  reservation r, flightexecution f
+  WHERE f.ICAO_Code_Origin = "EDDF" 
+    and f.ICAO_Code_Destination = "CYYZ" 
+    and f.FlightNo = r.FlightNo
+	and f.DepartureDateAndTimeUTC < date_add(now(),INTERVAL 65 day);
+	
+/*1d*/
+SELECT  r.FlightNo, sum(r.NoReservedSeats) as ReserviertePlätze
+  FROM  reservation r
+  group by r.FlightNo; 
+       
+	    
+ 
+	     

@@ -1,0 +1,73 @@
+/*1a*/
+
+-- 1) Selektieren Sie die Matrikelnummer, Vor- und Nachname der Kunden, die insgesamt 
+--    (in der Summe über alle Reservierungen hinweg) genau vier Sitzplätze reserviert 
+--    haben. 
+
+-- Über INNER JOIN werden nur die Daten aus Customer geholt, die auch in der Reservation
+-- Tabelle überhaupt vorkommen und mit dem Schlüsselwort HAVING können die weitere Bedingungen
+-- für Aggrigate definiert werden, in diesem Fall Summe = 4. Dazu muss/müssen Felder, die 
+-- aggregiert werden müssen, über GROUP BY gruppiert werden, in diesem Fall Matrikelnummer
+
+-- Da das Feld 'Matrikelnummer' in beiden Tabellen, sowohl in 'Customer' als auch in 'Reservation'
+-- vorkommt, muss auf diese in der Abfrage über voll qualifizierten Namen zugegriffen werden.
+-- Dies kann aber zu langem und unübersichtlichen Code führen, deshalb definieren wir für die 
+-- Tabellennamen Alias in Kurzform. Dazu verwenden das Schlüsselwort AS gefolgt vo Alias
+
+SELECT 
+	C.Matrikelnummer,
+	C.FirstName,
+	C.LastName
+FROM Customer AS C
+INNER JOIN Reservation AS R ON C.Matrikelnummer = R.Matrikelnummer
+GROUP BY C.Matrikelnummer
+HAVING SUM(R.NoReservedSeats) = 4;
+
+
+/*1b*/
+
+-- Über DISTINCT werden Duplikate der Menge eleminiert, d.h. Matrikelnummern werden
+-- nur ein mal gezählt, auch wenn sie im Ergebnis mehrfach vorkommen.
+SELECT 
+	COUNT(DISTINCT R.Matrikelnummer) AS AnzahlBerlinerStudMitSitzplatz
+FROM Kunden_Details AS K
+INNER JOIN Reservation AS R ON K.Matrikelnummer = R.Matrikelnummer
+WHERE K.STADT = 'Berlin' AND R.NoReservedSeats > 0;
+
+
+/*1c*/
+
+-- Mit dem Schlüsselwort BETWEEN kann ein Bereich definiert werden.
+-- In diesem Fall zwischen jetzt durch NOW() Funktion und NOW() + INTERVAL 65 DAY
+-- also mit 65 Tage Offset
+
+SELECT 
+	SUM(R.NoReservedSeats) AS AnzahlReservierterPlaetze
+FROM Reservation AS R
+INNER JOIN FlightExecution AS F ON R.FlightNo = F.FlightNo
+WHERE 
+	F.ICAO_Code_Origin = 'EDDF' AND 
+	F.ICAO_Code_Destination = 'CYYZ' AND
+	R.DepartureDateAndTimeUTC BETWEEN NOW() AND NOW() + INTERVAL 65 DAY;
+
+
+/*1d*/
+
+-- *********************************************************************************************************
+-- 'FlightNo' kann wahlweise entweder aus der Stammdatentabelle 'FlightExecution' oder aus der 
+-- Bewegungsdatentabelle 'Reservation' genommen werden. Wenn 'FlightNo' aus 'Reservation' geholt wird, 
+-- werden u. U. nicht alle FlighNo aufgelistet, weil sie evtl. noch gar nicht in dieser Tabelle vorkommen, 
+-- obwohl sie bereits in Stammdaten existieren.
+
+-- Hierfür wurde entschieden, dass 'FlightNo' aus 'Reservation' geholt wird. Somit werden evtl. nicht alle
+-- 'FlightNo', die in Stammdaten vorhanden sind, aufgelistet!
+-- *********************************************************************************************************
+
+-- FlightNo und die Anzahl der reservierten Plätze aus der Tabelle 'Reservation' holen.
+
+SELECT 
+	FlightNo,
+	SUM(NoReservedSeats) AS AnzahlReservierterPlaetzeProFlugNr
+FROM Reservation
+GROUP BY FlightNo;	-- Summe der reservierten Plätze Pro Flug
+

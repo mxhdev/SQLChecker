@@ -1,0 +1,35 @@
+/*1a*/
+
+SELECT `customer`.`Matrikelnummer`, `customer`.`FirstName`, `customer`.`LastName`, SUM(`reservation`.`NoReservedSeats`) AS `summe`
+FROM `customer`
+JOIN `reservation` ON `customer`.`Matrikelnummer` = `reservation`.`Matrikelnummer`
+GROUP BY `customer`.`Matrikelnummer`
+HAVING `summe`='4';
+
+
+/*1b*/
+
+SELECT COUNT(DISTINCT(`kunden_deutschland`.`Matrikelnummer`)) AS gesamtanzahl
+FROM `kunden_deutschland`
+JOIN `reservation` ON `kunden_deutschland`.`Matrikelnummer`=`reservation`.`Matrikelnummer`
+WHERE `kunden_deutschland`.`Stadt`='Berlin';
+
+
+
+/*1c*/
+
+SELECT SUM(`reservation`.`NoReservedSeats`) AS reserved_seats
+FROM `flightexecution`
+JOIN `reservation` ON `reservation`.`FlightNo` = `flightexecution`.`FlightNo`
+WHERE `flightexecution`.`DepartureDateAndTimeUTC` BETWEEN NOW() AND NOW() + INTERVAL 65 DAY
+AND `flightexecution`.`ICAO_Code_Origin`='EDDF'
+AND `flightexecution`.`ICAO_Code_Destination`='CYYZ';
+
+
+
+/*1d*/
+
+SELECT `flightexecution`.`FlightNo`, SUM(`reservation`.`NoReservedSeats`) as reserved_seats
+FROM `flightexecution`
+LEFT JOIN `reservation` ON `reservation`.`FlightNo` = `flightexecution`.`FlightNo`
+GROUP BY `flightexecution`.`FlightNo`;

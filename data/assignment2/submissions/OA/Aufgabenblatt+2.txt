@@ -1,0 +1,28 @@
+﻿/*1a*/
+-- Die where-Klausel Sitzplatzreservierung.Sitzplatzreservierung enthält Aliase
+-- die vorher definiert wurden.
+
+select m.Matrikelnummer, m.LastName, m.FirstName from customer m 
+join (select Matrikelnummer, sum(NoReservedSeats) as Sitzplatzreservierung from airport.reservation group by Matrikelnummer) as Sitzplatzreservierung
+using(Matrikelnummer) where Sitzplatzreservierung.Sitzplatzreservierung = 4 ;
+
+
+/*1b*/
+
+select m.Matrikelnummer, m.LastName, m.FirstName, s.Street
+from address s, customer m, reservation r where s.Town = 'Berlin' and s.AddressID = m.AddressID and m.Matrikelnummer = r.Matrikelnummer and r.NoReservedSeats > 0
+group by m.Matrikelnummer;
+
+
+/*1c*/
+-- Für den jetzigen Zeitraum (f.DepartureDateAndTimeUTC > now()) und für die 65 Tage 
+-- in der Zukunft (f.DepartureDateAndTimeUTC < now() + interval 65 day)
+-- werden die Anzahl der Sitzplatzreservierungen angegeben.
+
+select sum(NoReservedSeats) from reservation r, flightexecution f where r.FlightNo = f.FlightNo
+and ICAO_Code_Origin = 'EDDF' and ICAO_Code_Destination = 'CYYZ' and f.DepartureDateAndTimeUTC > now() and f.DepartureDateAndTimeUTC < now() + interval 65 day;
+
+
+/*1d*/
+
+select r.FlightNo, sum(r.NoReservedSeats) as Sitzplatzreservierung from reservation r group by r.FlightNo;

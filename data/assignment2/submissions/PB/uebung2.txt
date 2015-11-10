@@ -1,0 +1,46 @@
+/*1a*/
+ SELECT Matrikelnummer, Nachname, Vorname 
+ FROM (
+	SELECT Matrikelnummer, Sum(NoReservedSeats) NoReservedSeats 
+	FROM reservation 
+	GROUP BY Matrikelnummer)a /*erzeugt eine Zwischentabelle die alle reservierten Sitze einer Matrikelnummer angiebt */
+ NATURAL JOIN kunden_details
+ WHERE NoReservedSeats = 4; /*Zwischentabelle wird mit kunden_details gejoint um an Nach/Vorname zu kommen. Angezeigt werden nur Ergebnisse die genau 4 Sitze reserviert haben. */
+
+/*1b*/
+ SELECT COUNT(DISTINCT Matrikelnummer) AS CustFromBer
+ FROM customer
+ NATURAL JOIN (
+	SELECT AddressID, Town 
+	FROM address) shortAddress
+ NATURAL JOIN (
+	SELECT ReservationID, Matrikelnummer 
+	FROM reservation) shortReservation
+ WHERE Town LIKE 'Berlin'
+ ;
+
+/*1c*/
+ SELECT SUM(NoReservedSeats) AS NoReservedSeatsFraToToro 
+ FROM (
+	SELECT NoReservedSeats, FlightNo, DepartureDateAndTimeUTC 
+	FROM reservation
+ 	WHERE DepartureDateAndTimeUTC BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 65 DAY)) shortReservation
+ 	NATURAL JOIN (
+	SELECT FlightNo, ICAO_Code_Origin, ICAO_Code_Destination 
+	FROM flightexecution) shortExecution
+ WHERE ICAO_Code_Origin LIKE 'EDDF' AND ICAO_Code_Destination LIKE 'CYYZ'
+ ;
+
+/*1d*/
+ SELECT FlightNo, COALESCE(NoReservedSeats, 0) AS NoReservedSeats /*Select um NULL werte als 0 anzeigen zu lassen*/
+ FROM(
+	SELECT shortExecution.FlightNo, SUM(NoReservedSeats) AS NoReservedSeats /*Ausgabe der gesuchten Werte mit Summation über gleiche Flugnummer durch GROUP BY*/
+	FROM (
+		SELECT FlightNo 
+		FROM flightexecution) shortExecution
+ 	LEFT JOIN (													/*LEFT JOIN um nich nur über die gemeinsamen Flugnummern zu Joinen sondern alle Flugnummern zum Schluss zu haben. Auch die ohne Reservierungen*/
+		SELECT FlightNo, NoReservedSeats 
+		FROM reservation) shortReservation
+ 	ON shortExecution.FlightNo=shortReservation.FlightNo
+	GROUP BY FlightNo) preSolution
+ ;

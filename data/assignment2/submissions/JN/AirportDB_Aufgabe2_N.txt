@@ -1,0 +1,35 @@
+/*1a*/
+select S.Matrikelnummer, FirstName, LastName
+from(	select Matrikelnummer
+		from (	select  sum(NoReservedSeats) as NoSeats, Matrikelnummer
+				from reservation 
+				group by Matrikelnummer) as T
+		where NoSeats = 4 ) as S, customer
+where S.Matrikelnummer = customer.Matrikelnummer;
+
+/*1b*/
+select count(C.Matrikelnummer) as Students_who_reserved_and_live_in_Berlin
+from (	select distinct Matrikelnummer 
+		from reservation) as A, 
+	(	select Matrikelnummer 
+		from (	select AddressID 
+				from address
+				where Town = 'Berlin') as B, 
+		customer 
+		where B.AddressID = customer.AddressID) as C
+where A.Matrikelnummer = C.Matrikelnummer;
+
+/*1c*/
+select sum(NoReservedSeats) as FlightFromFFMtoUSA65Days
+from reservation,
+	(select FlightNo
+	from flightexecution
+	where ICAO_Code_Origin = 'EDDF' and ICAO_Code_Destination = 'CYYZ') as H
+where H.FlightNo = reservation.FlightNo and ((DepartureDateandTimeUTC > now()) and DepartureDateandTimeUTC < (now() + interval 65 day));
+
+/*1d*/
+select flightexecution.FlightNo,  ifnull( sum(NoReservedSeats),0) as NoReservedSeats
+from flightexecution
+left join reservation on (flightexecution.FlightNo = reservation.FlightNo)
+group by  FlightNo;
+

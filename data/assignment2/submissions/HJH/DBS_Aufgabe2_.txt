@@ -1,0 +1,18 @@
+/*1a*/
+
+select customer.Matrikelnummer, customer.Firstname, customer.Lastname from customer where customer.Matrikelnummer =  (select Matrikelnummer from ((select sum(NoReservedSeats) as summe, Matrikelnummer from reservation group by Matrikelnummer) as sum_table) where sum_table.summe = 4)  ;
+
+/*1b*/
+
+select count(distinct(reservation.Matrikelnummer)) from reservation,address,customer where reservation.Matrikelnummer = customer.Matrikelnummer and  customer.AddressID = address.AddressID and AddRess.town = 'Berlin';
+
+/*1c*/
+
+select sum(NoReservedSeats) from flightexecution,reservation where flightexecution.FlightNo = reservation.Flightno and flightexecution.ICAO_CODE_ORIGIN = 'EDDF' and flightexecution.ICAO_CODE_DESTINATION = 'CYYZ' and flightexecution.DepartureDateAndTimeUTC>= NOW() and  flightexecution.DepartureDateAndTimeUTC <= NOW() + INTERVAL 65 DAY;
+
+
+
+
+/*1d*/
+
+select distinct reservation.flightno, sum(reservation.NoReservedSeats) from reservation group by flightno;

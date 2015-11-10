@@ -1,0 +1,30 @@
+﻿/*1a*/
+-- Erstellen einer temporären Tabelle um die Summe der Sitze
+-- einer Matrikelnummer zuordnen zu können
+DROP TABLE IF EXISTS temp;
+CREATE TABLE temp AS
+select Matrikelnummer, sum(NoReservedSeats) AS seats
+from airport.reservation group by Matrikelnummer;
+-- eigentlicher SELECT befehl
+SELECT airport.customer.matrikelnummer, Lastname, Firstname
+FROM airport.customer, airport.temp
+where airport.customer.matrikelnummer = airport.temp.matrikelnummer
+and temp.seats = 4;
+-- löschen der temporären tabelle
+DROP TABLE temp;
+
+/*1b*/
+select count(distinct airport.reservation.matrikelnummer) 
+from airport.reservation, airport.customer, airport.address
+where airport.reservation.matrikelnummer = airport.customer.matrikelnummer
+and airport.customer.addressId = airport.address.addressID and town = 'Berlin';
+
+/*1c*/
+select sum(NoReservedSeats)
+from airport.reservation, airport.flightexecution
+where airport.reservation.FlightNo = airport.flightexecution.FlightNo
+and airport.reservation.DepartureDateAndTimeUTC < (date_add('2014-06-26 23:55:00', INTERVAL 65 DAY));
+
+/*1d*/
+select distinct airport.reservation.flightNo, sum(NoReservedSeats) 
+from airport. reservation group by airport.reservation.flightNo;

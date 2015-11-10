@@ -1,0 +1,62 @@
+/*1a*/
+-- Matrikelnummer und Name von Leuten, die
+-- genau 4 Plätze reserviert haben.
+-- man ordnet die Ausgabe nach Matrikelnummer
+-- mit der zusätzlichen Bedingung von genau vier
+-- reservierten Plätzen (having). 
+select CU.Matrikelnummer, FirstName, LastName 
+   from airport.customer CU, airport.reservation RE
+   where CU.Matrikelnummer = RE.Matrikelnummer         
+   group by RE.Matrikelnummer
+   having sum(RE.NoReservedSeats) = 4;
+
+/*1b*/
+-- gibt Zahl der Studenten aus, die
+-- -> in Berlin wohnen
+-- -> mindestens ein Mal reserviert haben
+-- dazu wird in den entsprechenden Tabellen geprüft,
+-- ob ein solcher Eintrag existiert (exists) 
+select count(Matrikelnummer)
+  from airport.customer CU
+  where exists(
+     select * 
+     from airport.address AD       
+     where AD.AddressID = CU.AddressID 
+     and   AD.Town = "Berlin") 
+  and exists(  
+    select * 
+    from airport.reservation RE
+    where RE.Matrikelnummer = CU.Matrikelnummer);
+
+
+/*1c*/
+-- gibt Summe der Reservierten Plätze aus
+-- auf bestimmter Strecke und 
+-- in bestimmtem Zeitintervall aus. Aktuelle Zeit kann man
+-- mit NOW() bekommen.
+select sum(NoReservedSeats) 
+   from airport.flightexecution EX, airport.reservation RE
+   where EX.FlightNo = RE.FlightNo  
+      -- wenn man die nächste Zeile rauslässt unterscheider sich das Ergebnis,
+      -- da die Abflugzeit von LH5301 in reservation und flightexecution anders ist
+      -- so etwas dürfte es eiegtnlich nicht geben 
+      and EX.DepartureDateAndTimeUTC = RE.DepartureDateAndTimeUTC 
+      and EX.ICAO_Code_Origin = "EDDF"
+      and EX.ICAO_Code_Destination = "CYYZ"
+      and EX.DepartureDateAndTimeUTC < DATE_ADD(NOW(),INTERVAL 65 DAY)
+      and EX.DepartureDateAndTimeUTC > NOW();
+
+/*1d*/
+-- Ausgabe zusammenfassen nach Flugnummer (group by) mit
+-- den jeweils reservierten Sitzen (sum())
+select RE.FlightNo, sum(RE.NoReservedSeats) 
+  from airport.flightexecution EX, airport.reservation RE
+  where  EX.FlightNo = RE.FlightNo 
+        and EX.DepartureDateAndTimeUTC = RE.DepartureDateAndTimeUTC
+        group by FlightNo;
+
+
+ 
+
+
+

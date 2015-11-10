@@ -1,0 +1,23 @@
+/*1a*/
+SELECT customer.Matrikelnummer, LastName, FirstName
+FROM customer JOIN reservation USING(Matrikelnummer) 
+GROUP BY customer.Matrikelnummer 
+HAVING SUM(NoReservedSeats) = 4;        -- WHERE kann nicht auf SUM(..) zugreifen
+
+/*1b*/
+SELECT COUNT(*) 
+FROM customer JOIN address USING(AddressID) 
+WHERE Town = 'Berlin' 
+    AND Matrikelnummer IN (SELECT Matrikelnummer FROM reservation WHERE NoReservedSeats > 0);
+    
+/*1c*/
+SELECT SUM(NoReservedSeats)
+FROM reservation LEFT JOIN flightexecution USING(FlightNo)  -- ohne left join verliert man alle Flüge ohne reservierungen, ohne using klappt es nicht
+WHERE ICAO_Code_Destination = 'CYYZ' 
+    AND ICao_Code_Origin = 'EDDF' 
+    AND DATE(flightexecution.DepartureDateAndTimeUTC) BETWEEN CURDATE() AND ADDDATE(CURDATE(),65);
+    
+/*1d*/
+SELECT flightexecution.FlightNo, SUM(NoReservedSeats) 
+FROM flightexecution LEFT JOIN reservation USING(FlightNo) 
+GROUP BY flightexecution.FlightNo;

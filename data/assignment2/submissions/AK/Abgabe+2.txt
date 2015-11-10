@@ -1,0 +1,8 @@
+/*1a*/
+SELECT customer.Matrikelnummer, FirstName, LastName FROM customer, reservation WHERE reservation.Matrikelnummer = customer.Matrikelnummer GROUP BY
+reservation.Matrikelnummer HAVING SUM(NoReservedSeats) = 4;
+/*1b*/
+SELECT COUNT(customer.Matrikelnummer) FROM customer, address WHERE address.AddressID = customer.AddressID AND address.Town = 'Berlin'; 
+/*1d*/
+SELECT flightexecution.FlightNo, SUM(reservation.NoReservedSeats) FROM flightexecution LEFT JOIN reservation ON reservation.FlightNo = flightexecution.FlightNo GROUP BY
+flightexecution.FlightNo;

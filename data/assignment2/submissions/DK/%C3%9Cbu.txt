@@ -1,0 +1,29 @@
+/*1a*/
+
+# Gibt alle Kunden aus mit genau 4 Reservierungen
+SELECT customer.Matrikelnummer, customer.FirstName, customer.LastName
+FROM customer, reservation
+WHERE customer.Matrikelnummer = reservation.Matrikelnummer 
+GROUP BY customer.Matrikelnummer
+HAVING sum(reservation.NoReservedSeats) = '4';
+
+/*1b*/
+# Anzahl aller aus Berlin die schon einmal reserviert haben
+SELECT count(DISTINCT reservation.Matrikelnummer) FROM airport.address, airport.customer, airport.reservation
+WHERE address.AddressID = customer.AddressID 
+AND address.Town = "Berlin" 
+AND reservation.Matrikelnummer = customer.Matrikelnummer;
+/*1c*/
+# Zeigt alle Fluege von Frankfurt nach Toronto ab jetzt bis 65 Tage
+SELECT sum(reservation.NoReservedSeats) FROM flightexecution, reservation
+WHERE flightexecution.FlightNo = reservation.FlightNo
+AND flightexecution.ICAO_Code_Origin = "EDDF"
+AND flightexecution.ICAO_Code_Destination = "CYYZ"
+AND (flightexecution.DepartureDateAndTimeUTC > now())
+AND (flightexecution.DepartureDateAndTimeUTC < (now() + interval 65 day));
+/*1d*/
+# Gibt zu jeder Flugnummer die Anzahl an reservierten Sitzplaetzen an
+SELECT flightexecution.FlightNo, SUM(reservation.NoReservedSeats)
+FROM flightexecution LEFT JOIN reservation
+ON (flightexecution.FlightNo = reservation.FlightNo) GROUP BY flightexecution.FlightNo;
+

@@ -1,0 +1,75 @@
+/*1a*/
+-- 4-1  Selektieren Sie die Matrikelnummer, Vor- und Nachname der Kunden, die insgesamt
+-- (in der Summe über alle Reservierungen hinweg) genau vier Sitzplätze reserviert haben.
+
+ -- kommentar
+-- selction from tabelle kunde sowie reservation und summe von alle kunde,
+--  die genau 4 sitzplätze reserviert haben.
+SELECT c.Matrikelnummer, c.FirstName, c.LastName, sum(NoReservedSeats)
+from  customer c, reservation r
+where c.Matrikelnummer = r.Matrikelnummer
+Group by   Matrikelnummer
+having  sum(NoReservedSeats)= 4;
+
+-- ergebnisse 28943155	Sabrina	Weber	4
+
+/*1b*/
+-- Geben Sie die Gesamtanzahl der verschiedenen in Berlin wohnhaften Studenten aus CountryName
+-- die schon mal einen Sitzplatz reserviert haben.
+
+SELECT count(c.Matrikelnummer) as StudentenBerlin
+FROM customer c, address a
+where c.AddressID = a.AddressID and Town ='Berlin';
+
+/*1c*/
+-- Geben Sie die Anzahl aller reservierten Plätze (für den Zeitraum „jetzt“ plus 65 Tage
+-- in der Zukunft) für die Route Frankfurt (ICAO-Code EDDF) nach Toronto (ICAOCode
+-- CYYZ) aus.
+
+select sum(NoReservedSeats)
+
+from reservation r, flightexecution f
+where r.FlightNo = f.FlightNo and
+f.ICAO_CODE_Origin like  "EDDF"and ICAO_Code_Destination like "CYYZ" 
+and (f.`DepartureDateAndTimeUTC` > now()) and (f.`DepartureDateAndTimeUTC` < (now() + interval 65 day));
+
+-- ergebnisse 10
+
+/*1d*/
+
+-- Selektieren Sie alle Flugnummern und die dazugehörige Anzahl aller reservierten haben.
+
+select f.flightNo, sum(NoReservedSeats) -- national join von flugttabelle und reservation uber flugtnummer
+from flightexecution f, reservation r 
+where f.FlightNo = r.FlightNo
+Group by FlightNo;
+
+-- ergebnisse
+
+-- IBE1684	1
+-- IBE1764	1
+-- IBE1846	1
+-- IBE3843	2
+-- IBE4681	4
+-- LH1167	2
+-- LH1354	2
+-- LH1761	1
+-- LH1769	3
+-- LH1943	2
+--  LH1973	1
+-- LH2301	9
+-- LH3584	1
+-- LH3842	1
+-- LH5301	1
+-- LH7660	1
+
+
+
+
+
+
+
+
+
+
+

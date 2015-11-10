@@ -1,0 +1,49 @@
+/*1a*/
+/*1. Selektieren Sie die Matrikelnummer, Vor- und Nachname der Kunden, die insgesamt
+(in der Summe über alle Reservierungen hinweg) genau vier Sitzplätze reserviert
+haben.*/
+SELECT customer.Matrikelnummer, customer.FirstName, customer.LastName 
+FROM customer JOIN
+	(SELECT MatrikelnummerSitze.*
+	 FROM 
+			(SELECT Matrikelnummer,sum(NoReservedSeats) AS Sitzsumme 
+			FROM reservation 
+			GROUP BY Matrikelnummer) as MatrikelnummerSitze 
+	 WHERE MatrikelnummerSitze.Sitzsumme = 4 ) AS MatrikelnummerSitze4
+WHERE customer.Matrikelnummer = MatrikelnummerSitze4.Matrikelnummer;
+
+
+/*1b*/
+/*2. Geben Sie die Gesamtanzahl der verschiedenen in Berlin wohnhaften Studenten aus,
+die schon mal einen Sitzplatz reserviert haben.*/
+
+#Reservierung von 0 Sitzen ist nicht ... wirklich möglich: Ansonsten fang ich das mit der Summe ab und mir jubelt einer noch negative Reservierungen unter...
+#bzw WENN ich mitfliege, will ich auch sitzen - oder die anderen Passagiere wollen, dass ich sitze, d.h. Kunde sein führt immer zu mindestens einer Reservierung.
+select count(distinct reservation.Matrikelnummer) as "Gesamtanzahl der verschiedenen in Berlin wohnende Studenten, die schon mal einen Sitzplatz reserviert haben" from
+	((select  Matrikelnummer,Town from customer join address where customer.AddressID = address.AddressID and Town = "Berlin") as MatrikelNummerStadt
+	join reservation)
+where MatrikelNummerStadt.Matrikelnummer = reservation.Matrikelnummer;
+
+
+/*1c*/
+/*3. Geben Sie die Anzahl aller reservierten Plätze (für den Zeitraum „jetzt“ plus 65 Tage
+in der Zukunft) für die Route Frankfurt (ICAO-Code EDDF) nach Toronto (ICAOCode
+CYYZ) aus.*/
+
+select sum(reservation.NoReservedSeats) as "aller reservierten Plätze für den Zeitraum „jetzt“ plus 65 Tage
+in der Zukunft für die Route Frankfurt nach Toronto"
+from reservation join flightexecution
+where ICAO_Code_Origin = "EDDF" and ICAO_Code_Destination = "CYYZ" 
+and flightexecution.DepartureDateAndTimeUTC < (now() + INTERVAL 65 DAY) and flightexecution.DepartureDateAndTimeUTC > now()
+and flightexecution.DepartureDateAndTimeUTC = reservation.DepartureDateAndTimeUTC and reservation.FlightNo = flightexecution.FlightNo;
+
+/*1d*/
+/*4. Selektieren Sie alle Flugnummern und die dazugehörige Anzahl aller reservierten
+Plätze.*/
+
+#Anmerkung: das System sieht scheinbar vor, dass Flugnummern recyclet werden, d.h. die Anfrage so wie gewünscht war, ist eher nur mäßig sinnvoll,
+#es sei denn sie wird in bestimmten Abständen recyclet und man möchte dadurch Erkenntnisse darüber gewinnen, wie oft ein bestimmter Anschluss genutzt wird.
+select flightexecution.FlightNo, sum(reservation.NoReservedSeats) as "Anzahl der reservierten Sitzplätze für diese Flugnummer"
+from flightexecution join reservation
+where reservation.FlightNo = flightexecution.FlightNo
+Group by FlightNo;

@@ -1,0 +1,5 @@
+/*1a*/
+select Matrikelnummer,sum(NoReservedSeats)
+from airport.reservation
+group by Matrikelnummer
+having sum(NoReservedSeats) = 4;

@@ -1,0 +1,137 @@
+tags=1a,1b,1c,1d
+
+
+<table>
+	<tr>
+		<td>dbfit.MySqlTest</td>
+	</tr>
+</table>
+
+<table> <tr> <td>Connect</td> <td>localhost</td> <td>root</td> <td></td> <td>airport</td> </tr> </table>
+
+
+<table>
+	<tr>
+		<td>Query</td>
+		<td>/*1a*/</td>
+	</tr>
+	<tr>
+		<td>firstname</td>
+		<td>lastname</td>
+		<td>Matrikelnummer</td>
+		<td>SUM(r.NoReservedSeats)</td>
+	</tr>
+	<tr>
+		<td>Sabrina</td>
+		<td>Weber</td>
+		<td>28943155</td>
+		<td>4</td>
+	</tr>
+</table>
+
+
+
+<table>
+	<tr>
+		<td>Query</td>
+		<td>/*1b*/</td>
+	</tr>
+	<tr>
+		<td>COUNT(DISTINCT (r.Matrikelnummer))</td>
+	</tr>
+	<tr>
+		<td>3</td>
+	</tr>
+</table>
+
+
+
+<table>
+	<tr>
+		<td>Query</td>
+		<td>/*1c*/</td>
+	</tr>
+	<tr>
+		<td>NoReservedSeats</td>
+	</tr>
+	<tr>
+		<td>2</td>
+	</tr>
+</table>
+
+
+
+	<table>
+	<tr>
+		<td>Query</td>
+		<td>/*1d*/</td>
+	</tr>
+	<tr>
+		<td>FlightNo</td>
+		<td>NoOfReservedSeatsPerFlight</td>
+	</tr>
+	<tr>
+		<td>IBE1684</td>
+		<td>1</td>
+	</tr>
+	<tr>
+		<td>IBE1764</td>
+		<td>1</td>
+	</tr>
+	<tr>
+		<td>IBE1846</td>
+		<td>1</td>
+	</tr>
+	<tr>
+		<td>IBE3843</td>
+		<td>2</td>
+	</tr>
+	<tr>
+		<td>IBE4681</td>
+		<td>4</td>
+	</tr>
+	<tr>
+		<td>LH1167</td>
+		<td>2</td>
+	</tr>
+	<tr>
+		<td>LH1354</td>
+		<td>2</td>
+	</tr>
+	<tr>
+		<td>LH1761</td>
+		<td>1</td>
+	</tr>
+	<tr>
+		<td>LH1769</td>
+		<td>3</td>
+	</tr>
+	<tr>
+		<td>LH1943</td>
+		<td>2</td>
+	</tr>
+	<tr>
+		<td>LH1973</td>
+		<td>1</td>
+	</tr>
+	<tr>
+		<td>LH2301</td>
+		<td>9</td>
+	</tr>
+	<tr>
+		<td>LH3584</td>
+		<td>1</td>
+	</tr>
+	<tr>
+		<td>LH3842</td>
+		<td>1</td>
+	</tr>
+	<tr>
+		<td>LH5301</td>
+		<td>1</td>
+	</tr>
+	<tr>
+		<td>LH7660</td>
+		<td>1</td>
+	</tr>
+</table>

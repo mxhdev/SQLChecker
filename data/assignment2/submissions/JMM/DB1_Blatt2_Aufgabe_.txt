@@ -1,0 +1,39 @@
+﻿/*1a*/
+
+SELECT c.matrikelnummer, c.lastname, c.firstname, SUM(r.noreservedseats)
+FROM customer c, reservation r
+WHERE c.matrikelnummer = r.matrikelnummer
+GROUP BY c.matrikelnummer
+HAVING SUM(r.noreservedseats) = 4;
+
+
+/*1b*/
+
+SELECT COUNT(distinct r.Matrikelnummer) AS Gesamtanzahl
+FROM reservation r, kunden_details kd
+WHERE r.Matrikelnummer = kd.matrikelnummer
+AND kd.Stadt ="Berlin";
+
+
+/*1c*/
+
+SELECT SUM(r.NoReservedSeats) as Gesamtanzahl
+FROM reservation r, flightexecution f
+WHERE r.DepartureDateAndTimeUTC between now() AND (now() + Interval 65 day)
+and f.ICAO_Code_Origin  = 'EDDF' 
+and f.ICAO_Code_Destination = 'CYYZ';
+
+
+/*1d*/
+
+SELECT FlightNo, SUM(NoReservedSeats)
+FROM reservation
+GROUP BY FlightNo
+UNION 
+SELECT FlightNo, 0
+FROM flightexecution
+WHERE flightexecution.flightno not in (
+	SELECT FlightNo FROM reservation
+) 
+GROUP BY FlightNo;
+

@@ -1,0 +1,24 @@
+/*1a*/
+
+SELECT customer.Matrikelnummer, customer.LastName AS 'Nachname', customer.FirstName AS 'Vorname' FROM customer, reservation
+	WHERE reservation.Matrikelnummer = customer.Matrikelnummer
+	GROUP BY customer.Matrikelnummer 
+	HAVING sum(reservation.NoReservedSeats) = 4;
+/*1b*/
+
+SELECT count(DISTINCT kunden_deutschland.Matrikelnummer) AS 'Kunden aus Berlin' FROM kunden_deutschland, reservation
+	WHERE reservation.Matrikelnummer = kunden_deutschland.Matrikelnummer 
+		AND kunden_deutschland.Stadt = 'Berlin';
+
+/*1c*/
+
+SELECT sum(NoReservedSeats) AS 'Reservierte Sitze von Frankfurt nach Totonto' FROM reservation, flightexecution
+	WHERE reservation.FlightNo = flightexecution.FlightNo 
+		AND flightexecution.DepartureDateAndTimeUTC BETWEEN NOW() AND (NOW()+INTERVAL 65 DAY)
+		AND flightexecution.ICAO_Code_Origin = 'EDDF' 
+		AND flightexecution.ICAO_Code_Destination = 'CYYZ';
+
+/*1d*/
+
+SELECT FlightNo AS 'Flugnummer', sum(NoReservedSeats) AS 'reservierte Sitze' FROM reservation
+	GROUP BY FlightNo;

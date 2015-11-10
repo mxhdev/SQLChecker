@@ -1,0 +1,34 @@
+/*1a*/
+SELECT customer.Matrikelnummer, customer.FirstName, customer.LastName
+FROM customer NATURAL JOIN reservation
+GROUP BY customer.Matrikelnummer HAVING sum(reservation.NoReservedSeats) = 4;
+
+
+
+/*1b*/
+
+SELECT count(DISTINCT reservation.Matrikelnummer) AS 'AnzahlStudentenAusBerlin'
+FROM reservation NATURAL JOIN (customer NATURAL JOIN address)
+WHERE (address.Town LIKE 'Berlin');
+
+
+
+/*1c*/
+
+select sum(reservation.NoReservedSeats) AS 'AnzahlReservierteSitze'
+from flightexecution natural join reservation
+where (flightexecution.ICAO_Code_Origin = 'EDDF') AND
+      (flightexecution.ICAO_Code_Destination = 'CYYZ') AND
+      (flightexecution.DepartureDateAndTimeUTC BETWEEN now() AND (now() + interval 65 day));
+
+
+
+/*1d*/
+
+SELECT reservation.FlightNo, sum(reservation.NoReservedSeats) as 'AnzahlReservierteSitze'
+FROM reservation
+GROUP BY reservation.FlightNo;
+
+
+
+/* Ende der Datei */

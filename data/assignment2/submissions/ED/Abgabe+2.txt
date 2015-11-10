@@ -1,0 +1,38 @@
+/*1a*/
+###Zeigt alle an die genau vier plätzte reserviert haben
+alter VIEW only4 AS select kunden_details.Matrikelnummer AS Matrikelnummer, 
+		Nachname AS Nachname, Vorname AS Vorname, 
+		NoReservedSeats as Plätze from kunden_details, reservation 
+	where NoReservedSeats = 4;
+###Test
+select * from only4;
+
+/*1b*/
+###hier zählen wir alle plätzte durch die aus berlin sind und plätzte reserviert haben, sprich es werden leute nicht akzeptier die noch nicht reserviert haben.
+###durch die join funktion sichern wir das die zeilen nicht überzählt werden. Wir sorgen mit join das die funktion zu ihren foreign key sich anpassen.
+###select(*) count from Berlin; gehört zur ganzen funktion und sorgt das die leute die mehrmals gebucht haben einzeln gezählt werden
+alter view Berlin as select count(NoReservedSeats) as Gesamt
+		from reservation LEFT JOIN customer ON reservation.Matrikelnummer=customer.Matrikelnummer
+  LEFT JOIN address ON customer.AddressID=address.AddressID
+		where Town="Berlin" and NoReservedSeats != 0
+		group by LastName;
+select count(*) from Berlin;
+
+/*1c*/
+###mertzt alles aus was mann braucht und wie es sein soll damit die datetimeanzeige funktioniert... gibt uns einen halben punkt
+create view Zukunft65 as select ICAO_Code_Origin as Origin, ICAO_Code_Destination as Destination, 
+		AirportName as AirportName from flightexecution,airport
+		where ICAO_Code_Origin = "EDDF" and ICAO_Code_Destination = "CYYZ"
+		and  adddate(now(), interval 65 day) > DepartureDateAndTimeUTC > now() ;
+
+select * from Zukunft65;
+
+/*1d*/
+###hier summieren wir alle sitze zu den entsprechenden flugnummern, dabei sorgen wir das keine nullen kommen und gruppieren es nach flugnumemr
+alter view Flug as select FlightNo as Flugnummer,
+				sum(NoReservedSeats) as Seats
+				from reservation
+				where NoReservedSeats != 0
+			group by Flugnummer;
+
+select * from Flug;

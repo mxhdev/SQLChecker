@@ -1,0 +1,100 @@
+/*1a*/
+
+/*
+IDEE:
+	- 	selektieren die Matrikelnummer, Vor- und Nachname von allen Kunden := tabelle_1
+
+	- 	selektieren die Matrikelnummer aller Kunden, die 4 Plätze reserviert haben
+		(Summe über alle Reservierungen hinweg) haben := tabelle_2
+
+	-	selektieren die Matrikelnummer aller Kunden, die nur ein mal, auf ein mal, 
+		4 Plätzen reserviert haben := tabelle_3
+
+	-	union zwischen tabelle_2 und tabelle_3 := tabelle_4
+
+	-	Inner Join zwischen tabelle_1 und tabelle_4
+		
+*/
+
+SELECT 
+    c.Matrikelnummer, c.FirstName, c.LastName
+FROM
+    customer AS c
+INNER JOIN
+    (SELECT 
+        Matrikelnummer, sum(NoReservedSeats) AS NoReservedSeats
+    FROM
+        reservation
+    GROUP BY Matrikelnummer
+    HAVING NoReservedSeats = 4 
+UNION 				
+	SELECT 			
+        Matrikelnummer, NoReservedSeats
+    FROM
+        reservation
+    WHERE
+        NoReservedSeats = 4) AS res
+ON c.Matrikelnummer = res.Matrikelnummer;
+
+/*1b*/
+
+/* 
+IDEE:
+
+*/
+
+
+SELECT 
+    count(*) -- Anzahl von Datensätze der endeTabelle
+FROM
+    (SELECT 					-- Tabelle (endeTabelle) mit Matrikelnummer der Kunden,
+        Matrikelnummer			-- die mal reserviert haben und in Berlin wohnen
+    FROM
+        reservation
+    GROUP BY Matrikelnummer
+    HAVING Matrikelnummer in (SELECT -- Tabelle mit Matrikelnummer der Kunden,
+            Matrikelnummer			 -- die in Berlin Wohnen
+        FROM
+            customer
+        WHERE
+            AddressID in (SELECT  -- Tabelle mit AddressID von Berlin
+                    AddressID
+                FROM
+                    address
+                WHERE
+                    Town = 'Berlin'))) AS endeTabellev;
+
+	
+/*1c*/
+-- ich weiß nicht so genau, was ich hier komentieren soll :/
+
+SELECT 
+    sum(res.NoReservedSeats)
+FROM
+    reservation AS res,
+    flightexecution AS fe
+WHERE
+    DATE(res.DepartureDateAndTimeUTC) <= CURDATE() + INTERVAL 65 DAY
+        AND res.FlightNo = fe.FlightNo
+        AND fe.ICAO_Code_Origin = 'EDDF'
+        AND fe.ICAO_Code_Destination = 'CYYZ';
+
+
+/*1d*/
+-- hier weiß ich auch nicht :s
+
+SELECT 
+    FlightNo, sum(NoReservedSeats)
+FROM
+    reservation
+GROUP BY FlightNo;
+
+
+
+
+
+
+
+
+
+

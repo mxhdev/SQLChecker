@@ -1,0 +1,27 @@
+/*1a*/
+-- Anwendungsreihenfolge von Kriterien: WHERE -> Vor Projektion, HAVING danach. WHERE kann auch entfallen.
+SELECT reservation.`Matrikelnummer`, sum(`NoReservedSeats`) AS summe JOIN `LastName`, `FirstName`
+FROM reservation
+GROUP BY `Matrikelnummer`
+HAVING summe=4;
+
+
+/*1b*/
+
+SELECT count(reservation.`Matrikelnummer`) as number
+ FROM reservation  JOIN customer ON (reservation.`Matrikelnummer` = customer.`Matrikelnummer`)
+ JOIN address ON (customer.`AddressID` = address.`AddressID`)
+ WHERE address.Town = 'Berlin'
+ GROUP BY customer.`Matrikelnummer`;
+
+/*1c*/
+
+SELECT sum(`NoReservedSeats`)
+FROM reservation JOIN flightexecution ON reservation.`FlightNo`=flightexecution.`FlightNo`
+WHERE flightexecution.`DepartureDateAndTimeUTC`<=TIMESTAMPADD(DAY, 65, NOW()) AND flightexecution.`DepartureDateAndTimeUTC`>=NOW() AND flightexecution.`ICAO_Code_Origin`='EDDF' AND flightexecution.`ICAO_Code_Destination`='CYYZ';
+
+/*1d*/
+
+SELECT `FlightNo`, sum(`NoReservedSeats`) as seats
+FROM reservation
+GROUP BY `FlightNo`

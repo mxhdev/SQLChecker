@@ -1,0 +1,33 @@
+/*1a*/
+
+USE`airport`;
+Select  customer.matrikelnummer, customer.firstname, customer.lastname, sum(NoReservedSeats) as Gesamtanzahl_res_Sitzplätze
+From customer, reservation
+Where customer.MAtrikelnummer = Reservation.matrikelnummer
+GROUP BY customer.matrikelnummer, customer.firstname
+HAVING sum(NoReservedSeats) = 4;
+
+/*1b*/
+
+USE`airport`;
+Select count(Matrikelnummer) as Gesamtanzahl_in_Berlin_wohnhafter_Studenten
+From customer, address
+Where Address.AddressID = customer.addressID and Town = "Berlin" and Matrikelnummer in (Select Matrikelnummer FROM Reservation);
+
+/*1c*/
+
+USE`airport`;
+Select sum(NoReservedSeats)
+From flightexecution, Airport, Reservation
+Where flightexecution.ICAO_Code_Destination = Airport.ICAO_Code and Reservation.FlightNo = flightexecution.FlightNo
+and ICAO_Code_Origin = "EDDF" and ICAO_Code_Destination = "CYYZ" and FlightExecution.DepartureDAteAndTimeUTC between Now() and Now() + Interval 65 Day;
+
+/*1d*/
+
+USE`airport`;
+Select FlightNo, NoReservedSeats
+From reservation
+Group by FlightNo
+UNION
+Select FlightNo, 0
+from flightexecution;

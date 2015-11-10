@@ -1,0 +1,33 @@
+/*1a*/
+/*Aufgabe 3.1: Folgendes SQL Statement gibt die Matrikelnummer, den Vornamen, den Nachnamen und die Summe der Reservierungen
+der Kunden wieder, die über alle Reservierungen hinweg genau vier Sitzplätze reserviert haben. */
+select customer.Matrikelnummer, customer.FirstName, customer.LastName, sum(reservation.NoReservedSeats) as seats
+from reservation, customer
+where reservation.Matrikelnummer=customer.Matrikelnummer
+group by reservation.Matrikelnummer
+having seats = 4;
+/*1b*/
+/* Aufgabe 3.2: Folgendes SQL Statement gibt die Anzahl der  Kunden aus Berlin an,
+ die schon mal einen Sitzplatz reserviert haben*/
+select count(*) from customer  join address on (address.AddressID = customer.AddressID) 
+where address.Town = 'Berlin' and customer.Matrikelnummer in 
+(select reservation.Matrikelnummer from reservation);
+/*1c*/
+/* Aufgabe 3.3: Folgendes SQL Statment gibt die Anzahl aller reservierten Plätze (für den Zeitraum „jetzt“ plus 65 Tage
+in der Zukunft) für die Route Frankfurt (ICAO-Code EDDF) nach Toronto (ICAOCode
+CYYZ) aus.  */
+select ICAO_Code_Origin, ICAO_Code_Destination, sum(reservation.NoReservedSeats) as AnzahlreservierterSitze
+from flightexecution, reservation
+where flightexecution.DepartureDateAndTimeUTC between curdate() and date_add(current_date, interval 65 day)
+and ICAO_Code_Origin like 'EDDF' and ICAO_Code_Destination like 'CYYZ' 
+and reservation.FlightNo=flightexecution.FlightNo
+group by ICAO_Code_Origin, ICAO_Code_Destination;
+
+/*1d*/
+
+/* Aufgabe 3.4: Folgendes SQL Statement selektiert Sie alle Flugnummern und die dazugehörige Anzahl aller reservierten
+Plätze. */
+select  flightexecution.FlightNo, sum(reservation.NoReservedSeats) as seats
+from  flightexecution left join reservation on flightexecution.FlightNo= reservation.FlightNo 
+group by reservation.FlightNo;
+

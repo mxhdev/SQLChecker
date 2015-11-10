@@ -1,0 +1,36 @@
+
+/*1a*/
+
+select c.Matrikelnummer, c.LastName, c.FirstName, sum(r.NoReservedSeats) as SummeReservations
+from customer c, reservation r
+where r.Matrikelnummer = c.Matrikelnummer
+GROUP BY r.Matrikelnummer having SummeReservations = 4;
+
+-- select Matrikelnummer, sum(NoReservedSeats) from reservation group bY Matrikelnummer; -- überprüfe Anzahl von Reserv. pro Person
+
+
+/*1b*/
+
+select count(c.Matrikelnummer) as StudentenBerlin
+from customer c, address a
+where c.AddressID = a.AddressID
+and a.Town = 'Berlin';
+
+/*1c*/
+
+select sum(r.NoReservedSeats) as Reservations_from_EDDF_to_CYYZ
+from flightexecution f, reservation r
+where f.FlightNo = r.FlightNo and
+f.`DepartureDateAndTimeUTC` between Current_Timestamp and Current_timestamp + interval 65*24 hour and
+f.ICAO_Code_Origin like "EDDF" and f.ICAO_Code_Destination like "CYYZ";
+
+/*1d*/
+
+select f.FlightNo, sum(r.NoReservedSeats) as No_Reservations
+from flightexecution f, reservation r
+where f.FlightNo = r.FlightNo
+group bY f.FlightNo;
+
+
+
+########################################################################################################################

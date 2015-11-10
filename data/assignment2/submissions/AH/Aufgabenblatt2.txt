@@ -1,0 +1,15 @@
+/*1a*/
+-- tried to select the persons with four reserved seats but had some errors
+
+select c.Matrikelnummer, c.FirstName , c.LastName, sum(r.NoReservedSeats) from customer c, reservation r where c.Matrikelnummer = r.Matrikelnummer group by r.Matrikelnummer;
+select r.Matrikelnummer, sum(r.NoReservedSeats) from reservation r group by r.Matrikelnummer;
+
+/*1b*/
+-- selecting the number of customers who live in berlin 
+
+select count(c.Matrikelnummer) from customer c, address a, reservation r where a.Town = 'Berlin' and a.AddressID = c.AddressID and r.Matrikelnummer = c.Matrikelnummer;
+
+/*1d*/
+-- selecting every flight where there are reserved seats and the number of reserved seats 
+
+select FlightNo, sum(NoReservedSeats) from reservation group by FlightNo;

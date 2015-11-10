@@ -1,0 +1,19 @@
+/*1a*/
+SELECT r.Matrikelnummer, LastName, FirstName
+FROM reservation r, customer c
+WHERE (c.Matrikelnummer = r.Matrikelnummer) GROUP BY r.Matrikelnummer HAVING SUM(NoReservedSeats) = 4;
+
+/*1b*/
+SELECT COUNT(DISTINCT k.Matrikelnummer) AS SchonMalReserviertAusBerlin
+FROM kunden_details k, reservation r
+WHERE (k.Stadt = 'Berlin') AND (k.Matrikelnummer = r.Matrikelnummer);
+
+/*1c*/
+SELECT SUM(NoReservedSeats) AS ReservierteSitzeIn65Tagen
+FROM reservation
+WHERE DepartureDateAndTimeUTC <= NOW() + INTERVAL 65 DAY;
+
+/*1d*/
+SELECT FlightNo, SUM(NoReservedSeats) AS ReserviertePlaetze
+FROM reservation
+GROUP BY FlightNo;

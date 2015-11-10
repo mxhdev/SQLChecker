@@ -1,0 +1,24 @@
+/*1a*/
+
+SELECT `Matrikelnummer`, `FirstName`, `LastName`
+FROM `customer`
+WHERE 4 = (SELECT sum(`reservation`.`NoReservedSeats`) FROM `reservation` WHERE (`customer`.`Matrikelnummer`= `reservation`.`Matrikelnummer`));
+
+/*1b*/
+
+SELECT count(distinct c.`Matrikelnummer`)
+FROM `customer` c, `reservation`,`address`
+WHERE (c.`Matrikelnummer`= `reservation`.`Matrikelnummer` and c.`AddressID` = `address`.`AddressID` and `address`.`Town` = "Berlin");
+
+/*1c*/
+
+SELECT sum(r.`NoReservedSeats`)
+FROM `reservation` r, `flightexecution` e
+WHERE (r.`FlightNo` = e.`FlightNo` and e.`ICAO_Code_Origin`= "EDDF" and e.`ICAO_Code_Destination` = "CYYZ" and e.`DepartureDateAndTimeUTC` <= DATE_ADD(CURRENT_TIMESTAMP, INTERVAL 65 day));
+
+/*1d*/
+
+SELECT e.`FlightNo`, sum(r.`NoReservedSeats`)
+FROM `reservation` r, `flightexecution` e
+WHERE (r.`FlightNo` = e.`FlightNo`)
+GROUP BY e.`FlightNo`;

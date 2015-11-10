@@ -1,0 +1,85 @@
+/*1a*/
+-- ************************************** Aufgabe 4.1 **************************************
+
+/* Erstellt eine View, die die Anzahl der reservierten Sitze, grupiert nach der Matrikelnummer
+sortiert und zusammen mit der entsprechenden Matrikelnummer ausgibt.*/
+
+create view No_of_Seats_grouped_by_Matrikelnummer as
+select
+r.Matrikelnummer,
+sum(r.NoReservedSeats) as TotalNoOfSeats
+from reservation r group by r.Matrikelnummer;
+
+/* Selektiert, die Kunden aus Customer, die 4 Sitze gebucht haben, diese Information wird der
+View entnommen, indem die Matrikelnummer abgeglichen wird*/
+
+select c.Matrikelnummer, c.FirstName, c.LastName
+from customer c
+where c.Matrikelnummer in (select Matrikelnummer
+							from airport.No_of_Seats_grouped_by_Matrikelnummer
+							where TotalNoOfSeats = 4);
+
+
+/*1b*/
+/* Erstellt eine View, die die Matrikelnummer aller Kunden enthält, die:
+1. aus Berlin kommen
+2. und in der Liste der Reservierungen vorhanden sind. (distinct)*/
+
+create view Customers_from_Berlin_in_Reservations as
+select distinct
+c.Matrikelnummer
+from customer c, address a, reservation r
+where c.AddressID = a.AddressID 			-- verbindet customer mit adress
+and a.Town = 'Berlin'						-- filtert nur Kunden aus Berlin
+and c.Matrikelnummer = r.Matrikelnummer; 	-- prüft ob Kunden in reservation
+
+/* Zählt die Anzahl der Tupel in der View*/
+
+select count(*)
+from airport.customers_from_berlin_in_reservations;
+
+/*1c*/
+/*
+Schritt 1:
+Selektiert alle Flugnummern aus flightexecution für die die gewünschten Bedingungen erfüllt sind:
+Abflug: Frankfurt
+Ankunft: Toronto
+von jetzt
+bis 65 Tage in der Zukunft
+
+Schritt 2:
+Summiert die Werte von NoReservedFlights aus reservation,
+deren FlightNo unter den vorher selektierten ist.
+*/
+select sum(NoReservedSeats)
+from reservation r
+where r.FlightNo in (select FlightNo
+						from Flightexecution f
+						where f.ICAO_Code_Origin = 'EDDF'
+						and f.ICAO_Code_Destination = 'CYYZ'
+						and f.DepartureDateAndTimeUTC > now()
+						and f.DepartureDateAndTimeUTC < (now() + interval 65 day));
+
+/*1d*/
+/* Erstellt eine view
+Schritt 1:
+Sie joint die Tabellen flightexecution und reservation
+Schritt 2
+Dann summiert sie die Werte der Spalte 'NoReservedSeats' grupiert nach den
+Flugnummern der Tabelle flightexecution, da durch bleiben alle Flugnummern
+der enthalten, nicht nur die, die in reservation sind!
+Schritt 3:
+Die Summenfunktion hat eine Bedingung, sie entnimmt den Wert von 'NoReservedSeats'
+nur, wenn die Flugnummern des Tupel aus flightexecution und reservation gleich sind
+also, wenn die Reservierung wirklich existiert,
+ansonsten entnimmt sie zum summieren die 0
+Dadurch wird für Flugnummern auf die noch nicht reserviert wurde, der Wert 0 für die
+reservierten Sitze summiert.*/
+create view All_FlightNos_with_Reserved_Seats as
+select distinct
+f.FlightNo,
+sum(case when (f.FlightNo = r.FlightNo) then r.NoReservedSeats else 0 end) as TotalNoOfSeatsByFlightNo
+from flightexecution f, reservation r
+group by f.FlightNo;
+
+select * from airport.All_FlightNos_with_Reserved_Seats;

@@ -1,0 +1,23 @@
+/*1a*/
+--Aufgabe3.1)
+--Dieser View enthält den Join zwischen kunden_details und reservation
+CREATE VIEW joinreservation AS(SELECT * FROM kunden_details JOIN reservation USING (Matrikelnummer))
+--Dieser View benutz die Ansicht joinreservation und summiert die reservierten Sitzplätze
+CREATE VIEW viersitz AS(SELECT MatrikelNummer,Nachname,Vorname,NoReservedSeats ,SUM(NoReservedSeats)AS AnzahlReservedSeats,COUNT(*)FROM joinreservation GROUP BY Matrikelnummer)
+--Diese Anfrage benutz die Ansicht viersitz und selektiert die Kunden, die insgesamt über alle Reservierungen 4 plätze reserviert haben.
+SELECT MatrikelNummer,Nachname,Vorname,AnzahlReservedSeats FROM viersitz WHERE AnzahlReservedSeats=4
+/*1b*/
+--Dieser View enthält den Join zwischen reservation und kunden_deutschland
+CREATE VIEW Berlinanzahl AS (SELECT * FROM reservation JOIN kunden_deutschland USING (Matrikelnummer) WHERE Stadt = "Berlin")
+--Diese Anfrage benutz die Ansicht berlinanzahl und zählt die Studenten aus Berlin, die mindestens eine Reservierung gemacht haben.
+SELECT COUNT(DISTINCT Matrikelnummer) AS GesamtAnzahl FROM `berlinanzahl` 
+/*1c*/
+--Diese Ansicht zeigt das aktuelle Datum plus 65 Tage in der Zukunft
+CREATE VIEW zeitplus AS (SELECT date_add(CURDATE(),interval 65 day))
+--Diese Ansicht benutzt die view zeitplus und enthält den Join zwischen flightexecution und reservation. Zusätzlich bringt die Ausgabe für den Zeitraum jetz plus 65 tagen.
+CREATE VIEW joinflight AS (SELECT * FROM flightexecution JOIN reservation USING (FlightNo,DepartureDateAndTimeUTC)WHERE (DepartureDateAndTimeUTC<=(Select * FROM zeitplus)))
+--Diese Anfrage zeigt die Summe aller reservierten Sitzplätze die zwischen EDDF und CYYZ innerhalb der nächsten 65 Tage wurden gebucht
+SELECT SUM(NoReservedSeats)FROM joinflight WHERE joinflight.ICAO_Code_Origin='EDDF'AND joinflight.ICAO_Code_Destination='CYYZ'
+/*1d*/
+--Diese Anfrage zeigt alle Flugnummern und die Anzahl der reservierten Plätze
+SELECT FlightNo,SUM(NoReservedSeats)AS AnzahlReservedSeats,COUNT(*)FROM reservation GROUP BY FlightNo

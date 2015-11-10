@@ -1,0 +1,29 @@
+/*1a*/
+-- Selektieren Sie die Matrikelnummer, Vor- und Nachname der Kunden, die insgesamt
+-- (in der Summe über alle Reservierungen hinweg) genau vier Sitzplätze reserviert haben.
+
+select `Matrikelnummer`, `FirstName` ,`LastName` from `customer` cu,`reservation` re
+where  cu.Matrikelnummer = re.Matrikelnummer and exists (
+sum(`NoReservedSeats`) = 4)
+/*1b*/
+-- Geben Sie die Gesamtanzahl der verschiedenen in Berlin wohnhaften Studenten aus,
+-- die schon mal einen Sitzplatz reserviert haben.
+
+
+select count(cu.AddressID) as 'Students in Berlin'
+from `customer` CU, `address` AD
+where CU.AddressID = AD.AddressID and Town = 'Berlin';
+/*1c*/
+-- Geben Sie die Anzahl aller reservierten Plätze (für den Zeitraum „jetzt“ plus 65 Tage
+-- in der Zukunft) für die Route Frankfurt (ICAO-Code EDDF) nach Toronto (ICAOCode CYYZ) aus.
+
+select sum(NoReservedSeats)
+from reservation, flightexecution fe
+where (reservation.flightno = fe.flightno) and ((fe.ICAO_Code_Origin = 'EDDF' and fe.ICAO_Code_Destination = 'CYYZ') and ((fe.`DepartureDateAndTimeUTC` > now()) and (fe.`DepartureDateAndTimeUTC` < (now() + interval 65 day))));
+/*1d*/
+-- Selektieren Sie alle Flugnummern und die dazugehörige Anzahl aller reservierten Plätze.
+
+select fe.flightno, sum(NoReservedSeats)
+from reservation, flightexecution fe
+where (reservation.flightno = fe.flightno) 
+group by fe.flightno;

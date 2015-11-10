@@ -1,0 +1,28 @@
+/*1a*/
+SELECT c.Matrikelnummer, c.FirstName, c.LastName
+FROM customer c, reservation r
+WHERE c.Matrikelnummer = r.Matrikelnummer -- connect tables
+GROUP BY r.Matrikelnummer -- group all reservations of one customer
+HAVING sum(r.NoReservedSeats) = 4; -- proof number of reservated seats
+
+/*1b*/
+SELECT count(distinct r.Matrikelnummer) -- distinct lines with same matrikelnumber
+FROM reservation r, customer c, address a
+WHERE r.Matrikelnummer = c.Matrikelnummer -- connect reservation with customer
+AND c.AddressId = a.AddressId -- connect costumer with address
+AND a.Town = 'Berlin' -- get all in berlin living customers
+AND r.NoReservedSeats > 0; -- get costumers who have reserved one or more seats
+
+/*1c*/
+SELECT sum(r.NoReservedSeats)
+FROM reservation r, flightexecution f
+WHERE r.DepartureDateAndTimeUTC >= curdate() -- from now
+AND r.DepartureDateAndTimeUTC <= date_add(curdate(), INTERVAL 65 DAY) -- until 65 days after current date
+AND r.FlightNo = f.FlightNo -- connect tables
+AND f.ICAO_Code_Origin = 'EDDF' -- from frankfurt
+AND f.ICAO_Code_Destination = 'CYYZ'; -- to toronto
+
+/*1d*/
+SELECT r.FlightNo, sum(r.NoReservedSeats) -- sum the seats of a flight number
+FROM reservation r
+GROUP BY r.FlightNo; -- group all flight numbers

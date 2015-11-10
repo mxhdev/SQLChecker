@@ -1,0 +1,26 @@
+/*1a*/
+select customer.Matrikelnummer, Firstname, LastName
+from customer,  
+		(select Matrikelnummer, sum(NoReservedSeats) as anzahl 
+		 from reservation group by Matrikelnummer) as reservierung -- erzeuge eine neue Tabelle "Reservierung"
+where (customer.Matrikelnummer = reservierung.Matrikelnummer) and (reservierung.anzahl = 4);
+
+/*1b*/
+select count(distinct c.Matrikelnummer)
+from customer c, address a, reservation r
+where c.AddressID = a.AddressID and a.Town = 'Berlin' and r.NoReservedSeats >=1;
+
+
+/*1c*/
+-- select r.FlightNo, NoReservedSeats, DepartureDateAndTimeUTC, flight.ICAO_Code_Origin, flight.ICAO_Code_Destination
+select sum(NoReservedSeats)
+from reservation as r, 
+	 (select FlightNo, ICAO_Code_Origin, ICAO_Code_Destination from flightexecution) as flight
+where (not date_add(curdate(), interval 65 day) <= DepartureDateAndTimeUTC) and r.FlightNo = flight.FlightNo;
+
+
+/*1d*/
+select f.FlightNo, ifnull(sum(r.NoReservedSeats), 0)
+from flightexecution f left join reservation r 
+	on (f.FlightNo = r.FlightNo) group by f.FlightNo order by f.FlightNo;
+

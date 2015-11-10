@@ -1,0 +1,20 @@
+/*1a*/
+
+SELECT c.Matrikelnummer, c.LastName, c.FirstName, sum(r.NoReservedSeats) from customer as c, reservation as r where
+c.Matrikelnummer = r.Matrikelnummer 
+group by c.Matrikelnummer
+having sum(r.NoReservedSeats) = 4;
+/*1b*/
+SELECT count(DISTINCT c.MatrikelNummer) from customer as c, reservation as r, address as a where
+c.Matrikelnummer = r.Matrikelnummer and a.AddressID = c.AddressID and a.Town = "Berlin";
+/*1c*/
+SELECT sum(r.NoReservedSeats) from reservation as r, flightexecution as f where
+r.FlightNo = f.FlightNo and f.DepartureDateAndTimeUTC > now() 
+and f.ICAO_Code_Origin = "EDDF" and f.ICAO_Code_Destination = "CYYZ"
+and f.DepartureDateAndTimeUTC < (now() + INTERVAL 65 DAY);
+/*1d*/
+SELECT f.FlightNo, sum(r.NoReservedSeats) from reservation as r, flightexecution as f where
+r.FlightNo = f.FlightNo and f.DepartureDateAndTimeUTC > now()
+group by f.FlightNo
+
+

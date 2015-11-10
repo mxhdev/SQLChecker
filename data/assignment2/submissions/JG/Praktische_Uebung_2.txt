@@ -1,0 +1,33 @@
+/*1a*/
+--
+Select c.Matrikelnummer, c.FirstName, c.LastName 
+from airport.customer as c, airport.reservation as r 
+where c.Matrikelnummer=r.Matrikelnummer and r.NoReservedSeats = 4;
+--
+/*1b*/
+--
+select count(*) from(
+select distinct c.Matrikelnummer
+from airport.customer as c
+left join airport.address as a
+on c.AddressID=a.AddressID
+where a.Town='Berlin') as ca
+left join airport.reservation as r
+on ca.Matrikelnummer=r.Matrikelnummer
+group by ca.Matrikelnummer;
+
+--
+/*1c*/
+--
+select sum(r.NoReservedSeats)
+from airport.reservation as r
+left join 
+(select f.FlightNo from airport.flightexecution as f where f.ICAO_Code_Origin='EDDF' and f.ICAO_Code_Destination='CYYZ') as fl
+on r.FlightNo=fl.FlightNo
+where r.DepartureDateAndTimeUTC between now() and (now()+ interval 65 day)
+
+--
+/*1d*/
+--
+select r.FlightNo, sum(r.NoReservedSeats) 
+from airport.reservation as r group by r.FlightNo;

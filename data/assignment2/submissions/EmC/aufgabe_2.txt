@@ -1,0 +1,52 @@
+/*1a*/
+ select c.Matrikelnummer, c.FirstName, c.LastName from customer as c
+ inner join 
+ (select r.Matrikelnummer,sum(r.NoReservedSeats) as anzahl from reservation as r group by Matrikelnummer) 
+   as t on c.Matrikelnummer=t.Matrikelnummer and t.anzahl=4;
+ 
+ /* 
+ Selektiert die Matrikelnummer, Vor- und Nachname der Kunden, die insgesamt
+(in der Summe über alle Reservierungen hinweg) genau vier Sitzplätze reserviert
+haben.
+ 
+ */
+/*1b*/
+select count(distinct c.Matrikelnummer) as GesamtAnzahl from 
+ reservation as r 
+  inner join
+   customer as c 
+     on c.Matrikelnummer = r.Matrikelnummer
+       inner join 
+         (select a.AddressID from address as a where a.Town = "Berlin") as t
+            on c.AddressID = t.AddressID;
+            
+/* 
+Gibt die Gesamtanzahl der verschiedenen in Berlin wohnhaften Studenten aus,
+die schon mal einen Sitzplatz reserviert haben.
+*/ 
+           
+/*1c*/
+ 
+select sum(r.NoReservedSeats) as "die Anzahl reservierter Plaetze" from 
+(select  FlightNo from flightexecution as f 
+  where ((f.ICAO_Code_Origin = "EDDF" and f.ICAO_Code_Destination = "CYYZ") and  
+   (f.DepartureDateAndTimeUTC > now() and f.DepartureDateAndTimeUTC < now() + interval 65 day))) as t 
+     inner join reservation as r
+      on t.FlightNo = r.FlightNo;
+ 
+/* 
+Gibt die Anzahl aller reservierten Plätze (für den Zeitraum „jetzt“ plus 65 Tage
+in der Zukunft) für die Route Frankfurt (ICAO-Code EDDF) nach Toronto (ICAOCode
+CYYZ) aus.
+*/
+
+/*1d*/
+select f.FlightNo as Flugnummer,sum(r.NoReservedSeats) as "die Anzahl reservierter Plaetze" from
+   flightexecution as f inner join reservation as r on f.FlightNo = r. FlightNo group by f.FlightNo;
+
+   
+/*
+Selektiert alle Flugnummern und die dazugehörige Anzahl aller reservierten
+Plätze.
+ */
+ 

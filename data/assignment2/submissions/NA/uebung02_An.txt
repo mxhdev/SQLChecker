@@ -1,0 +1,31 @@
+/*1a*/
+select cs.Matrikelnummer,cs.LastName,cs.FirstName,sum(r.NoReservedSeats)
+from customer cs,reservation r 
+where cs.Matrikelnummer=r.Matrikelnummer 
+GROUP BY r.Matrikelnummer having sum(r.NoReservedSeats)=4;
+
+/*1b*/
+select count(distinct r.Matrikelnummer) as Anzahl_in_Berlin_wohnhaften_Studenten
+from customer cs,reservation r,address a 
+where cs.Matrikelnummer=r.Matrikelnummer
+and cs.AddressID=a.AddressID
+and a.Town='Berlin' ;
+
+/*1c*/
+select count(distinct r.NoReservedSeats) as Anzahl_aller_reservierten_Plaetze_von_EDDF_nach_CYYZ
+from reservation r ,flightexecution f
+where r.FlightNo=f.FlightNo
+and r.DepartureDateAndTimeUTC=f.DepartureDateAndTimeUTC
+and f.ICAO_Code_Origin='EDDF' 
+and f.ICAO_Code_Destination='CYYZ'
+and r.DepartureDateAndTimeUTC>='2014-06-05 11:30:45' #jetzt
+or r.DepartureDateAndTimeUTC<='2014-08-08 11:30:45'; # nach 65 Tage
+
+/*1d*/
+ select f.FlightNo, count(distinct r.NoReservedSeats) as Anzahl_reserviert_plaetze
+from reservation r ,flightexecution f
+where r.FlightNo=f.FlightNo
+GROUP BY r.FlightNo;
+
+
+

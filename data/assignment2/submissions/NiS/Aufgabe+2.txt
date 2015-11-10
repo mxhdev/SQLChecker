@@ -1,0 +1,55 @@
+/*1a*/
+SELECT t.Matrikelnummer, c.LastName, c.FirstName				-- es wird die Matrikelnummern, LastName und FirstName alle Customers die genau 4 Plaze rezerviert haben
+FROM(
+
+	SELECT Matrikelnummer
+
+	FROM (
+
+		SELECT r. matrikelnummer, sum(r.NoReservedSeats) AS reserv	-- hier wird die Matrikelnummern aus der Table Reservation selektiert und dazu gehörige NoReservedSeats addiert
+		FROM reservation r		
+		GROUP BY r.Matrikelnummer) AS m
+
+	WHERE reserv LIKE 4) AS t, customer c					-- es soll genau 4 reservierte Sitzplaze haben
+WHERE t.matrikelnummer = c.Matrikelnummer
+
+GROUP BY Matrikelnummer;
+
+/*1b*/
+SELECT count( distinct t.matrikelnummer) AS Gesamtzahl
+				-- es wird gerechnet wieviel Kunden aus Berlin ein Reservierung haben
+FROM(
+
+	SELECT b.matrikelnummer
+
+	FROM(
+
+		SELECT c.Matrikelnummer						-- es wird die Matrikelnummer selectiert,die den Kunden die in Berlin wohnen 
+		FROM customer c, address a
+
+		WHERE c.AddressID = a.AddressID and Town like "Berlin") AS b, reservation r
+
+	WHERE b.matrikelnummer = r.Matrikelnummer) AS t;
+
+/*1c*/
+SELECT SUM(r.NoReservedSeats) AS Anzahl 					-- es wird die Anzahl den reservierten Sitzpläze gerechnet,
+FROM reservation r, (
+
+	SELECT ReservationID
+
+	FROM reservation r , (
+
+		SELECT f.FlightNo 						-- es wird alle FlightNo selectiert, die das Frankfurt Airport as Origin und Toronto Airport als Destination haben
+		FROM flightexecution f
+
+		WHERE f.ICAO_Code_Origin like "EDDF" and f.ICAO_Code_Destination like "CYYZ") AS t
+ 
+	WHERE t.flightNo = r.FlightNo and DepartureDateAndTimeUTC >= now() and DepartureDateAndTimeUTC <= (now() + interval 65 day)) AS m	-- in einem Intervall von 65 Tagen
+WHERE r.ReservationID = m.ReservationID;
+
+/*1d*/
+SELECT FlightNo, SUM(NoReservedSeats) AS NoResSeats
+ 				-- es wird gerechnet, wieviele reserviete Sitzpläze jedes Flug hat
+FROM reservation
+
+GROUP BY FlightNo;

@@ -1,0 +1,63 @@
+/*1a*/
+
+select distinct
+    customer.Matrikelnummer, LastName, FirstName
+from
+    customer,
+    reservation
+where
+    (select 
+            sum(NoReservedSeats)
+        from
+            reservation
+        where
+            reservation.Matrikelnummer = customer.Matrikelnummer) = 4
+        and reservation.Matrikelnummer = customer.Matrikelnummer;
+
+
+/*1b*/
+
+select 
+    count(distinct Matrikelnummer)
+from
+    customer
+where
+    customer.AddressID in (select 
+            address.AddressID
+        from
+            address
+        where
+            address.Town = 'Berlin')
+        and Matrikelnummer in (select 
+            Matrikelnummer
+        from
+            reservation);
+
+
+/*1c*/
+
+select 
+    sum(NoReservedSeats)
+from
+    reservation
+where
+    FlightNo in (select 
+            FlightNo
+        from
+            flightexecution
+        where
+            DepartureDateAndTimeUTC >= now()
+                and DepartureDateAndTimeUTC <= date_add(now(), interval 65 day)
+                and ICAO_Code_Origin = 'eddf'
+                and ICAO_Code_Destination = 'cyyz');
+
+
+/*1d*/
+
+select 
+    flightexecution.FlightNo, sum(NoReservedSeats)
+from
+    flightexecution
+        join
+    reservation ON flightexecution.FlightNo = reservation.FlightNo
+group by flightexecution.FlightNo;

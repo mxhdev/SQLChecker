@@ -1,0 +1,51 @@
+﻿/*1a*/
+-- ============================ Join-Variante ===============================
+select 
+    kunden_details.Matrikelnummer as Matrikelnummer,
+    kunden_details.Vorname as Vorname,
+    kunden_details.Nachname as Nachname
+from
+    kunden_details
+	join
+    reservation ON kunden_details.Matrikelnummer = reservation.Matrikelnummer
+group by reservation.Matrikelnummer
+having sum(reservation.NoReservedSeats) = '4';
+
+/*1b*/
+-- ============================ Join-Variante ===============================
+select distinct
+    count(distinct kunden_details.Matrikelnummer)
+from
+    kunden_details
+        left join
+    reservation ON kunden_details.Matrikelnummer = reservation.Matrikelnummer
+where
+    kunden_details.Stadt = 'Berlin'
+        and reservation.NoReservedSeats > '0';
+
+/*1c*/
+-- ============================ Join-Variante ===============================
+Select 
+    sum(reservation.NoReservedSeats) as NoReservedSeatsEDDFtoCYYZ
+from
+    reservation
+        left join
+    flightexecution ON reservation.FlightNo = flightexecution.FlightNo
+where
+    reservation.DepartureDateAndTimeUTC between now() and (now() + interval 65 day)
+        and flightexecution.ICAO_Code_Origin = 'EDDF'
+        and flightexecution.ICAO_Code_Destination = 'CYYZ';
+
+
+/*1d*/
+select 
+    flightexecution.FlightNo, sum(NoReservedSeats) as NoReserverdSeatsTotal
+from
+    flightexecution
+        left join
+    reservation ON flightexecution.FlightNo = reservation.FlightNo
+group by flightexecution.FlightNo;
+
+
+
+

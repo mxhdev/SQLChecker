@@ -1,0 +1,36 @@
+/*1a*/
+
+SELECT r.`Matrikelnummer`, c.`FirstName`, c.`LastName`, SUM(r.`NoReservedSeats`) FROM `reservation` r
+	INNER JOIN `customer` c ON (r.`Matrikelnummer` = c.`Matrikelnummer`) 
+GROUP BY r.`Matrikelnummer`
+HAVING SUM(r.`NoReservedSeats`) = 4;
+/*1b*/
+
+SELECT Count(*) AS Anzahl FROM `customer` c
+	INNER JOIN `address` a ON (a.`addressid` = c.`addressid`) 
+AND a.`Town` = 'Berlin'
+AND `Matrikelnummer` IN (SELECT `Matrikelnummer` FROM `reservation`);
+/*1c*/
+
+/*
+Fuer die 3te Abfrage ist eine Einschraenkung auf die Flugroute eigentlich ueberfluessig, da innerhalb der Range der Depaturetime von Heute bis +65 Tage
+keine weiteren bzw. andere Flugrouten enthalten sind. Die Einschraenkung macht erst Sinn, wenn weitere Reservierungen eingefuegt werden. Deshalb wurde 
+in der Tablle `reservation` ein weiterer Datensatz hinzugefuegt.
+*/;
+SELECT SUM(r.NoReservedSeats) FROM `reservation` r, `flightexecution` f 
+WHERE r.`DepartureDateAndTimeUTC`  Between NOW() AND DATE_ADD(NOW(), INTERVAL 65 DAY)
+AND f.`FlightNo` = r.`FlightNo`
+AND `ICAO_Code_Origin` = 'EDDF'
+AND `ICAO_Code_Destination` = 'CYYZ';
+
+/*1d*/
+/*
+Eigentlich sollte die Abfrage nicht nur auf die Flugnummer beschraenkt werden, sonder in Verbindung 
+mit der Abflugzeit (und/oder Route) getaetigt werden. So werden u.U. (weil die Flugnummer nicht eindeutig ist) 
+komplett verschiedene Verbindungen (Routen) zusammengepackt.
+*/
+SELECT `FlightNo`, SUM(NoReservedSeats) AS `Anzahl Reservierungen`  FROM `reservation`
+GROUP BY `FlightNo`
+UNION
+SELECT `FlightNo`, 0 AS `Anzahl Reservierungen` FROM `flightexecution`
+WHERE `FlightNo` NOT IN (SELECT `FlightNo` FROM `reservation`);

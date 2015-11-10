@@ -1,0 +1,32 @@
+/*1a*/
+select CU.Matrikelnummer, CU.FirstName , CU.LastName
+from customer CU, reservation RE
+where CU.Matrikelnummer = RE.Matrikelnummer
+and RE.NoReservedSeats = 4;
+
+
+/*1b*/
+select count(*) /*select count(Matrikelnummer)*/
+from kunden_deutschland
+where Stadt = 'Berlin'
+AND exists (
+select * 
+from reservation
+where reservation.Matrikelnummer = kunden_deutschland.Matrikelnummer);
+
+
+/*1c*/
+select count(*)
+from flightexecution
+where (ICAO_Code_Origin = 'EDDF') AND (ICAO_Code_Destination = 'CYYZ')
+AND exists(
+SELECT *
+FROM reservation
+WHERE DepartureDateAndTimeUTC >= CURDATE()+65);
+
+
+/*1d*/
+select flightexecution.FlightNo, SUM(NoReservedSeats), reservation.DepartureDateAndTimeUTC
+from reservation, flightexecution
+where flightexecution.FlightNo = reservation.FlightNo
+group by FlightNo, DepartureDateAndTimeUTC;

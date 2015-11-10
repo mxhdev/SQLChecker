@@ -1,0 +1,11 @@
+/*1a*/
+SELECT Matrikelnummer, FirstName, LastName from customer c join (SELECT Matrikelnummer, sum(NoReservedSeats) as seats FROM airport.reservation group by  Matrikelnummer) as seats using (Matrikelnummer) where seats.seats =4;
+/*1b*/
+SELECT count(*) as BerlinerKunden FROM airport.address join (SELECT * FROM address join (reservation join airport.customer using (Matrikelnummer)) using (AddressID)   where customer.AddressID = address.AddressID and customer.Matrikelnummer = reservation.Matrikelnummer) as zwischen using (AddressID) where address.Town = 'Berlin';
+
+
+
+/*1c*/
+SELECT sum(NoReservedSeats) as Anzahl FROM airport.flightexecution join reservation using(FlightNo, DepartureDateAndTimeUTC) where (ICAO_Code_Origin = 'EDDF' and ICAO_Code_Destination = 'CYYZ') or (ICAO_Code_Origin = 'CYYZ' and ICAO_Code_Destination = 'EDDF');
+/*1d*/
+SELECT FlightNo, sum(NoReservedSeats) as NoReserved FROM airport.reservation group by FlightNo;

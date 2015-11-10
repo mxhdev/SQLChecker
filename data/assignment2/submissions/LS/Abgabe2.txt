@@ -1,0 +1,32 @@
+/*1a*/
+
+SELECT C.Matrikelnummer, C.FirstName, C.LastName
+FROM customer C
+   JOIN reservation R ON C.Matrikelnummer = R.Matrikelnummer
+GROUP BY C.Matrikelnummer
+HAVING SUM(R.NoReservedSeats) = 4;
+
+/*1b*/
+
+SELECT COUNT(DISTINCT C.Matrikelnummer) Anzahl
+FROM customer C
+   JOIN reservation R ON C.Matrikelnummer = R.Matrikelnummer
+   JOIN address A ON C.AddressID = A.AddressID
+WHERE A.Town = 'Berlin';
+
+/*1c*/
+
+SELECT SUM(R.NoReservedSeats) Anzahl
+FROM flightexecution F
+   JOIN reservation R ON F.FlightNo = R.FlightNo
+WHERE 
+   F.ICAO_Code_Origin = 'EDDF'
+   AND F.ICAO_Code_Destination = 'CYYZ'
+   AND F.DepartureDateAndTimeUTC BETWEEN NOW() AND (NOW() + INTERVAL 65 DAY);
+
+/*1d*/
+
+SELECT F.FlightNo, SUM(R.NoReservedSeats) NoReservedSeats
+FROM flightexecution F
+   JOIN reservation R ON F.FlightNo = R.FlightNo
+GROUP BY F.FlightNo;

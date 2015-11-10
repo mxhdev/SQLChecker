@@ -1,0 +1,30 @@
+/*1a*/
+
+SELECT DISTINCT K.Matrikelnummer, K.Vorname, K.Nachname
+FROM kunden_details AS K INNER JOIN reservation AS R
+ON K.Matrikelnummer = R.Matrikelnummer
+WHERE R.NoReservedSeats = 4;
+
+/*1b*/
+
+SELECT COUNT(DISTINCT K.Matrikelnummer) AS numberstudents
+FROM kunden_details AS K INNER JOIN reservation AS R
+ON K.Matrikelnummer = R.Matrikelnummer
+WHERE K.Stadt ='Berlin'
+AND R.NoReservedSeats > 0;
+
+
+/*1c*/
+
+SELECT SUM(R.NoReservedSeats) AS number
+FROM reservation AS R INNER flightexecution AS F
+ON R.FlightNo = F.FlightNo
+WHERE F.ICAO_Code_Origin = 'EDDF'
+AND F.ICAO_Code_Destination = 'CYYZ'
+AND F.DepartureDateAndTimeUTC BETWEEN NOW() AND NOW() + 65;
+
+/*1d*/
+
+SELECT FlightNo, SUM(NoReservedSeats)
+FROM reservation
+GROUP BY FlightNo;

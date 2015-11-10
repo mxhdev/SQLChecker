@@ -1,0 +1,76 @@
+/*1a*/
+
+
+Select	b.Matrikelnummer, 
+b.Lastname as Nachname, b.Firstname as Vorname
+
+from customer b 
+
+join 	(SELECT Matrikelnummer,
+
+	sum(NoReservedSeats) as Buchung
+	
+	FROM airport.reservation
+		
+	group by  Matrikelnummer)
+as Buchung
+
+using(Matrikelnummer) 
+where Buchung.Buchung= 4 ;
+
+
+
+
+/*1b*/
+
+
+select 	b.matrikelnummer as Matrikelnummer,
+
+	b.lastname as Nachname,
+		
+	b.firstname as Vorname,
+		
+	c.street as Straße
+from address c, customer b, reservation l
+
+where c.town = 'Berlin'
+
+and c.addressID = b.addressID
+
+and b.matrikelnummer = l.matrikelnummer
+
+and l.noreservedseats > 0
+
+group by b.matrikelnummer;
+
+
+
+
+
+/*1c*/
+
+
+select sum(noreservedseats )
+
+from reservation l, flightexecution k
+
+where l.flightno = k.flightno
+
+and icao_code_origin = 'eddf'
+and icao_code_destination = 'cyyz' 
+and k.departuredateandtimeutc > now()
+and k.departuredateandtimeutc < now() + interval 65 day;
+
+
+
+
+
+/*1d*/
+
+
+select l.flightno as FLugnummer, sum(l.noreservedseats) as Reservierungen
+
+from reservation l
+
+group by l.flightno; 
+

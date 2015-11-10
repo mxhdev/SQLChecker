@@ -1,0 +1,41 @@
+/*1a*/
+/*4.1 Selektiert die Matrikelnummer, Vor- und Nachname 
+der Kunden, die insgesamt genau 4 sitzplätze reserviert haben*/
+
+SELECT  C.Matrikelnummer, C.LastName, C.FirstName
+FROM customer C, reservation R
+WHERE C.Matrikelnummer = R.Matrikelnummer
+GROUP BY R.Matrikelnummer 
+HAVING SUM(NoReservedSeats) = 4;
+
+
+
+/*1a*/
+/* Selektiert die Gesamtanzahl der verschiedenen in Berlin wohnhaften
+ Studenten, die mindestens einen sitzplatz reserviert haben*/
+ 
+SELECT count(DISTINCT Kd.Matrikelnummer) AS GesamtanzahlBerlinUndSitzplatzReservierten
+FROM reservation R, kunden_deutschland Kd
+WHERE  Kd.Stadt='Berlin' AND  R.NoReservedSeats >= 1;
+
+/*1a*/ 
+/* Selektiert Anzahl aller reservierten Plätze(von jetzt bis 65 Tage) von Frankfurt(EDDF) nach Toronto(CYYZ)*/
+
+SELECT SUM(R.NoReservedSeats) AS ReserviertenPlätze
+from reservation R join flightexecution f 
+WHERE f.DepartureDateAndTimeUTC between curdate() AND curdate() + interval 65 DAY
+AND f.FlightNo = R.FlightNo 
+AND f.ICAO_Code_Origin = 'EDDF'
+AND f.ICAO_Code_Destination ='CYYZ';
+
+
+/*1d*/ 
+/*Selektiert alle Flugnummer und die dazugehörige Anzahl aller reservierten Plätze*/
+
+SELECT f.FlightNo, SUM(R.NoReservedSeats) AS SummeDerReserviertenPlätze
+FROM flightexecution f, Reservation R
+WHERE f.FlightNo = R.FlightNo
+GROUP BY f.FlightNo;
+
+
+
