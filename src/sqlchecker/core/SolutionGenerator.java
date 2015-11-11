@@ -154,7 +154,7 @@ public class SolutionGenerator {
 		html += "\n<table> <tr> <td>Connect</td> "
 				+ "<td>" + connProps[0] + "</td> "
 				+ "<td>" + connProps[1] + "</td> "
-				+ "<td>" + connProps[3] + "</td> "
+				+ "<td>" + connProps[2] + "</td> "
 				+ "<td>" + connProps[3] + "</td> </tr> </table>\n";
 		
 		/*
