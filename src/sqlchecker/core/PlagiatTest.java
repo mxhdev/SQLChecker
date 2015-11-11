@@ -1,21 +1,10 @@
 package sqlchecker.core;
 
-import org.simmetrics.StringMetric;
-import org.simmetrics.metrics.Levenshtein;
-import org.simmetrics.simplifiers.Simplifiers;
-
 import sqlchecker.io.IOUtil;
-import sqlchecker.io.OutputWriter;
 import sqlchecker.io.impl.SubmissionReader;
 
-import static org.simmetrics.StringMetricBuilder.with;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public final class PlagiatTest {
 	
@@ -76,30 +65,6 @@ public final class PlagiatTest {
 	}
 	
 	/**
-	 * Calculate the similarity of two strings. At the moment Levenshtein 
-	 * distance is used for that. The returned float value is limited to
-	 * 0 all characters different and 1 all are the same. -1 is returned if
-	 * stringA is empty. 
-	 * @param stringA
-	 * @param stringB
-	 * @return The returned float value is limited to 0 all characters
-	 * different and 1 all are the same. -1 is returned if stringA is empty.
-	 */
-	public static float similarityStrings(String stringA, String stringB) {
-
-		if(stringA.equals("")){
-			return -1;
-		}else{
-			StringMetric metric = with(new Levenshtein())
-					.simplify(Simplifiers.removeDiacritics())
-					.simplify(Simplifiers.removeNonWord())
-					.simplify(Simplifiers.toLowerCase()).build();
-
-			return metric.compare(stringA, stringB);			
-		}
-	}
-	
-	/**
 	 * Gets the list of PlagiatTest objects for all submissions and calculate each
 	 * similarity for the exercises of the submission i and i+1.  
 	 * @param com List of PlagiatTest objects
@@ -131,7 +96,7 @@ public final class PlagiatTest {
 						}
 					}
 					//compare similarity of comments
-					float sim = similarityStrings(comment[2], compareComment[2]);
+					float sim = CalculateSimilarity.similarityStringsCosine(comment[2], compareComment[2]);
 					simExer.add(sim);
 				}
 				Float simMax = Collections.max(simExer);
@@ -148,7 +113,13 @@ public final class PlagiatTest {
 		resultListStringArray.add(plagiatHeader);
 		String body = "";
 		for(PlagiatTest l: resultList){
-			body = l.filePath + IOUtil.CSV_DELIMITER + l.compareFilePath + IOUtil.CSV_DELIMITER + l.simMax + IOUtil.CSV_DELIMITER;
+			String valueMax = "";
+			if(l.simMax == -1){
+				valueMax = "no Comment found for "+ l.filePath;
+			}else{
+				valueMax = String.valueOf(l.simMax);
+			}
+			body = l.filePath + IOUtil.CSV_DELIMITER + l.compareFilePath + IOUtil.CSV_DELIMITER + valueMax + IOUtil.CSV_DELIMITER;
 			for(int i = 0; i < l.similarities.size(); i++){
 				String value = "";
 				if(l.similarities.get(i) == -1){
@@ -166,7 +137,7 @@ public final class PlagiatTest {
 	/**
 	 * Gets the List of submissions and exercises transform each submission to
 	 * a PlagiatTest object by getting the name, the studentID, and the solution
-	 * Array of the exercises.
+	 * array of the exercises.
 	 * Call Function generatePlagiatList with the list of PlagiatTest objects and the 
 	 * exercise list.
 	 * @param subs ArrayList of SubmissionReader
