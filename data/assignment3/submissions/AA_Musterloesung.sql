@@ -1,17 +1,24 @@
+﻿ü
+ö
+ä
+ß
 /*1a*/
+# Hier steht mein Kommentar für die Musterlösung und Aufgabe 1a
 SELECT 
     c.firstname,
     c.lastname,
     r.Matrikelnummer,
     SUM(r.NoReservedSeats)
-FROM
+FROM # 1a # Kommentar
     reservation r,
     customer c
 WHERE
     r.matrikelnummer = c.matrikelnummer
 GROUP BY r.Matrikelnummer
 HAVING SUM(r.NoReservedSeats) = 4;
+-- Kommentar für die Musterlösung
 /*1b*/
+-- Kommentar 1b
 SELECT 
     COUNT(DISTINCT (r.Matrikelnummer))
 FROM
@@ -23,7 +30,9 @@ WHERE
     r.Matrikelnummer = cu.Matrikelnummer
         AND cu.AddressID = a.AddressID
         AND a.town LIKE 'Berlin';
+-- Kommentar für die Musterlösung 1b
 /*1c*/
+/* Kommentar für die Musterlösung */
 SELECT 
     sum(`r`.`NoReservedSeats`) AS `NoReservedSeats`
 FROM
@@ -37,6 +46,7 @@ WHERE
         AND (`f`.`DepartureDateAndTimeUTC` < (NOW() + INTERVAL 65 DAY)));
 
 /*1d*/
+/* Kommentar für die Musterlösung */
 SELECT 
 	DISTINCT r.FlightNo,
 	(SELECT SUM(rv.NoReservedSeats) 

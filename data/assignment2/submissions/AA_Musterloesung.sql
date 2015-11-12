@@ -1,5 +1,5 @@
-/*1a*/
-# Hier steht mein Kommentar für die Musterlösung und Aufgabe 1a
+ï»¿/*1a*/
+# Hier steht mein Kommentar fÃ¼r die MusterlÃ¶sung und Aufgabe 1a
 SELECT 
     c.firstname,
     c.lastname,
@@ -12,7 +12,7 @@ WHERE
     r.matrikelnummer = c.matrikelnummer
 GROUP BY r.Matrikelnummer
 HAVING SUM(r.NoReservedSeats) = 4;
--- Kommentar für die Musterlösung
+-- Kommentar fÃ¼r die MusterlÃ¶sung
 /*1b*/
 -- Kommentar 1b
 SELECT 
@@ -26,9 +26,9 @@ WHERE
     r.Matrikelnummer = cu.Matrikelnummer
         AND cu.AddressID = a.AddressID
         AND a.town LIKE 'Berlin';
--- Kommentar für die Musterlösung 1b
+-- Kommentar fÃ¼r die MusterlÃ¶sung 1b
 /*1c*/
-/* Kommentar für die Musterlösung */
+/* Kommentar fÃ¼r die MusterlÃ¶sung */
 SELECT 
     sum(`r`.`NoReservedSeats`) AS `NoReservedSeats`
 FROM
@@ -42,10 +42,10 @@ WHERE
         AND (`f`.`DepartureDateAndTimeUTC` < (NOW() + INTERVAL 65 DAY)));
 
 /*1d*/
-/* Kommentar für die Musterlösung */
+/* Kommentar fÃ¼r die MusterlÃ¶sung */
 SELECT 
 	DISTINCT r.FlightNo,
 	(SELECT SUM(rv.NoReservedSeats) 
 		FROM reservation rv
-		WHERE rv.FlightNo = r.FlightNo) AS NoOfReservedSeatsPerFlight 
+		WHERE rv.FlightNo = r.FlightNo)
 FROM reservation r;

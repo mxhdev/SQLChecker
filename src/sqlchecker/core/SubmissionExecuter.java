@@ -271,10 +271,8 @@ public class SubmissionExecuter {
 	 */
 	
 	public static void main(String[] args) {
-		String submissionPath = "data/assignment2/submissions/";
-		String solutionPath = "data/assignment2/solution.txt";
 		
-		String agnPath = "data/assignment2/";
+		String agnPath = "data/assignment3/";
 		String resetPath = "";
 		
 		SubmissionExecuter se = new SubmissionExecuter(agnPath, resetPath);

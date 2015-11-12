@@ -1,4 +1,5 @@
-﻿/*1a*/
+﻿üöäß
+/*1a*/
 -- Die where-Klausel Sitzplatzreservierung.Sitzplatzreservierung enthält Aliase
 -- die vorher definiert wurden.
 
