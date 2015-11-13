@@ -1,6 +1,7 @@
 package sqlchecker.core;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import sqlchecker.io.impl.ScriptReader;
 import dbfit.MySqlTest;
@@ -56,10 +57,10 @@ public class DBFitFacade {
 	
 	/**
 	 * Runs a submission
-	 * @param sqlhtml HTML containing the submitted SQL statements 
+	 * @param sqlhtml HTML containing the submitted SQL statements, name and student id(s) of the submitter. 
 	 * @throws SQLException If the function was unable to close the sql connection
 	 */
-	public ResultStorage runSubmission(String sqlhtml) throws SQLException {
+	public ResultStorage runSubmission(String sqlhtml, ArrayList<String> name, ArrayList<String> matrikelnummer) throws SQLException {
 		
 		MySqlTest tester = null;
 
@@ -80,7 +81,7 @@ public class DBFitFacade {
 			
 			String result = getParseResult(target);
 			
-			rs = new ResultStorage(fileName, result
+			rs = new ResultStorage(fileName, name, matrikelnummer, result
 					, tester.counts.right, tester.counts.wrong
 					, tester.counts.ignores, tester.counts.exceptions);
 

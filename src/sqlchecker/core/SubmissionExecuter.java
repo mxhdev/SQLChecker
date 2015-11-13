@@ -174,7 +174,7 @@ public class SubmissionExecuter {
 			ResultStorage rs = null;
 			try {
 				// rs = runSubmission(fname, checkStr, connProps);
-				rs = checker.runSubmission(checkStr);
+				rs = checker.runSubmission(checkStr, subr.getName(), subr.getMatrikelnummer());
 			} catch (SQLException sqle) {
 				// unable to close connection
 				sqle.printStackTrace();

@@ -252,7 +252,7 @@ public class SolutionGenerator {
 		DBFitFacade checker = new DBFitFacade(outputFile, resetScript, connProps);
 		ResultStorage rs = null;
 		try {
-			rs = checker.runSubmission(checkStr);
+			rs = checker.runSubmission(checkStr, null, null);
 		} catch (SQLException sqle) {
 			// unable to close connection
 			sqle.printStackTrace();
