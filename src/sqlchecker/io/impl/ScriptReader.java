@@ -129,6 +129,7 @@ public class ScriptReader extends AbstractFileReader {
 		System.out.println("\n> Starting to execute the queries\n");
 		
 		MySQLQueryExecuter exec = new MySQLQueryExecuter(conn);
+		exec.setIgnoreFK(true); // make sure to ignore fk, to avoid errors
 		exec.runSQL(queryList);
 		
 		System.out.println("\n> Finished executing the queries\n");

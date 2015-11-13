@@ -1,11 +1,12 @@
 
 /*static*/
 
-CREATE DATABASE  IF NOT EXISTS `airport`;
+CREATE DATABASE IF NOT EXISTS `airport`;
 
 
 /*static*/
 DROP TABLE IF EXISTS `airport`.`address`;
+
 
 /*static*/
 
@@ -17,7 +18,7 @@ CREATE TABLE `airport`.`address` (
   `CountryISO3166_2LetterCode` char(2) NOT NULL,
   PRIMARY KEY (`AddressID`),
   KEY `CountryISO3166_2LetterCode` (`CountryISO3166_2LetterCode`),
-  CONSTRAINT `address_ibfk_1` FOREIGN KEY (`CountryISO3166_2LetterCode`) REFERENCES `country` (`CountryISO3166_2LetterCode`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `address_ibfk_1` FOREIGN KEY (`CountryISO3166_2LetterCode`) REFERENCES `airport`.`country` (`CountryISO3166_2LetterCode`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /*static*/
@@ -57,7 +58,7 @@ CREATE TABLE `airport`.`airport` (
   `AddressID` int(11) NOT NULL,
   PRIMARY KEY (`ICAO_Code`),
   KEY `AddressID` (`AddressID`),
-  CONSTRAINT `airport_ibfk_1` FOREIGN KEY (`AddressID`) REFERENCES `address` (`AddressID`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `airport_ibfk_1` FOREIGN KEY (`AddressID`) REFERENCES `airport`.`address` (`AddressID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /*static*/
@@ -113,7 +114,7 @@ CREATE TABLE `airport`.`customer` (
   `AddressID` int(11) NOT NULL,
   PRIMARY KEY (`Matrikelnummer`),
   KEY `AddressID` (`AddressID`),
-  CONSTRAINT `customer_ibfk_1` FOREIGN KEY (`AddressID`) REFERENCES `address` (`AddressID`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `customer_ibfk_1` FOREIGN KEY (`AddressID`) REFERENCES `airport`.`address` (`AddressID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /*static*/
@@ -137,9 +138,9 @@ CREATE TABLE `airport`.`flightexecution` (
   KEY `PlaneID` (`PlaneID`),
   KEY `ICAO_Code_Origin` (`ICAO_Code_Origin`),
   KEY `ICAO_Code_Destination` (`ICAO_Code_Destination`),
-  CONSTRAINT `flightexecution_ibfk_1` FOREIGN KEY (`PlaneID`) REFERENCES `plane` (`PlaneID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `flightexecution_ibfk_2` FOREIGN KEY (`ICAO_Code_Origin`) REFERENCES `airport` (`ICAO_Code`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `flightexecution_ibfk_3` FOREIGN KEY (`ICAO_Code_Destination`) REFERENCES `airport` (`ICAO_Code`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `flightexecution_ibfk_1` FOREIGN KEY (`PlaneID`) REFERENCES `airport`.`plane` (`PlaneID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `flightexecution_ibfk_2` FOREIGN KEY (`ICAO_Code_Origin`) REFERENCES `airport`.`airport` (`ICAO_Code`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `flightexecution_ibfk_3` FOREIGN KEY (`ICAO_Code_Destination`) REFERENCES `airport`.`airport` (`ICAO_Code`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /*static*/
@@ -218,8 +219,8 @@ CREATE TABLE `airport`.`reservation` (
   PRIMARY KEY (`ReservationID`),
   KEY `Matrikelnummer` (`Matrikelnummer`),
   KEY `FlightNo` (`FlightNo`,`DepartureDateAndTimeUTC`),
-  CONSTRAINT `reservation_ibfk_1` FOREIGN KEY (`Matrikelnummer`) REFERENCES `customer` (`Matrikelnummer`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `reservation_ibfk_2` FOREIGN KEY (`FlightNo`, `DepartureDateAndTimeUTC`) REFERENCES `flightexecution` (`FlightNo`, `DepartureDateAndTimeUTC`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `reservation_ibfk_1` FOREIGN KEY (`Matrikelnummer`) REFERENCES `airport`.`customer` (`Matrikelnummer`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `reservation_ibfk_2` FOREIGN KEY (`FlightNo`, `DepartureDateAndTimeUTC`) REFERENCES `airport`.`flightexecution` (`FlightNo`, `DepartureDateAndTimeUTC`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /*static*/
@@ -510,3 +511,5 @@ INSERT INTO
 		('IBE1233', '2014-12-08 23:40:45', 'EDDF', 'EDDT', 4, 240),
 		('IBE1234', '2014-12-09 12:45:45', 'LIRA', 'EDDF', 1, 180),
 		('IBE1235', '2014-12-10 10:35:45', 'EDDL', 'EGLC', 2, 180);
+
+		
