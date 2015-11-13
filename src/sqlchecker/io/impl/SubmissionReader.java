@@ -164,10 +164,10 @@ public class SubmissionReader extends AbstractFileReader {
 
 	public static void main(String[] args) {
 		String fpath = "data/assignment2/submissions/AA_Musterloesung.sql";
+		fpath = "data/assignment3/submissions/utf8Bug.txt";
 		String[] tags = new String[]{"1a", "1b", "1c", "1d"}; 
 		SubmissionReader sr = new SubmissionReader(fpath, tags);
 		sr.loadFile();
-		
 	}
 
 

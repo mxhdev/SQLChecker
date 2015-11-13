@@ -1,6 +1,7 @@
 package sqlchecker.io;
 
 import java.io.File;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -69,16 +70,21 @@ public class IOUtil {
 		
 		// sample tags: /*a2b*/, /* a2B*/
 		
-		line = line.replace(" ", "");
+		String tmpLine = line.replace(" ", "");
 		
+		// replace all non-ASCII characters
+		tmpLine = tmpLine.replaceAll("[^\\x00-\\x7F]", "");
+
 		// either tag prefix or suffix is incorrect
-		if (((!line.startsWith(TAG_PREFIX)) || (!line.endsWith(TAG_SUFFIX))))
+		if (((!tmpLine.startsWith(TAG_PREFIX)) || (!tmpLine.endsWith(TAG_SUFFIX)))) {
 			return -1;
+		}
 		
 		for (int i = 0; i < tags.length; i++) {
 			String tag = tags[i];
-			if (line.equalsIgnoreCase(TAG_PREFIX + tag + TAG_SUFFIX))
+			if (tmpLine.equalsIgnoreCase(TAG_PREFIX + tag + TAG_SUFFIX)) {
 				return i;
+			}
 		}
 		
 		// no tags were matching
