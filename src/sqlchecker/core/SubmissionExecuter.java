@@ -273,7 +273,7 @@ public class SubmissionExecuter {
 	public static void main(String[] args) {
 		
 		String agnPath = "data/assignment3/";
-		String resetPath = "";
+		String resetPath = "data/assignment2/airportReset.sql";
 		
 		SubmissionExecuter se = new SubmissionExecuter(agnPath, resetPath);
 		se.runCheck();
