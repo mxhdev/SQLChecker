@@ -459,10 +459,10 @@ public class QueryPipeline extends MySQLWrapper {
 				String queryLower = query.toLowerCase().trim();
 				// determine which command should be used
 				String command = "Execute";
-				if (queryLower.startsWith("select ")) {
+				if (queryLower.startsWith("select")) {
 					// check for ordered query
-					if (queryLower.contains(" order by ") 
-							|| queryLower.contains(" group by ")) {
+					if (queryLower.contains("order by") 
+							|| queryLower.contains("group by")) {
 						command = "Ordered Query";
 					} else {
 						command = "Query";
