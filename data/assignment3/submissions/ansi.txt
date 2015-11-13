@@ -2,6 +2,8 @@
 ä
 ö
 ß
+/*authors*/
+ANSI; Matrikelnummer Ansi
 /*1a*/
 # Hier steht mein Kommentar für die Musterlösung und Aufgabe 1a
 SELECT 

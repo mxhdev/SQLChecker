@@ -46,6 +46,11 @@ public class IOUtil {
 	 * Delimiter used in all CSV files of this application
 	 */
 	public static final String CSV_DELIMITER = ";";
+	
+	/**
+	 * Delimter of values used in all CSV file of this application
+	 */
+	public static final String VALUE_DELIMITER = ",";
 
 	/**
 	 * A static list of the currently valid tags
@@ -111,7 +116,9 @@ public class IOUtil {
 	 * @return The first line of the csv file as String
 	 */
 	public static String generateCSVHeader(ArrayList<String> tagMap) {
-		String csvHead = "Submission" + IOUtil.CSV_DELIMITER
+		String csvHead = "Name(s)" + IOUtil.CSV_DELIMITER
+				+ "Student ID(s)" + IOUtil.CSV_DELIMITER
+				+ "Submission" + IOUtil.CSV_DELIMITER
 				+ "Right" + IOUtil.CSV_DELIMITER
 				+ "Wrong" + IOUtil.CSV_DELIMITER
 				+ "Ignored" + IOUtil.CSV_DELIMITER

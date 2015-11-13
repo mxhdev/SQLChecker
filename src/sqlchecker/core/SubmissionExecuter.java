@@ -174,7 +174,7 @@ public class SubmissionExecuter {
 			ResultStorage rs = null;
 			try {
 				// rs = runSubmission(fname, checkStr, connProps);
-				rs = checker.runSubmission(checkStr);
+				rs = checker.runSubmission(checkStr, subr.getName(), subr.getMatrikelnummer());
 			} catch (SQLException sqle) {
 				// unable to close connection
 				sqle.printStackTrace();
@@ -273,7 +273,7 @@ public class SubmissionExecuter {
 	public static void main(String[] args) {
 		
 		String agnPath = "data/assignment3/";
-		String resetPath = "";
+		String resetPath = "data/assignment2/airportReset.sql";
 		
 		SubmissionExecuter se = new SubmissionExecuter(agnPath, resetPath);
 		se.runCheck();

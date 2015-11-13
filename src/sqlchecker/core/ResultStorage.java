@@ -1,5 +1,7 @@
 package sqlchecker.core;
 
+import java.util.ArrayList;
+
 import sqlchecker.io.IOUtil;
 
 
@@ -41,6 +43,18 @@ public class ResultStorage {
 	
 	
 	/**
+	 * Name(s) of the students who submitted the file
+	 */
+	private ArrayList<String> name = null;
+	
+	/**
+	 * Student IDs of the students who submitted the file
+	 */
+	private ArrayList<String> matrikelnummer = null;
+	
+	private String csv_name = "";
+	private String csv_matrikelnummer = "";
+	/**
 	 * Creates a ResultStorage object and sets the counts to -1. 
 	 * It is highly recommended to call the setCounts() function 
 	 * after using this constructor
@@ -49,7 +63,7 @@ public class ResultStorage {
 	 * this submission
 	 */
 	public ResultStorage(String fname, String resultRaw) {
-		this(fname, resultRaw, -1, -1, -1, -1);
+		this(fname, null, null, resultRaw, -1, -1, -1, -1);
 	}
 	
 	
@@ -67,12 +81,14 @@ public class ResultStorage {
 	 * @param exceptions Amount of error values (can be taken from 
 	 * the Fixture.counts field)
 	 */
-	public ResultStorage(String fname, String resultRaw, int right, int wrong, int ignored, int exceptions) {
+	public ResultStorage(String fname, ArrayList<String> sName, ArrayList<String> sMatrikelnummer, String resultRaw, int right, int wrong, int ignored, int exceptions) {
 		
 		this.raw = resultRaw;
 		this.fileName = fname;
 		
 		this.setCounts(right, wrong, ignored, exceptions);
+		this.name = sName;
+		this.matrikelnummer = sMatrikelnummer;
 		
 		// create csv line for this record
 		this.csv = generateCSVLine();
@@ -131,10 +147,23 @@ public class ResultStorage {
 		counts[2] = ignored;
 		counts[3] = exceptions;
 	}
-	
-	
-	
-	
+
+	/**
+	 * Set the names of the student(s)
+	 * @param name ArrayList<String>
+	 */
+	public void setName(ArrayList<String> name) {
+		this.name = name;
+	}
+
+	/**
+	 * Set the student ID(s)
+	 * @param matrikelnummer ArrayList<String>
+	 */
+	public void setMatrikelnummer(ArrayList<String> matrikelnummer) {
+		this.matrikelnummer = matrikelnummer;
+	}
+
 	/**
 	 * This function is part of the initialization routine of this
 	 * class and generates a csv line corresponding to the
@@ -142,7 +171,25 @@ public class ResultStorage {
 	 * @return CSV line corresponding to the results
 	 */
 	private String generateCSVLine() {
-		String csvLine = fileName + IOUtil.CSV_DELIMITER
+		if( name != null){
+			for(int i = 0; i < name.size();i++){
+				csv_name = csv_name + name.get(i).toString();
+				if(i < (name.size() - 1)){
+					csv_name = csv_name + IOUtil.VALUE_DELIMITER + " ";
+				}
+			}
+		}
+		if( matrikelnummer != null){
+			for(int i = 0; i < matrikelnummer.size();i++){
+				csv_matrikelnummer = csv_matrikelnummer + matrikelnummer.get(i);
+				if(i < (matrikelnummer.size() - 1)){
+					csv_matrikelnummer = csv_matrikelnummer + IOUtil.VALUE_DELIMITER + " ";
+				}
+			}
+		}
+		String csvLine = csv_name + IOUtil.CSV_DELIMITER
+				+ csv_matrikelnummer + IOUtil.CSV_DELIMITER
+				+ fileName + IOUtil.CSV_DELIMITER
 				+ counts[0] + IOUtil.CSV_DELIMITER
 				+ counts[1] + IOUtil.CSV_DELIMITER
 				+ counts[2] + IOUtil.CSV_DELIMITER

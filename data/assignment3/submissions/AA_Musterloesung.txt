@@ -1,7 +1,6 @@
-﻿ü
-ö
-ä
-ß
+/*authors*/
+Timo Eichhorn; 765443
+Max Hofmann; 875687
 /*1a*/
 # Hier steht mein Kommentar für die Musterlösung und Aufgabe 1a
 SELECT 
