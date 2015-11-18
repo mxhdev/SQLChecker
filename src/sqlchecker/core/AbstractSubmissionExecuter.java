@@ -1,9 +1,7 @@
 package sqlchecker.core;
 
-
 import java.io.File;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 import sqlchecker.io.IOUtil;
@@ -11,19 +9,7 @@ import sqlchecker.io.OutputWriter;
 import sqlchecker.io.impl.SolutionReader;
 import sqlchecker.io.impl.SubmissionReader;
 
-
-
-/**
- * Executes the submissions which are stored in the given directory
- * and prints the result/status
- * 
- * @author Max Hofmann
- * @deprecated This class will be split up in the classes <br>
- * {@link AbstractSubmissionExecuter} <br>
- * {@link DBFitSubmissionExecuter} <br>
- * {@link MySQLSubmissionExecuter} <br>
- */
-public class SubmissionExecuter {
+public abstract class AbstractSubmissionExecuter {
 
 	/**
 	 * (Relative) Path to the folder which stores all the submissions
@@ -46,16 +32,9 @@ public class SubmissionExecuter {
 	 */
 	private String resetScript = "";
 	
-	/**
-	 * Creates a SubmissionExecuter class and stores the
-	 * given parameters
-	 * @param agnPath The (relative) path to the folder, which
-	 * stores all the assignment-data
-	 * @param resetPath Path to the reset script which should be executed
-	 * before running any of the actual queries. If the given file does 
-	 * not exist, then there will be no reset queries executed
-	 */
-	public SubmissionExecuter(String assignmentPath, String resetPath) {
+	
+	
+	public AbstractSubmissionExecuter(String assignmentPath, String resetPath) {
 		this.agnPath = assignmentPath;
 		this.submPath = assignmentPath + "/submissions/";
 		this.solPath = assignmentPath + "/solution.txt";
@@ -114,6 +93,9 @@ public class SubmissionExecuter {
 		return sr;
 	}
 	
+	
+	
+	
 	/**
 	 * Tests all the available submissions
 	 */
@@ -121,119 +103,56 @@ public class SubmissionExecuter {
 		// get list of all submissions
 		ArrayList<File> submFileList = IOUtil.fetchFiles(submPath);
 		File[] submissions = submFileList.toArray(new File[submFileList.size()]);
-		
-		// all lines of the csv file
-		ArrayList<String> csvLines = new ArrayList<String>();
-		// log (contains errors for each submission)
-		ArrayList<String> logContent = new ArrayList<String>();
-		
-		
 		// show info
 		System.out.println("Solution: \n\t" + solPath);
 		System.out.println("\n" + submissions.length + " submissions found: ");
 		for (File f : submissions) 
 			System.out.println("\t" + f.getPath());
-		
+/*
 		// load tags & solution
 		SolutionReader sr = new SolutionReader(solPath);
 		sr.loadFile();
 		String solution = sr.getHTML().toString();
+	*/	
 		
-
-		// add csv header
-		csvLines.add(IOUtil.generateCSVHeader(sr.getTagMap()));
-		
-		//Generate ArrayList for duplicate Submission testing
+		// submission list for plagiat check
 		ArrayList<SubmissionReader> subCom = new ArrayList<SubmissionReader>();
+		// store list of results for writing them to a file
+		ArrayList<ResultStorage> rsList = new ArrayList<ResultStorage>();
 		
-		// Define output writer
-		//PrintWriter out = new PrintWriter(System.out, false);
-		String[] connProps = sr.getConnectionProperties();
-		
+		// load tags & solution
+		SolutionReader sr = new SolutionReader(solPath);
+		sr.loadFile();
+
 		for (int i = 0; i < submissions.length; i++) {
-			
 			File subm = submissions[i];
-			String fname = subm.getName();
-			
+
 			System.out.println("\n\n[" + (i+1) + "/" + submissions.length + "] Testing: " + subm);
 			
 			// load a submission
 			SubmissionReader subr = new SubmissionReader(subm.getPath(), IOUtil.tags);
 			subr.loadFile();
 			
-			// Set Name and Matrikelnummer of Submission
+			// Set Name and StudentId for Submission
 			subr = generateMetadata(subr);
-			
-			//add submission to submission list for duplicate check
 			subCom.add(subr);
 			
-			// get mapping and apply it
-			ArrayList<String[]> mapping = subr.getMapping();
-			String checkStr = IOUtil.applyMapping(solution, mapping);
-			
-			
-			DBFitFacade checker = new DBFitFacade(fname, resetScript, connProps);
-			// perform the check
-			ResultStorage rs = null;
-			try {
-				// rs = runSubmission(fname, checkStr, connProps);
-				rs = checker.runSubmission(checkStr, subr.getName(), subr.getMatrikelnummer());
-			} catch (SQLException sqle) {
-				// unable to close connection
-				sqle.printStackTrace();
-			}
-			
-			if (rs == null) {
-				// some sql exception occurred
-				logContent.add("Error for file " + fname);
-				csvLines.add(fname + IOUtil.CSV_DELIMITER + "?");
-				continue;
-			}
-			
-			// add csv line
-			csvLines.add(rs.getCSVLine());
-			// add log entry
-			logContent.add(rs.getLogEntry());
-		}
-		
-		/*
-		 * write/show content
-		 */
-		System.out.println("\n\nWriting content to > CSV < file:\n");
-		String summaryPath = this.agnPath + "summary.csv";
-		summaryPath = OutputWriter.makeUnique(summaryPath);
-		System.out.println("\t" + summaryPath + "\n");
-		/*
-		for (int i = 0; i < csvLines.size(); i++)  {
-			System.out.println(csvLines.get(i));
-		}*/
-		try {
-			OutputWriter summaryWriter = new OutputWriter(summaryPath, csvLines);
-			summaryWriter.writeLines();
-		} catch (IOException ioe) {
-			ioe.printStackTrace();
+			ResultStorage rs = workSubmission(sr, subr);
+			rsList.add(rs);
 		}
 		
 		
-		System.out.println("\n\nWriting content to > LOG < file:\n");
-		String logPath = this.agnPath + "mistakes.log";
-		logPath = OutputWriter.makeUnique(logPath);
-		System.out.println("\t" + logPath + "\n");
-		/*
-		for (int i = 0; i < logContent.size(); i++)  {
-			System.out.println(logContent.get(i));
-		}
-		*/
+		workResults(rsList);
 		
-		try {
-			OutputWriter logWriter = new OutputWriter(logPath, logContent);
-			logWriter.writeLines();
-		} catch (IOException ioe) {
-			ioe.printStackTrace();
-		}
+		
+		
+		
 		/*
-		 * perform plagiat check+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+		 * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 		 * 
+		 * perform plagiat check (start)
+		 * 
+		 * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 		 */
 		ArrayList<String> tags = sr.getTagMap();
 		ArrayList<String> exercises = new ArrayList<String>();
@@ -258,28 +177,29 @@ public class SubmissionExecuter {
 			ioe.printStackTrace();
 		}
 		
+		
+		/*
+		 * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+		 * 
+		 * perform plagiat check (end)
+		 * 
+		 * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+		 */
+		
+		
+		
 	}
 	
 	
 	
-	/*
-	 * HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
-	 * 
-	 * CURRENT MAIN CLASS
-	 * 
-	 * TODO
-	 * - generated solutions.txt automated ?
-	 * - javadoc
-	 * HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
-	 */
 	
-	public static void main(String[] args) {
-		
-		String agnPath = "data/assignment3/";
-		String resetPath = "data/assignment2/airportReset.sql";
-		
-		SubmissionExecuter se = new SubmissionExecuter(agnPath, resetPath);
-		se.runCheck();
-	}
+	
+	
+	
 
+	protected abstract ResultStorage workSubmission(SolutionReader sr, SubmissionReader subr);
+	
+	protected abstract void workResults(ArrayList<ResultStorage> results);
+	
+	
 }
