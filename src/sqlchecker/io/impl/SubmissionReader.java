@@ -24,13 +24,28 @@ public class SubmissionReader extends AbstractFileReader {
 
 	/**
 	 * Stores the mapping (TAG-->SubmissionSQL)
+	 * Does not contain static mappings after afterReading() finished
+	 * executing
 	 */
 	private ArrayList<String[]> tagMappings = new ArrayList<String[]>();
+
+	
+	/**
+	 * Equivalent to the tagMappings list, but contains only
+	 * static mappings
+	 */
+	private ArrayList<String[]> staticMappings = new ArrayList<String[]>();
+	
+	/**
+	 * List of student ids for every student who contributed to this submission
+	 */
 	private ArrayList<String> matrikelnummer;
+	
+	/**
+	 * List of student names for every student who contributed to this submission
+	 */
 	private ArrayList<String> name;
-	private String filePath;
-	
-	
+
 	
 	/**
 	 * Create a submission reader class, store the given path
@@ -59,6 +74,10 @@ public class SubmissionReader extends AbstractFileReader {
 		if (tmpPos >= 0) {
 			// new tag found!
 			pos = tmpPos;
+		} else if (line.equals(IOUtil.TAG_PREFIX + "static" + IOUtil.TAG_SUFFIX)) {
+			// static tag, add an empty map
+			tagMappings.add(new String[]{"static", ""});
+			pos = tagMappings.size() - 1;
 		} else {
 			// use (already found) tag
 			if (pos < 0) {
@@ -122,17 +141,51 @@ public class SubmissionReader extends AbstractFileReader {
 			//Delete all the comment tags
 			tagMappings.set(i, content);
 		}
+
+
+		// fill staticMapping list
+		staticMappings.clear();
+		ArrayList<String[]> newMapping = new ArrayList<String[]>();
+		for (int i = 0; i < tagMappings.size(); i++) {
+			String[] map = tagMappings.get(i);
+			// split into 2 lists (static / non-static)
+			if (map[0].equals(IOUtil.TAG_PREFIX + "static" + IOUtil.TAG_SUFFIX)) {
+				staticMappings.add(map.clone());
+			} else {
+				newMapping.add(map.clone());
+			}
+		}
+		
+		// re-fill normal mapping list
+		tagMappings.clear();
+		tagMappings.addAll(newMapping);
 	}
-	
+
 	
 	/**
 	 * For receiving the mapping which was extracted from the
 	 * given file
 	 * @return The tag-query mapping which was read from the given
-	 * submission
+	 * submission. This does not contain static tag mappings
 	 */
 	public ArrayList<String[]> getMapping() {
 		return this.tagMappings;
+	}
+	
+	
+	/**
+	 * Takes all the sql statements which are associated with a static
+	 * tag
+	 * @return
+	 */
+	public ArrayList<String> getStaticMapping() {
+		ArrayList<String> sql = new ArrayList<String>();
+		for (int i = 0; i < staticMappings.size(); i++) {
+			// (tag,sql) tuples, we only want the sql part
+			sql.add(staticMappings.get(i)[1]);
+		}
+		
+		return sql;
 	}
 	
 	

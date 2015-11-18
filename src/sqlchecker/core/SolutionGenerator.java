@@ -245,11 +245,18 @@ public class SolutionGenerator {
 	
 	
 	private void verify(String htmlStr, ArrayList<String[]> mapping) {
-		
+
+		// reset the database first
+		System.out.println("Executing reset with values \n\thost=" + connProps[0] + "\n\tdb=" + connProps[1] + "\n\tuser=" + connProps[2] + "\n\tpw=" + connProps[3] + "\n\tscript=" + resetScript);;
+
+		ScriptReader resetter = new ScriptReader(resetScript, ScriptReader.DEFAULT_DELIM, connProps);
+		resetter.loadFile();
+
+					
 		// apply the solution mapping
 		String checkStr = IOUtil.applyMapping(htmlStr, mapping);
 		
-		DBFitFacade checker = new DBFitFacade(outputFile, resetScript, connProps);
+		DBFitFacade checker = new DBFitFacade(outputFile, connProps);
 		ResultStorage rs = null;
 		try {
 			rs = checker.runSubmission(checkStr, null, null);

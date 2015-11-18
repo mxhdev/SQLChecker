@@ -16,6 +16,11 @@ public class MySQLQueryExecuter extends MySQLWrapper {
 	 */
 	private boolean ignoreFK = false;
 
+	
+	private boolean[] statusList = new boolean[0];
+	
+	private String errorString = "";
+	
 	/**
 	 * Initialize this class, which allows executing a list of mysql
 	 * queries
@@ -58,8 +63,25 @@ public class MySQLQueryExecuter extends MySQLWrapper {
 		this.ignoreFK = igno;
 	}
 	
-	public void runSQL(ArrayList<String> queryList) {
-		
+	
+	/**
+	 * Executes a list of (My)SQL queries
+	 * @param queryList
+	 * @return True iff no error occurred (thus, no rollback was performed)
+	 * The error information can be acquired with getErrorMsg() and getStatusList()
+	 */
+	public boolean runSQL(ArrayList<String> queryList) {
+
+		// init error string and status flag
+		errorString = "";
+		boolean success = true;
+
+		// init status list
+		statusList = new boolean[queryList.size()];
+		for (int i = 0; i < statusList.length; i++) {
+			statusList[i] = false;
+		}
+
 		Connection conn = null;
 		Statement stmt = null;
 		
@@ -82,6 +104,7 @@ public class MySQLQueryExecuter extends MySQLWrapper {
 			for (int i = 0; i < queryList.size(); i++) {
 				sql = queryList.get(i);
 				stmt.execute(sql);
+				statusList[i] = true;
 			}
 			
 			
@@ -92,6 +115,17 @@ public class MySQLQueryExecuter extends MySQLWrapper {
 			}
 			
 		} catch (SQLException sqle) {
+			// store error message!
+			errorString = "[MySQLQueryExecuter] ERROR For sql \n" + sql + "\n";
+			StackTraceElement[] strace = sqle.getStackTrace();
+			for (StackTraceElement ste : strace) {
+				errorString += ste.toString() + "\n";
+			}
+			errorString += "\n - - - - - - - - - - \n\n";
+			
+			// set flag
+			success = false;
+			
 			// try to undo everything!
 			rollback(conn);
 			System.out.println(sql);
@@ -103,14 +137,33 @@ public class MySQLQueryExecuter extends MySQLWrapper {
 			close(conn);
 		}
 		
+		
+		return success;
+		
+	}
+	
+	/**
+	 * For checking the error message of the query list which was 
+	 * last executed by this class
+	 * @return The error message of the query list which was 
+	 * last executed by this class. This String is empty iff there was 
+	 * no error
+	 */
+	public String getErrorMessage() {
+		return this.errorString;
+	}
+
+	
+	/**
+	 * For checking the status list of the last query list which was
+	 * executed. The list contains true for query i as long as query i
+	 * was successful, if query j was unsuccessful, the all values
+	 * with index >= j will be false 
+	 * @return Status list of the last executed query list
+	 */
+	public boolean[] getStatusList() {
+		return this.statusList.clone();
 	}
 	
 	
-	
-	
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
-	}
-
 }

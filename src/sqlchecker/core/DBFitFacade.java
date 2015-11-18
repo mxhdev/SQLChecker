@@ -32,22 +32,17 @@ public class DBFitFacade {
 	 * Temporary storage for the results of a submission
 	 */
 	private String storage = "";
-	
-	private String resetPath = "";
-	
+
+
 	/**
 	 * Initialize a DBFit facade object
 	 * @param fName File name of the submission that should be checked
-	 * @param resetScript Path to the reset script which should be executed
-	 * before running any of the actual queries. If the given file does 
-	 * not exist, then there will be no reset queries executed
 	 * @param cProps Connection properties in the following order:
 	 *  (host, user, pw, dbname)
 	 */
-	public DBFitFacade(String fName, String resetScript, String[] cProps) {
+	public DBFitFacade(String fName, String[] cProps) {
 		this.fileName = fName;
 		this.connProps = cProps.clone();
-		this.resetPath = resetScript;
 	}
 	
 	
@@ -112,11 +107,6 @@ public class DBFitFacade {
 		String db = connProps[3];
 		String dbuser = connProps[1];
 		String dbpw = connProps[2];
-		
-		System.out.println("Executing reset with values \n\thost=" + host + "\n\tdb=" + db + "\n\tuser=" + dbuser + "\n\tpw=" + dbpw + "\n\tscript=" + resetPath);;
-		
-		ScriptReader sr = new ScriptReader(resetPath, ScriptReader.DEFAULT_DELIM, connProps);
-		sr.loadFile();
 		
 		System.out.println("Connection with values \n\thost=" + host + "\n\tdb=" + db + "\n\tuser=" + dbuser + "\n\tpw=" + dbpw);
 		

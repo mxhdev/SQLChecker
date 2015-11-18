@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import sqlchecker.io.IOUtil;
 import sqlchecker.io.OutputWriter;
+import sqlchecker.io.impl.ScriptReader;
 import sqlchecker.io.impl.SolutionReader;
 import sqlchecker.io.impl.SubmissionReader;
 
@@ -43,6 +44,15 @@ public class SubmissionExecuter {
 	private String resetScript = "";
 	
 	/**
+	 * True iff there are static tags allowed in 
+	 * student submissions. Setting this to "true" will
+	 * make the class execute all static queries of the
+	 * current student submission, before trying to apply
+	 * the mapping to the DBFit solution file
+	 */
+	private boolean staticEnabled = false;
+	
+	/**
 	 * Creates a SubmissionExecuter class and stores the
 	 * given parameters
 	 * @param agnPath The (relative) path to the folder, which
@@ -50,12 +60,17 @@ public class SubmissionExecuter {
 	 * @param resetPath Path to the reset script which should be executed
 	 * before running any of the actual queries. If the given file does 
 	 * not exist, then there will be no reset queries executed
+	 * @param allowStatic True iff there are static tags allowed in 
+	 * student submissions
 	 */
-	public SubmissionExecuter(String assignmentPath, String resetPath) {
+	public SubmissionExecuter(String assignmentPath, String resetPath, boolean allowStatic) {
 		this.agnPath = assignmentPath;
 		this.submPath = assignmentPath + "/submissions/";
 		this.solPath = assignmentPath + "/solution.txt";
+		
 		this.resetScript = resetPath;
+		
+		this.staticEnabled = allowStatic;
 	}
 	
 	
@@ -144,9 +159,20 @@ public class SubmissionExecuter {
 		
 		// Define output writer
 		//PrintWriter out = new PrintWriter(System.out, false);
+		// host, user, pw, dbname
 		String[] connProps = sr.getConnectionProperties();
 		
 		for (int i = 0; i < submissions.length; i++) {
+			
+			
+
+			// reset the database first
+			System.out.println("Executing reset with values \n\thost=" + connProps[0] + "\n\tdb=" + connProps[1] + "\n\tuser=" + connProps[2] + "\n\tpw=" + connProps[3] + "\n\tscript=" + resetScript);;
+			
+			ScriptReader resetter = new ScriptReader(resetScript, ScriptReader.DEFAULT_DELIM, connProps);
+			resetter.loadFile();
+			
+			
 			
 			File subm = submissions[i];
 			String fname = subm.getName();
@@ -162,13 +188,33 @@ public class SubmissionExecuter {
 			
 			//add submission to submission list for duplicate check
 			subCom.add(subr);
+
+			// execute static mapping if enabled
+			// TODO: Store the following informations inside
+			// the ResultStorage so it also gets written to
+			// the files
+			boolean sqlSuccess = false;
+			String sqlError = "";
+			boolean[] sqlStatusList = new boolean[0];
+			if (staticEnabled) {
+				ArrayList<String> staticQueries = subr.getStaticMapping();
+				System.out.println("\n> Starting to execute the queries\n");
+				// Execute via MySQL!
+				MySQLQueryExecuter exec = new MySQLQueryExecuter(connProps);
+				exec.setIgnoreFK(true); // make sure to ignore fk, to avoid errors
+				// Get status information
+				sqlSuccess = exec.runSQL(staticQueries);
+				sqlStatusList = exec.getStatusList(); 
+				sqlError = exec.getErrorMessage();
+			}
+			
 			
 			// get mapping and apply it
 			ArrayList<String[]> mapping = subr.getMapping();
 			String checkStr = IOUtil.applyMapping(solution, mapping);
 			
 			
-			DBFitFacade checker = new DBFitFacade(fname, resetScript, connProps);
+			DBFitFacade checker = new DBFitFacade(fname, connProps);
 			// perform the check
 			ResultStorage rs = null;
 			try {
@@ -271,10 +317,11 @@ public class SubmissionExecuter {
 	
 	public static void main(String[] args) {
 		
+		boolean allowStatic = false;
 		String agnPath = "data/assignment3/";
 		String resetPath = "data/assignment2/airportReset.sql";
 		
-		SubmissionExecuter se = new SubmissionExecuter(agnPath, resetPath);
+		SubmissionExecuter se = new SubmissionExecuter(agnPath, resetPath, allowStatic);
 		se.runCheck();
 	}
 
