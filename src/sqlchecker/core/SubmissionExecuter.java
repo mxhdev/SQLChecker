@@ -18,10 +18,6 @@ import sqlchecker.io.impl.SubmissionReader;
  * and prints the result/status
  * 
  * @author Max Hofmann
- * @deprecated This class will be split up in the classes <br>
- * {@link AbstractSubmissionExecuter} <br>
- * {@link DBFitSubmissionExecuter} <br>
- * {@link MySQLSubmissionExecuter} <br>
  */
 public class SubmissionExecuter {
 
