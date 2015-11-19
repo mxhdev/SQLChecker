@@ -1,0 +1,28 @@
+tags=
+
+
+<table>
+	<tr>
+		<td>dbfit.MySqlTest</td>
+	</tr>
+</table>
+
+<table> <tr> <td>Connect</td> <td>localhost</td> <td>root</td> <td></td> <td>dbfit</td> </tr> </table>
+
+
+
+<table>
+	<tr>
+		<td>Query</td>
+		<td>SELECT count(pid) from Produkte</td>
+	</tr>
+	<tr>
+		<td>count(pid)</td>
+	</tr>
+	<tr>
+		<td>7</td>
+	</tr>
+</table>
+
+
+

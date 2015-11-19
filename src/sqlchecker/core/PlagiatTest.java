@@ -99,7 +99,13 @@ public final class PlagiatTest {
 					float sim = CalculateSimilarity.similarityStringsCosine(comment[2], compareComment[2]);
 					simExer.add(sim);
 				}
-				Float simMax = Collections.max(simExer);
+				
+				// max edit (start)
+				Float simMax = 0f;
+				if (!simExer.isEmpty())
+					simMax = Collections.max(simExer);
+				// max edit (end)
+				
 				PlagiatTest result = new PlagiatTest(com.get(i).getMatrikelnummer(), com.get(j).getMatrikelnummer(), com.get(i).getName(), com.get(j).getName(), simExer, simMax, com.get(i).getFilePath(), com.get(j).getFilePath());
 				resultList.add(result);
 			}
@@ -162,7 +168,7 @@ public final class PlagiatTest {
 	public static void main(String[] args) {
 		
 		String mitKom = "SELECT bezeichnung, preis FROM produkte; \n"
-						+"-- Dies ist ein Kommentar für s1 1a \n"
+						+"-- Dies ist ein Kommentar fï¿½r s1 1a \n"
 						+"Select dasd from asdasd; \n"
 						+"# Hier steht noch ein Kommentar\n"
 						+"Select dasda from dasd where;"

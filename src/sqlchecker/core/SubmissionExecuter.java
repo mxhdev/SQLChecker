@@ -195,7 +195,7 @@ public class SubmissionExecuter {
 			ResultStorage staticRs = null;
 			
 			if (staticEnabled) {
-				System.out.println("\n> Starting to execute the > STATIC < queries\n");
+				System.out.println("\n> Starting to execute the " + staticQueries.size() + " > STATIC < queries\n");
 				String staticString = SubmissionReader.generateStaticHTML(connProps, staticQueries);
 				// Execute via DBFit facade
 				try {
@@ -313,9 +313,6 @@ public class SubmissionExecuter {
 	 * 
 	 * CURRENT MAIN CLASS
 	 * 
-	 * TODO
-	 * - generated solutions.txt automated ?
-	 * - javadoc
 	 * HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 	 */
 	
@@ -323,7 +320,11 @@ public class SubmissionExecuter {
 		
 		boolean allowStatic = false;
 		String agnPath = "data/assignment3/";
-		String resetPath = "data/assignment2/airportReset.sql";
+		String resetPath = agnPath + "/airportReset.sql";
+		
+		agnPath = "data/assignment4";
+		resetPath = agnPath + "/reset.sql";
+		allowStatic = true;
 		
 		SubmissionExecuter se = new SubmissionExecuter(agnPath, resetPath, allowStatic);
 		se.runCheck();

@@ -1,6 +1,7 @@
 package sqlchecker.io.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -76,7 +77,7 @@ public class SubmissionReader extends AbstractFileReader {
 			pos = tmpPos;
 		} else if (line.equals(IOUtil.TAG_PREFIX + "static" + IOUtil.TAG_SUFFIX)) {
 			// static tag, add an empty map
-			tagMappings.add(new String[]{"static", ""});
+			tagMappings.add(new String[]{"static", "", ""});
 			pos = tagMappings.size() - 1;
 		} else {
 			// use (already found) tag
@@ -136,6 +137,7 @@ public class SubmissionReader extends AbstractFileReader {
 			}
 			//Extract the SQL Statement without the comments
 			mSQL.appendTail(cleanedSQL);
+			//System.out.println("[c]> " + Arrays.toString(content));
 			content[1] = cleanedSQL.toString();
 			content[2] = comment.replaceAll("(#|--|/\\*|\\*/)", "");
 			//Delete all the comment tags
@@ -149,7 +151,7 @@ public class SubmissionReader extends AbstractFileReader {
 		for (int i = 0; i < tagMappings.size(); i++) {
 			String[] map = tagMappings.get(i);
 			// split into 2 lists (static / non-static)
-			if (map[0].equals(IOUtil.TAG_PREFIX + "static" + IOUtil.TAG_SUFFIX)) {
+			if (map[0].equals("static")) {
 				staticMappings.add(map.clone());
 			} else {
 				newMapping.add(map.clone());
@@ -220,7 +222,7 @@ public class SubmissionReader extends AbstractFileReader {
 		
 		dbfit += IOUtil.generateDBFitHeader(connProps);
 
-		
+
 		// actual queries
 		
 		for (int i = 0; i < queries.size(); i++) {
@@ -234,6 +236,11 @@ public class SubmissionReader extends AbstractFileReader {
 					+ "\n\t<tr>"
 					+ "\n\t\t<td>" + command + "</td>"
 					+ "\n\t\t<td>" + sql + "</td>"
+					+ "\n\t</tr>"
+					+ "\n</table>\n\n";
+			dbfit += "<table>"
+					+ "\n\t<tr>"
+					+ "\n\t\t<td>Commit</td>"
 					+ "\n\t</tr>"
 					+ "\n</table>\n\n";
 		}
