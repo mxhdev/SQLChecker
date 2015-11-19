@@ -211,6 +211,35 @@ public class SubmissionReader extends AbstractFileReader {
 		this.name = name;
 	}
 
+	
+	
+	public static String generateStaticHTML(String[] connProps, ArrayList<String> queries) {
+		String dbfit = "";
+		
+		// generate header
+		
+		dbfit += IOUtil.generateDBFitHeader(connProps);
+
+		
+		// actual queries
+		
+		for (int i = 0; i < queries.size(); i++) {
+			String sql = queries.get(i);
+			
+			// determine dbfit command
+			String command = IOUtil.getDBFitCommand(sql);
+			
+			// generate HTML
+			dbfit += "\n\n<table>"
+					+ "\n\t<tr>"
+					+ "\n\t\t<td>" + command + "</td>"
+					+ "\n\t\t<td>" + sql + "</td>"
+					+ "\n\t</tr>"
+					+ "\n</table>\n\n";
+		}
+		
+		return dbfit;
+	}
 
 
 

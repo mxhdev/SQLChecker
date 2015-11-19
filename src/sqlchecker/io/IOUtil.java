@@ -208,6 +208,98 @@ public class IOUtil {
 		return status;
 	}
 
+
+	/**
+	 * Determine the correct dbfit command for the given sql
+	 * statement
+	 * @param sql
+	 * @return
+	 */
+	public static String getDBFitCommand(String sql) {
+		// determine dbfit command
+		String queryLower = sql.toLowerCase().trim();
+		// determine which command should be used
+		
+		String command = "Execute";
+		
+		if (queryLower.startsWith("select")) {
+			
+			// check for ordered query
+			if (queryLower.contains("order by") 
+					|| queryLower.contains("group by")) {
+				command = "Ordered Query";
+			} else {
+				command = "Query";
+			}
+			
+		} else {
+			// some other kind of query, probably a DDL / DML
+			// statement which does not produce a result set
+			command = "Execute";
+		}
+		
+		
+		return command;
+	}
+
+	
+	
+	/**
+	 * Generates a dbfit html header. This header contains 2 html tables.
+	 * The first table contains the driver name (here:dbfit.MySqlTest), 
+	 * the second table contains the connection properties
+	 * @param connProps Connection properties in the following order: <br>
+	 * host (default:localhost) <br>
+	 * dbUser (default:root) <br>
+	 * dbUserPw (default:) <br>
+	 * dbName (default:dbfit) <br>
+	 * @return The html header tables
+	 */
+	public static String generateDBFitHeader(String[] connProps) {
+		return generateDBFitHeader(connProps, "dbfit.MySqlTest");
+	}
+	
+	
+	/**
+	 * Generates a dbfit html header. This header contains 2 html tables.
+	 * The first table contains the driver name, the second table
+	 * contains the connection properties
+	 * @param connProps Connection properties in the following order: <br>
+	 * host (default:localhost) <br>
+	 * dbUser (default:root) <br>
+	 * dbUserPw (default:) <br>
+	 * dbName (default:dbfit) <br>
+	 * @param driverName The driver name (Default: dbfit.MySqlTest)
+	 * @return The html header tables
+	 */
+	public static String generateDBFitHeader(String[] connProps, String driverName) {
+		String header = "";
+		
+		// driver, i.e. dbfit.MySqlTest
+		header += "\n<table>"
+				+ "\n\t<tr>"
+				+ "\n\t\t<td>" + driverName + "</td>"
+				+ "\n\t</tr>"
+				+ "\n</table>\n";
+		
+		
+		/* Connection properties in the following order: <br>
+	 * host (default:localhost) <br>
+	 * dbUser (default:root) <br>
+	 * dbUserPw (default:) <br>
+	 * dbName (default:dbfit) <br>
+	 */
+		header += "\n<table> <tr> <td>Connect</td> "
+				+ "<td>" + connProps[0] + "</td> "
+				+ "<td>" + connProps[1] + "</td> "
+				+ "<td>" + connProps[2] + "</td> "
+				+ "<td>" + connProps[3] + "</td> </tr> </table>\n";
+		
+		return header;
+	}
+	
+	
+	
 	
 	public static String parseCallableHeader(String sql) {
 		

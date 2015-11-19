@@ -136,38 +136,14 @@ public class SolutionGenerator {
 		
 		// step 1.2 - write the header information
 		String html = "";
-		// tags
+		
+		// !HEADER! tags
 		html += "tags=" + tagStr + "\n\n";
-		// driver name
-		html += "\n<table>"
-				+ "\n\t<tr>"
-				+ "\n\t\t<td>dbfit.MySqlTest</td>"
-				+ "\n\t</tr>"
-				+ "\n</table>\n";
-		/* Connection properties in the following order: <br>
-	 * host (default:localhost) <br>
-	 * dbUser (default:root) <br>
-	 * dbUserPw (default:) <br>
-	 * dbName (default:dbfit) <br>
-	 */
 		
-		html += "\n<table> <tr> <td>Connect</td> "
-				+ "<td>" + connProps[0] + "</td> "
-				+ "<td>" + connProps[1] + "</td> "
-				+ "<td>" + connProps[2] + "</td> "
-				+ "<td>" + connProps[3] + "</td> </tr> </table>\n";
+		// !HEADER! driver name & connection props
+		html += IOUtil.generateDBFitHeader(connProps);
 		
-		/*
-		html += "\n<table>"
-				+ "\n\t<tr>"
-				+ "\n\t\t<td>Connect</td>"
-				+ "\n\t\t<td>" + connProps[0] + "</td>"
-				+ "\n\t\t<td>" + connProps[1] + "</td>"
-				+ "\n\t\t<td>" + connProps[2] + "</td>"
-				+ "\n\t\t<td>" + connProps[3] + "</td>"
-				+ "\n\t</tr>"
-				+ "\n</table>\n";
-		*/
+		
 		System.out.println("HEADER:");
 		System.out.println("H H H H H H H H H H H H H H H H H H H H");
 		System.out.println(html);

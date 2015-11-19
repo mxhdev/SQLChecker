@@ -455,23 +455,9 @@ public class QueryPipeline extends MySQLWrapper {
 				}
 				
 				// store results in html string
-				// header
-				String queryLower = query.toLowerCase().trim();
+				
 				// determine which command should be used
-				String command = "Execute";
-				if (queryLower.startsWith("select")) {
-					// check for ordered query
-					if (queryLower.contains("order by") 
-							|| queryLower.contains("group by")) {
-						command = "Ordered Query";
-					} else {
-						command = "Query";
-					}
-				} else {
-					// some other kind of query, probably a DDL / DBL
-					// statement which does not produce a result set
-					command = "Execute";
-				}
+				String command = IOUtil.getDBFitCommand(query);
 				
 				// Print the header with the command
 				// and the query or its corresponding tag
