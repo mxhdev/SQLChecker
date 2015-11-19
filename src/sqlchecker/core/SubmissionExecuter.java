@@ -151,8 +151,6 @@ public class SubmissionExecuter {
 		String solution = sr.getHTML().toString();
 		
 
-		// add csv header
-		csvLines.add(IOUtil.generateCSVHeader(sr.getTagMap()));
 		
 		//Generate ArrayList for duplicate Submission testing
 		ArrayList<SubmissionReader> subCom = new ArrayList<SubmissionReader>();
@@ -189,32 +187,34 @@ public class SubmissionExecuter {
 			//add submission to submission list for duplicate check
 			subCom.add(subr);
 
+			// init dbfit checker facade
+			DBFitFacade checker = new DBFitFacade(fname, connProps);
+			
 			// execute static mapping if enabled
-			// TODO: Store the following informations inside
-			// the ResultStorage so it also gets written to
-			// the files
-			boolean sqlSuccess = false;
-			String sqlError = "";
-			boolean[] sqlStatusList = new boolean[0];
+			ArrayList<String> staticQueries = subr.getStaticMapping();
+			ResultStorage staticRs = null;
+			
 			if (staticEnabled) {
-				ArrayList<String> staticQueries = subr.getStaticMapping();
-				System.out.println("\n> Starting to execute the queries\n");
-				// Execute via MySQL!
-				MySQLQueryExecuter exec = new MySQLQueryExecuter(connProps);
-				exec.setIgnoreFK(true); // make sure to ignore fk, to avoid errors
-				// Get status information
-				sqlSuccess = exec.runSQL(staticQueries);
-				sqlStatusList = exec.getStatusList(); 
-				sqlError = exec.getErrorMessage();
+				System.out.println("\n> Starting to execute the > STATIC < queries\n");
+				String staticString = SubmissionReader.generateStaticHTML(connProps, staticQueries);
+				// Execute via DBFit facade
+				try {
+					staticRs = checker.runSubmission(staticString, subr.getName(), subr.getMatrikelnummer());
+				} catch (SQLException sqle) {
+					// unable to close connection
+					sqle.printStackTrace();
+				}
 			}
 			
+
+			// add csv header
+			csvLines.add(IOUtil.generateCSVHeader(sr.getTagMap(), staticRs, staticQueries.size()));
 			
 			// get mapping and apply it
 			ArrayList<String[]> mapping = subr.getMapping();
 			String checkStr = IOUtil.applyMapping(solution, mapping);
-			
-			
-			DBFitFacade checker = new DBFitFacade(fname, connProps);
+
+
 			// perform the check
 			ResultStorage rs = null;
 			try {
@@ -230,6 +230,10 @@ public class SubmissionExecuter {
 				logContent.add("Error for file " + fname);
 				csvLines.add(fname + IOUtil.CSV_DELIMITER + "?");
 				continue;
+			}
+			
+			if (staticRs != null)  {
+				rs.setStaticResults(staticRs, staticQueries.size());
 			}
 			
 			// add csv line

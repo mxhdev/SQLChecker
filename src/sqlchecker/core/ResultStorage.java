@@ -54,6 +54,18 @@ public class ResultStorage {
 	
 	private String csv_name = "";
 	private String csv_matrikelnummer = "";
+	
+	/**
+	 * Amount of static queries executed
+	 */
+	private int staticAmount = -1;
+	
+	/**
+	 * Counts executed from the static queries (They were executed
+	 * via dbfit)
+	 */
+	private int[] staticCounts = new int[4];
+	
 	/**
 	 * Creates a ResultStorage object and sets the counts to -1. 
 	 * It is highly recommended to call the setCounts() function 
@@ -90,10 +102,31 @@ public class ResultStorage {
 		this.name = sName;
 		this.matrikelnummer = sMatrikelnummer;
 		
+		updateOutput(true, true);
+	}
+
+	
+	/*
+	 * Updates the logEntry and csv line
+	 */
+	
+	/**
+	 * Updates the logEntry and/or the output CSV line b using
+	 * the current values of the class variables
+	 * @param updateCSV True iff the CSV line should be updated
+	 * @param updateLogEntry True iff the log entry corresponding
+	 * to this submission should be updated
+	 */
+	private void updateOutput(boolean updateCSV, boolean updateLogEntry) {
 		// create csv line for this record
-		this.csv = generateCSVLine();
+		if (updateCSV) {
+			this.csv = generateCSVLine();
+		}
+		
 		// create log entry (has to be done AFTER generateCSVHeader())
-		this.logEntry = generateLogEntry();
+		if (updateLogEntry) {
+			this.logEntry = generateLogEntry();
+		}
 	}
 	
 	
@@ -187,9 +220,19 @@ public class ResultStorage {
 				}
 			}
 		}
+		
+		String staticCSV = this.staticAmount + IOUtil.CSV_DELIMITER;
+		if (this.staticAmount > 0) {
+			staticCSV += staticCounts[0] + IOUtil.CSV_DELIMITER
+					+ staticCounts[1] + IOUtil.CSV_DELIMITER
+					+ staticCounts[2] + IOUtil.CSV_DELIMITER
+					+ staticCounts[3] + IOUtil.CSV_DELIMITER;
+		}
+		
 		String csvLine = csv_name + IOUtil.CSV_DELIMITER
 				+ csv_matrikelnummer + IOUtil.CSV_DELIMITER
 				+ fileName + IOUtil.CSV_DELIMITER
+				+ staticCSV
 				+ counts[0] + IOUtil.CSV_DELIMITER
 				+ counts[1] + IOUtil.CSV_DELIMITER
 				+ counts[2] + IOUtil.CSV_DELIMITER
@@ -261,6 +304,27 @@ public class ResultStorage {
 			}
 		}
 		return logRaw;
+	}
+
+
+	/**
+	 * For storing information about executing static queries of a student
+	 * submission
+	 * @param staticRs The result set which was created from executing
+	 * the static queries of a student submission
+	 * @param qamount Amount of static queries executed
+	 */
+	public void setStaticResults(ResultStorage staticRs, int qamount) {
+		// store counts & amount
+		this.staticCounts = staticRs.counts.clone();
+		this.staticAmount = qamount;
+		
+		// append logEntry
+		this.logEntry += "\n" + staticRs.generateLogEntry();
+		
+		// update CSV line corresponding to this submission
+		updateOutput(true, false);
+		
 	}
 	
 	
