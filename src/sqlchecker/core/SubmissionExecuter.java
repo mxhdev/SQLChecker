@@ -160,6 +160,9 @@ public class SubmissionExecuter {
 		// host, user, pw, dbname
 		String[] connProps = sr.getConnectionProperties();
 		
+		
+		csvLines.add(IOUtil.generateCSVHeader(sr.getTagMap()));
+		
 		for (int i = 0; i < submissions.length; i++) {
 			
 			
@@ -206,10 +209,11 @@ public class SubmissionExecuter {
 				}
 			}
 			
-
-			// add csv header
-			csvLines.add(IOUtil.generateCSVHeader(sr.getTagMap(), staticRs, staticQueries.size()));
-			
+/*
+			// Add CSV header (if one submission is static, then others are too)
+			if (i == 0)
+				csvLines.add(IOUtil.generateCSVHeader(sr.getTagMap(), staticRs, staticQueries.size()));
+	*/		
 			// get mapping and apply it
 			ArrayList<String[]> mapping = subr.getMapping();
 			String checkStr = IOUtil.applyMapping(solution, mapping);

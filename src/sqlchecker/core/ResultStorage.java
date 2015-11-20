@@ -204,11 +204,14 @@ public class ResultStorage {
 
 	/**
 	 * This function is part of the initialization routine of this
-	 * class and generates a csv line corresponding to the
+	 * class and generates a CSV line corresponding to the
 	 * results stored in this class
 	 * @return CSV line corresponding to the results
 	 */
 	private String generateCSVLine() {
+		csv_name = "";
+		csv_matrikelnummer = "";
+		
 		if( name != null){
 			for(int i = 0; i < name.size();i++){
 				csv_name = csv_name + name.get(i).toString();
@@ -225,15 +228,14 @@ public class ResultStorage {
 				}
 			}
 		}
-		
+
 		String staticCSV = this.staticAmount + IOUtil.CSV_DELIMITER;
-		if (this.staticAmount > 0) {
-			staticCSV += staticCounts[0] + IOUtil.CSV_DELIMITER
-					+ staticCounts[1] + IOUtil.CSV_DELIMITER
-					+ staticCounts[2] + IOUtil.CSV_DELIMITER
-					+ staticCounts[3] + IOUtil.CSV_DELIMITER;
-		}
 		
+		staticCSV += staticCounts[0] + IOUtil.CSV_DELIMITER
+				+ staticCounts[1] + IOUtil.CSV_DELIMITER
+				+ staticCounts[2] + IOUtil.CSV_DELIMITER
+				+ staticCounts[3] + IOUtil.CSV_DELIMITER;
+
 		String csvLine = csv_name + IOUtil.CSV_DELIMITER
 				+ csv_matrikelnummer + IOUtil.CSV_DELIMITER
 				+ fileName + IOUtil.CSV_DELIMITER

@@ -121,22 +121,23 @@ public class IOUtil {
 	 * This function is part of the initialization routine of this
 	 * class and generates the header/first line of the result CSV file
 	 * @param tagMap
-	 * @param staticRs
-	 * @param staticCount
 	 * @return The first line of the CSV file as String
 	 */
-	public static String generateCSVHeader(ArrayList<String> tagMap, ResultStorage staticRs, int staticCount) {
+	public static String generateCSVHeader(ArrayList<String> tagMap) {
 		
 		// The CSV line always stores the amount of static queries
 		// But it also stores counts if there were actual static queries
 		
+		
+		// static amount
 		String staticHeader = "Static queries" + IOUtil.CSV_DELIMITER; 
-		if ((staticCount > 0) && (staticRs != null)) {
-			staticHeader += "Right (static)" + IOUtil.CSV_DELIMITER
-					+ "Wrong (static)" + IOUtil.CSV_DELIMITER
-					+ "Ignored (static)" + IOUtil.CSV_DELIMITER
-					+ "Exceptions (static)" + IOUtil.CSV_DELIMITER;
-		}
+		
+		// static counts
+		staticHeader += "Right (static)" + IOUtil.CSV_DELIMITER
+				+ "Wrong (static)" + IOUtil.CSV_DELIMITER
+				+ "Ignored (static)" + IOUtil.CSV_DELIMITER
+				+ "Exceptions (static)" + IOUtil.CSV_DELIMITER;
+
 		
 		String csvHead = "Name(s)" + IOUtil.CSV_DELIMITER
 				+ "Student ID(s)" + IOUtil.CSV_DELIMITER
