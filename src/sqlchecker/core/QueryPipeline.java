@@ -412,7 +412,7 @@ public class QueryPipeline extends MySQLWrapper {
 	
 	
 	private String runAndBuildHTML(Statement stmt) throws SQLException {
-		// stores result html
+		// stores result HTML
 		String html = ""; 
 		
 		boolean hasRes = false;
@@ -422,10 +422,17 @@ public class QueryPipeline extends MySQLWrapper {
 		
 		for (int i = 0; i < mapping.size(); i++) {
 			
+			hasRes = false;
 			resRaw = new ArrayList<String[]>();
 			String qtag = mapping.get(i)[0];
-			boolean isStatic = qtag.equalsIgnoreCase("static");
 			String query = mapping.get(i)[1];
+			
+			boolean errorExpected = qtag.equalsIgnoreCase("static.error");
+			boolean isStatic = (qtag.equalsIgnoreCase("static") || errorExpected);
+			// add error label
+			if (errorExpected) {
+				html += "\n<!--error-->\n";
+			}
 			
 			// query is one mapping (might have multiple calls)
 			System.out.println("\n\n - - - - - - - - - -\n");
@@ -444,7 +451,11 @@ public class QueryPipeline extends MySQLWrapper {
 				System.out.println("[1/1] Run execute(\"\n" + query +"\n\")");
 				
 				// Run it
-				hasRes = stmt.execute(query);
+				// Don't execute queries which are expected to
+				// produce an error
+				if (!errorExpected) {
+					hasRes = stmt.execute(query);
+				}
 				
 				// Fetch results
 				if (hasRes) {
@@ -535,7 +546,9 @@ public class QueryPipeline extends MySQLWrapper {
 					
 					// Function/procedure and SET/SELECT calls
 					for (int k = 0; k < planTmp.size(); k++) {
-						hasRes = stmt.execute(planTmp.get(k));
+						if (!errorExpected) {
+							hasRes = stmt.execute(planTmp.get(k));
+						}
 					}
 					
 					// Fetch result! The last statement is always the one

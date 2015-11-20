@@ -151,6 +151,11 @@ public class ResultStorage {
 		return this.raw;
 	}
 	
+	
+	public int[] getCounts() {
+		return this.counts.clone();
+	}
+	
 	/**
 	 * Checks if the results indicate, that this submission is 
 	 * completely correct
@@ -232,39 +237,62 @@ public class ResultStorage {
 		String csvLine = csv_name + IOUtil.CSV_DELIMITER
 				+ csv_matrikelnummer + IOUtil.CSV_DELIMITER
 				+ fileName + IOUtil.CSV_DELIMITER
-				+ staticCSV
-				+ counts[0] + IOUtil.CSV_DELIMITER
-				+ counts[1] + IOUtil.CSV_DELIMITER
-				+ counts[2] + IOUtil.CSV_DELIMITER
-				+ counts[3];
+				+ staticCSV;
 		
-		String[] statements = raw.split("<table>");
+		
+		
+		String[] statements = raw.split("</table>"); // instead of <table>
 		
 		int start = 0;
-		// skip first empty elem, connection and driver definition
-		if (statements.length > 3) start = 3;
+		// skip connection and driver definition
+		if (statements.length > 2) start = 2;
 
-		String status = IOUtil.CSV_DELIMITER;
+		String statusLine = IOUtil.CSV_DELIMITER;
+		boolean expectsError = false;
 		for (int i = start; i < statements.length; i++) {
 			String tmp = statements[i];
 			
+			expectsError = tmp.contains("<!--error-->");
+
 			// parse status
 			if (tmp.contains("class=\"pass\"")) {
-				status += "p";
+				statusLine += "p";
+				// one less passed, one more error
+				if (expectsError) {
+					this.counts[0] = Math.max(this.counts[0] - 1, 0);
+					this.counts[3]++;
+				}
 			}
 			if (tmp.contains("class=\"ignore\"")) {
-				status += "i";
+				statusLine += "i";
 			}
 			if (tmp.contains("class=\"fail\"")) {
-				status += "f";
+				statusLine += "f";
 			}
 			if (tmp.contains("class=\"error\"")) {
-				status += "e";
+				statusLine += "e";
+				// one more passed, one less error
+				if (expectsError) {
+					this.counts[0]++;
+					this.counts[3] = Math.max(this.counts[3] - 1, 0);
+				}
 			}
 			
-			csvLine += status;
-			status = IOUtil.CSV_DELIMITER;
+			statusLine += IOUtil.CSV_DELIMITER;
 		}
+		
+		// counts
+		String countLine = counts[0] + IOUtil.CSV_DELIMITER
+				+ counts[1] + IOUtil.CSV_DELIMITER
+				+ counts[2] + IOUtil.CSV_DELIMITER
+				+ counts[3];
+		csvLine += countLine;
+		
+		// status labels
+		csvLine += statusLine;
+		
+		
+		
 		return csvLine;
 	}
 	
@@ -325,6 +353,19 @@ public class ResultStorage {
 		// update CSV line corresponding to this submission
 		updateOutput(true, false);
 		
+	}
+	
+	
+	public static void main(String[] args) {
+		String test = "<table>QUERY1</table><!--error--><table>QUERY222</table>";
+		String splitter = "</table>";
+		
+		String[] tokens = test.split(splitter);
+		
+		for (int i = 0; i < tokens.length; i++) {
+			System.out.println("< " + (i+1) + " >");
+			System.out.println(tokens[i]);
+		}
 	}
 	
 	

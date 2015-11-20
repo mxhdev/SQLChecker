@@ -2,6 +2,7 @@ package sqlchecker.core;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import sqlchecker.io.impl.ScriptReader;
 import dbfit.MySqlTest;
@@ -71,8 +72,6 @@ public class DBFitFacade {
 			
 			System.out.println("\n* * * RESULTS * * *");
 			
-			// right, wrong, ignored, exception
-			System.out.println("Counts:\n\t" + tester.counts);
 			
 			String result = getParseResult(target);
 			
@@ -80,6 +79,10 @@ public class DBFitFacade {
 					, tester.counts.right, tester.counts.wrong
 					, tester.counts.ignores, tester.counts.exceptions);
 
+			// right, wrong, ignored, exception
+			System.out.println("Counts(1):\n\t" + tester.counts);
+			System.out.println("Counts(2):\n\t" + Arrays.toString(rs.getCounts()));
+						
 		} catch (FitParseException fpe) {
 			fpe.printStackTrace();
 		} catch (SQLException sqle) {

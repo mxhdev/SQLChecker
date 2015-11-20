@@ -263,12 +263,20 @@ public class SolutionGenerator {
 	public static String extractTags(ArrayList<String[]> mapping) {
 		String tStr = "";
 		ArrayList<String> tags = new ArrayList<String>();
-		String IGNORE = "static";
+		
+		String[] BLACKLIST = new String[]{"static", "static.error"};
 		
 		for (int i = 0; i < mapping.size(); i++) {
 			String tagTmp = mapping.get(i)[0];
 			// static will be ignored
-			if (!tagTmp.equalsIgnoreCase(IGNORE)) {
+			boolean igno = false;
+			// ignore all tags which are in the blacklist
+			for (String s : BLACKLIST) {
+				if (tagTmp.equalsIgnoreCase(s)) {
+					igno = true;
+				}
+			}
+			if (!igno) {
 				// avoid duplicates
 				if (tags.indexOf(tagTmp) < 0) tags.add(tagTmp);
 			}
@@ -286,11 +294,14 @@ public class SolutionGenerator {
 	
 	
 	public static void main(String[] args) {
-		String inPath = "data/assignment2/rawA2.sql";
-		String outPath = "data/assignment2/solutionA2.txt";
-		String samplePath = "data/assignment2/sampleA2.sql";
-		String resetPath = "data/assignment2/airportReset.sql";
-		String[] cProps = new String[]{"localhost", "root", "", "airport"};
+		
+		String wsPath = "data/assignment5/";
+		
+		String inPath = wsPath + "raw.sql";
+		String outPath = wsPath + "solutionA5.txt";
+		String samplePath = wsPath + "sampleA5.sql";
+		String resetPath = wsPath + "reset.sql";
+		String[] cProps = new String[]{"localhost", "root", "", "dbfit"};
 		
 		SolutionGenerator sg = new SolutionGenerator(inPath, outPath, samplePath, resetPath, cProps);
 		sg.generate();
