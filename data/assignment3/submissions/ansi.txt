@@ -5,20 +5,19 @@
 /*authors*/
 ANSI; Matrikelnummer Ansi
 /*1a*/
-# Hier steht mein Kommentar für die Musterlösung und Aufgabe 1a
+
 SELECT 
     c.firstname,
     c.lastname,
     r.Matrikelnummer,
     SUM(r.NoReservedSeats)
-FROM # 1a # Kommentar
+FROM 
     reservation r,
     customer c
 WHERE
     r.matrikelnummer = c.matrikelnummer
 GROUP BY r.Matrikelnummer
 HAVING SUM(r.NoReservedSeats) = 4;
--- Kommentar für die Musterlösung
 /*1b*/
 -- Kommentar 1b
 SELECT 

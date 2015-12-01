@@ -121,7 +121,7 @@ public class SubmissionReader extends AbstractFileReader {
 			String comment = "";
 			StringBuffer cleanedSQL = new StringBuffer();
 			allText = content[1];
-			//Get Text of exercise
+			//Get Text(SQL and comments) of exercise
 			Pattern p = Pattern.compile("(?m)(?:#|--).*|(/\\*[\\w\\W]*?(?=\\*/)\\*/)");
 			//find all comments which have the tags '#' or '--' or '/* Comment */'
 			Matcher mComment = p.matcher(allText);
@@ -180,14 +180,16 @@ public class SubmissionReader extends AbstractFileReader {
 	 * tag
 	 * @return
 	 */
-	public ArrayList<String> getStaticMapping() {
-		ArrayList<String> sql = new ArrayList<String>();
+	public ArrayList<String[]> getStaticMapping() {
+		/*ArrayList<String> sql = new ArrayList<String>();
 		for (int i = 0; i < staticMappings.size(); i++) {
 			// (tag,sql) tuples, we only want the sql part
 			sql.add(staticMappings.get(i)[1]);
 		}
 		
 		return sql;
+		*/
+		return this.staticMappings;
 	}
 	
 	

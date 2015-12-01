@@ -194,7 +194,13 @@ public class SubmissionExecuter {
 			DBFitFacade checker = new DBFitFacade(fname, connProps);
 			
 			// execute static mapping if enabled
-			ArrayList<String> staticQueries = subr.getStaticMapping();
+			ArrayList<String[]> staticQueriesAll = subr.getStaticMapping();
+			ArrayList<String> staticQueries =  new ArrayList<String>();
+			for (int j = 0; j < staticQueriesAll.size(); j++) {
+				// (tag,sql) tuples, we only want the sql part
+				staticQueries.add(staticQueriesAll.get(j)[1]);
+			}
+			
 			ResultStorage staticRs = null;
 			
 			if (staticEnabled) {
@@ -293,7 +299,7 @@ public class SubmissionExecuter {
 				exercises.add(tags.get(o));
 			}
 		}
-		ArrayList<String> resLis = PlagiatTest.extractComments(subCom, exercises);
+		ArrayList<String> resLis = PlagiatTest.extractComments(subCom, exercises, staticEnabled);
 
 		// generate unique filename of duplicate report
 		String fname = this.agnPath + "PlagiatReport.csv";
@@ -323,11 +329,9 @@ public class SubmissionExecuter {
 	public static void main(String[] args) {
 		
 		boolean allowStatic = false;
-		String agnPath = "data/assignment3/";
-		String resetPath = agnPath + "/airportReset.sql";
+		String agnPath = "data/assignment5/";
+		String resetPath = agnPath + "airportReset.sql";
 		
-		agnPath = "data/assignment4";
-		resetPath = agnPath + "/reset.sql";
 		allowStatic = true;
 		
 		SubmissionExecuter se = new SubmissionExecuter(agnPath, resetPath, allowStatic);
