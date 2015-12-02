@@ -12,7 +12,7 @@ tags=1a,1b,1c,1d
 
 <table>
 	<tr>
-		<td>Query</td>
+		<td>Ordered Query</td>
 		<td>/*1a*/</td>
 	</tr>
 	<tr>
@@ -37,7 +37,7 @@ tags=1a,1b,1c,1d
 		<td>/*1b*/</td>
 	</tr>
 	<tr>
-		<td>COUNT(DISTINCT (r.Matrikelnummer))</td>
+		<td>COUNT(DISTINCT (r.MATRIKELNUMMER))</td>
 	</tr>
 	<tr>
 		<td>3</td>
@@ -55,7 +55,7 @@ tags=1a,1b,1c,1d
 		<td>NoReservedSeats</td>
 	</tr>
 	<tr>
-		<td>2</td>
+		<td>null</td>
 	</tr>
 </table>
 
@@ -67,7 +67,7 @@ tags=1a,1b,1c,1d
 		<td>/*1d*/</td>
 	</tr>
 	<tr>
-		<td>FlightNo</td>
+		<td>FLIGHTNO</td>
 		<td>(SELECT SUM(rv.NoReservedSeats)
 FROM reservation rv
 WHERE rv.FlightNo = r.FlightNo)</td>
@@ -119,10 +119,6 @@ WHERE rv.FlightNo = r.FlightNo)</td>
 	<tr>
 		<td>LH2301</td>
 		<td>9</td>
-	</tr>
-	<tr>
-		<td>LH3333</td>
-		<td>2</td>
 	</tr>
 	<tr>
 		<td>LH3584</td>

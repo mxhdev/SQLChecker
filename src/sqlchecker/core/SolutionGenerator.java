@@ -295,13 +295,13 @@ public class SolutionGenerator {
 	
 	public static void main(String[] args) {
 		
-		String wsPath = "data/assignment5/";
+		String wsPath = "data/assignment3/";
 		
-		String inPath = wsPath + "raw.sql";
-		String outPath = wsPath + "solutionA5.txt";
+		String inPath = wsPath + "rawA2.sql";
+		String outPath = wsPath + "solution.txt";
 		String samplePath = wsPath + "sampleA5.sql";
-		String resetPath = wsPath + "reset.sql";
-		String[] cProps = new String[]{"localhost", "root", "", "dbfit"};
+		String resetPath = wsPath + "";
+		String[] cProps = new String[]{"localhost", "root", "", "airport"};
 		
 		SolutionGenerator sg = new SolutionGenerator(inPath, outPath, samplePath, resetPath, cProps);
 		sg.generate();

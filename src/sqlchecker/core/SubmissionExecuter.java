@@ -329,10 +329,10 @@ public class SubmissionExecuter {
 	public static void main(String[] args) {
 		
 		boolean allowStatic = false;
-		String agnPath = "data/assignment5/";
-		String resetPath = agnPath + "airportReset.sql";
+		String agnPath = "data/assignment3/";
+		String resetPath = agnPath + "";
 		
-		allowStatic = true;
+		allowStatic = false;
 		
 		SubmissionExecuter se = new SubmissionExecuter(agnPath, resetPath, allowStatic);
 		se.runCheck();

@@ -1,11 +1,13 @@
 /*authors*/
 Timo Eichhorn; 765443
 Max Hofmann; 875687
+
+
 /*1a*/
 # Hier steht mein Kommentar für die Musterlösung und Aufgabe 1a
 SELECT 
     c.firstname,
-    c.lastname,
+    c.lastname AS LASTNAME,
     r.Matrikelnummer,
     SUM(r.NoReservedSeats)
 FROM # 1a # Kommentar
@@ -16,6 +18,8 @@ WHERE
 GROUP BY r.Matrikelnummer
 HAVING SUM(r.NoReservedSeats) = 4;
 -- Kommentar für die Musterlösung
+
+
 /*1b*/
 -- Kommentar 1b
 SELECT 
@@ -30,10 +34,12 @@ WHERE
         AND cu.AddressID = a.AddressID
         AND a.town LIKE 'Berlin';
 -- Kommentar für die Musterlösung 1b
+
+
 /*1c*/
 /* Kommentar für die Musterlösung */
 SELECT 
-    sum(`r`.`NoReservedSeats`) AS `NoReservedSeats`
+    sum(`r`.`NoReservedSeats`) AS `NORESERVEDSEATS`
 FROM
     (`flightexecution` `f`
     JOIN `reservation` `r`)
