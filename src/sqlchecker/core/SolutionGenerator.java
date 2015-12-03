@@ -300,7 +300,7 @@ public class SolutionGenerator {
 		String inPath = wsPath + "rawA2.sql";
 		String outPath = wsPath + "solution.txt";
 		String samplePath = wsPath + "sampleA5.sql";
-		String resetPath = wsPath + "";
+		String resetPath = "data/assignment2/airportReset.sql";
 		String[] cProps = new String[]{"localhost", "root", "", "airport"};
 		
 		SolutionGenerator sg = new SolutionGenerator(inPath, outPath, samplePath, resetPath, cProps);
