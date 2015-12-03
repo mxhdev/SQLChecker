@@ -102,6 +102,10 @@ public class MySQLWrapper {
 	protected void close(AutoCloseable ac) {
 		try {
 			if (ac != null) {
+				// Also commit the connection
+				if (ac instanceof Connection) {
+					((Connection) ac).commit();
+				}
 				ac.close();
 			} else {
 				System.out.println("[WARNING] close() "

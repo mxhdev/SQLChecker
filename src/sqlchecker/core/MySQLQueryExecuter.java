@@ -133,7 +133,7 @@ public class MySQLQueryExecuter extends MySQLWrapper {
 		} finally {
 			// close statement object
 			close(stmt);
-			// close the connection
+			// commit & close the connection
 			close(conn);
 		}
 		
