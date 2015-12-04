@@ -280,6 +280,20 @@ public class ResultStorage {
 				}
 			}
 			
+			
+			// errorExpected, but query has no status annotation
+			if (!((tmp.contains("class=\"pass\""))
+					|| (tmp.contains("class=\"ignore\""))
+					|| (tmp.contains("class=\"fail\""))
+					|| (tmp.contains("class=\"error\""))) ) {
+				// add an error count
+				// because there are no annotations here, the is
+				// no count-value to decrease
+				if (expectsError) {
+					this.counts[3]++;
+				}
+			}
+			
 			statusLine += IOUtil.CSV_DELIMITER;
 		}
 		
@@ -317,11 +331,11 @@ public class ResultStorage {
 			logRaw += "No problems, everything is correct!";
 		} else {
 			// there were some problems, split by statement
-			String[] statements = raw.split("<table>");
+			String[] statements = raw.split("</table>");
 			
 			int start = 0;
 			// skip first empty element, connection and driver definition
-			if (statements.length > 3) start = 3;
+			if (statements.length > 2) start = 2;
 
 			for (int i = start; i < statements.length; i++) {
 				String tmp = statements[i];
@@ -359,8 +373,10 @@ public class ResultStorage {
 	
 	
 	public static void main(String[] args) {
-		String test = "<table>QUERY1</table><!--error--><table>QUERY222</table>";
+		String test = "<!--error-->\n<table>QUERY1</table>\n<!--error-->\n<table>QUERY222</table>\n<table>QUERY_333</table>";
 		String splitter = "</table>";
+		
+		System.out.println(test + "\n- - - - - - - - - -");
 		
 		String[] tokens = test.split(splitter);
 		

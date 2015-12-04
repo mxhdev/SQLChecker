@@ -123,6 +123,7 @@ public class SolutionGenerator {
 		ArrayList<String[]> mapping = rsr.getMapping();
 		ArrayList<SQLCallable> callables = generateCallables(mapping);
 		for (int i = 0; i < mapping.size(); i++) {
+			System.out.println("\"" + mapping.get(i)[0] + "\"");
 			System.out.println(mapping.get(i)[1]);
 			System.out.println("=> " + mapping.get(i)[1].split("\n").length + " lines");
 		}
@@ -175,6 +176,8 @@ public class SolutionGenerator {
 		
 		// step 4, Verify Solution!
 		ArrayList<String[]> filtered = filterTags(mapping, "static");
+		filtered = filterTags(filtered, "static.error");
+		
 		verify(html, filtered);
 		
 		// step 5, Write Solution to file!

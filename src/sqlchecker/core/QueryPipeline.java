@@ -419,7 +419,7 @@ public class QueryPipeline extends MySQLWrapper {
 		ArrayList<String[]> resRaw = new ArrayList<String[]>();
 		
 		ResultSet rs = null;
-		
+
 		for (int i = 0; i < mapping.size(); i++) {
 			
 			hasRes = false;
@@ -427,8 +427,11 @@ public class QueryPipeline extends MySQLWrapper {
 			String qtag = mapping.get(i)[0];
 			String query = mapping.get(i)[1];
 			
+			
+			
 			boolean errorExpected = qtag.equalsIgnoreCase("static.error");
 			boolean isStatic = (qtag.equalsIgnoreCase("static") || errorExpected);
+			
 			// add error label
 			if (errorExpected) {
 				html += "\n<!--error-->\n";
@@ -446,6 +449,7 @@ public class QueryPipeline extends MySQLWrapper {
 			
 			// not a callable
 			if (idx < 0) {
+				
 				// not a callable statement
 				System.out.println("> Not a callable");
 				System.out.println("[1/1] Run execute(\"\n" + query +"\n\")");
@@ -472,19 +476,21 @@ public class QueryPipeline extends MySQLWrapper {
 				
 				// Print the header with the command
 				// and the query or its corresponding tag
-				if (isStatic)  
+				if (isStatic) {
 					html += "\n\n<table>"
 						+ "\n\t<tr>"
 						+ "\n\t\t<td>" + command + "</td>"
 						+ "\n\t\t<td>" + query + "</td>"
 						+ "\n\t</tr>";
-				else
+					System.out.println("[static, " + qtag + "]");
+				} else {
 					html += "\n\n<table>"
 							+ "\n\t<tr>"
 							+ "\n\t\t<td>" + command + "</td>"
 							+ "\n\t\t<td>" + IOUtil.TAG_PREFIX + qtag + IOUtil.TAG_SUFFIX + "</td>"
 							+ "\n\t</tr>";
-				
+					System.out.println("[non-static, " + qtag + "]");
+				}
 				// Print result table
 				for (int i2 = 0; i2 < resRaw.size(); i2++) {
 					String[] row = resRaw.get(i2);
@@ -497,6 +503,7 @@ public class QueryPipeline extends MySQLWrapper {
 				html += "\n</table>\n\n";
 
 			} else {
+
 				// it is a callable statement
 				String[] headerCols = calls.get(idx).generateResultHeader();
 				
@@ -564,7 +571,7 @@ public class QueryPipeline extends MySQLWrapper {
 					// One Callable = 1 line
 					// Contains a dump of the result (1st line is headers)
 					// The calls might be split up in multiple test cases
-					html += generateHTML(q, sqlc, headerCols, resRaw, mapping.get(i)); 
+					html += generateHTML(q, sqlc, headerCols, resRaw, mapping.get(i).clone()); 
 					
 					// for debugging, save the complete plan
 					queryList.addAll(planTmp);
