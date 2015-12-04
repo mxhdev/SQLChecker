@@ -90,7 +90,7 @@ public class MySQLQueryExecuter extends MySQLWrapper {
 		try {
 			// init connection
 			conn = init();
-			conn.setAutoCommit(false);
+			conn.setAutoCommit(isAutoCommitEnabled());
 
 			if (ignoreFK) {
 				Statement stmtfk0 = conn.createStatement();

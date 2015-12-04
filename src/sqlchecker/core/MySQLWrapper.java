@@ -31,7 +31,7 @@ public class MySQLWrapper {
 	 */
 	protected String dbpw = "";
 
-
+	private static final boolean AUTOCOMMIT = false;
 	
 	/**
 	 * Initialize the SQL wrapper class
@@ -59,6 +59,13 @@ public class MySQLWrapper {
 
 
 
+	/**
+	 * 
+	 * @return True iff Auto-Commit is enabled
+	 */
+	protected boolean isAutoCommitEnabled() {
+		return this.AUTOCOMMIT;
+	}
 	
 
 	protected Connection init() throws SQLException {
@@ -83,11 +90,13 @@ public class MySQLWrapper {
 	protected void rollback(Connection conn) {
 		try {
 			if (conn != null) {
-				if (!conn.isClosed()) {
-					System.out.println("calling rollback!");
-					conn.rollback();
-				} else {
-					System.out.println("Connection already closed");
+				if (!AUTOCOMMIT) {
+					if (!conn.isClosed()) {
+						System.out.println("calling rollback!");
+						conn.rollback();
+					} else {
+						System.out.println("Connection already closed");
+					}
 				}
 			} else {
 				System.out.println("Connection is null");
@@ -102,8 +111,8 @@ public class MySQLWrapper {
 	protected void close(AutoCloseable ac) {
 		try {
 			if (ac != null) {
-				// Also commit the connection
-				if (ac instanceof Connection) {
+				// Also commit the connection (if autoCommit=false)
+				if ( (!AUTOCOMMIT) && (ac instanceof Connection)) {
 					((Connection) ac).commit();
 				}
 				ac.close();
