@@ -108,10 +108,16 @@ public class IOUtil {
 		if (((!line.startsWith(TAG_PREFIX)) || (!line.endsWith(TAG_SUFFIX))))
 			return null;
 		
+		// spaces are not allowed in tags
+		if (line.contains(" "))
+			return null;
+		
 		// take the string surrounded by the prefix and suffix
 		line = line.substring(
 				line.indexOf(TAG_PREFIX) + TAG_PREFIX.length(), 
 				line.indexOf(TAG_SUFFIX));
+		
+		
 		
 		return line;
 	}
