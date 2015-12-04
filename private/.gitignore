@@ -1,0 +1,9 @@
+
+# Ignore all files and subfolders in here
+*
+
+# Except this file
+!.gitignore
+
+# And except the readme file
+!README.md
