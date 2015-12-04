@@ -322,7 +322,8 @@ public class ResultStorage {
 	 */
 	private String generateLogEntry() {
 		String logRaw = "";
-
+		boolean errorExpected = false;
+		
 		logRaw += "\n\n-------------------- Detailed results for " 
 				+ fileName + " --------------------\n";
 		
@@ -338,12 +339,15 @@ public class ResultStorage {
 			if (statements.length > 2) start = 2;
 
 			for (int i = start; i < statements.length; i++) {
+				
 				String tmp = statements[i];
+				errorExpected = tmp.contains("<!--error-->");
+				
 				if (tmp.contains("class=\"ignore\"")
 						|| tmp.contains("class=\"fail\"")
 						|| tmp.contains("class=\"error\"")) {
 					// something did not go as expected here!
-					logRaw += "\n * Statement " + (i+1) + " * \n" + tmp + "\n * * * * * * * * \n\n"; 
+					logRaw += "\n * Statement " + (i+1) + " [ERROR_EXPECTED=" + errorExpected + "] * \n" + tmp + "\n * * * * * * * * \n\n"; 
 				}
 			}
 		}
