@@ -21,7 +21,7 @@ public class DBFitFacade {
 	/**
 	 * File name/path of the file which is being checked
 	 */
-	private String fileName = "";
+	private String filePath = "";
 	
 	/**
 	 * Connection properties in the following order:
@@ -37,12 +37,12 @@ public class DBFitFacade {
 
 	/**
 	 * Initialize a DBFit facade object
-	 * @param fName File name of the submission that should be checked
+	 * @param fPath Path of the submission that should be checked
 	 * @param cProps Connection properties in the following order:
 	 *  (host, user, pw, dbname)
 	 */
-	public DBFitFacade(String fName, String[] cProps) {
-		this.fileName = fName;
+	public DBFitFacade(String fPath, String[] cProps) {
+		this.filePath = fPath;
 		this.connProps = cProps.clone();
 	}
 	
@@ -75,7 +75,7 @@ public class DBFitFacade {
 			
 			String result = getParseResult(target);
 			
-			rs = new ResultStorage(fileName, name, matrikelnummer, result
+			rs = new ResultStorage(filePath, name, matrikelnummer, result
 					, tester.counts.right, tester.counts.wrong
 					, tester.counts.ignores, tester.counts.exceptions);
 

@@ -176,7 +176,7 @@ public class SubmissionExecuter {
 			
 			
 			File subm = submissions[i];
-			String fname = subm.getName();
+			String fpath = subm.getPath();
 			
 			System.out.println("\n\n[" + (i+1) + "/" + submissions.length + "] Testing: " + subm);
 			
@@ -191,7 +191,7 @@ public class SubmissionExecuter {
 			subCom.add(subr);
 
 			// init dbfit checker facade
-			DBFitFacade checker = new DBFitFacade(fname, connProps);
+			DBFitFacade checker = new DBFitFacade(fpath, connProps);
 			
 			// execute static mapping if enabled
 			ArrayList<String[]> staticQueriesAll = subr.getStaticMapping();
@@ -237,8 +237,8 @@ public class SubmissionExecuter {
 			
 			if (rs == null) {
 				// some sql exception occurred
-				logContent.add("Error for file " + fname);
-				csvLines.add(fname + IOUtil.CSV_DELIMITER + "?");
+				logContent.add("Error for file " + fpath);
+				csvLines.add(fpath + IOUtil.CSV_DELIMITER + "?");
 				continue;
 			}
 			
@@ -332,8 +332,8 @@ public class SubmissionExecuter {
 		String agnPath = "data/assignment3/";
 		String resetPath = "data/assignment2/airportReset.sql";
 		
-		agnPath = "private/kh_b2/";
-		resetPath = "private/kh_b2/b2_reset.sql";
+		agnPath = "private/kh_b2Test/";
+		resetPath = "private/kh_b2Test/b2_reset.sql";
 		
 		SubmissionExecuter se = new SubmissionExecuter(agnPath, resetPath, allowStatic);
 		se.runCheck();

@@ -36,10 +36,10 @@ public class ResultStorage {
 	
 	
 	/**
-	 * Name of the submission file corresponding to the results
+	 * Path of the submission file corresponding to the results
 	 * stored in this class
 	 */
-	private String fileName = "";
+	private String filePath = "";
 	
 	
 	/**
@@ -81,7 +81,7 @@ public class ResultStorage {
 	
 	/**
 	 * Creates a ResultStorage object
-	 * @param fname File name of the submission
+	 * @param fpath Path of the submission
 	 * @param resultRaw The raw annotated html results for
 	 * this submission
 	 * @param right Amount of correct values (can be taken from 
@@ -93,10 +93,10 @@ public class ResultStorage {
 	 * @param exceptions Amount of error values (can be taken from 
 	 * the Fixture.counts field)
 	 */
-	public ResultStorage(String fname, ArrayList<String> sName, ArrayList<String> sMatrikelnummer, String resultRaw, int right, int wrong, int ignored, int exceptions) {
+	public ResultStorage(String fpath, ArrayList<String> sName, ArrayList<String> sMatrikelnummer, String resultRaw, int right, int wrong, int ignored, int exceptions) {
 		
 		this.raw = resultRaw;
-		this.fileName = fname;
+		this.filePath = fpath;
 		
 		this.setCounts(right, wrong, ignored, exceptions);
 		this.name = sName;
@@ -238,7 +238,7 @@ public class ResultStorage {
 
 		String csvLine = csv_name + IOUtil.CSV_DELIMITER
 				+ csv_matrikelnummer + IOUtil.CSV_DELIMITER
-				+ fileName + IOUtil.CSV_DELIMITER
+				+ filePath + IOUtil.CSV_DELIMITER
 				+ staticCSV;
 		
 		
@@ -325,7 +325,7 @@ public class ResultStorage {
 		boolean errorExpected = false;
 		
 		logRaw += "\n\n-------------------- Detailed results for " 
-				+ fileName + " --------------------\n";
+				+ filePath + " --------------------\n";
 		
 		// todo: submission number!
 		if (isPassed()) {
