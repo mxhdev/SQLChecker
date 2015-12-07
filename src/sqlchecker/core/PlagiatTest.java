@@ -154,7 +154,11 @@ public final class PlagiatTest {
 				body = body + value + IOUtil.CSV_DELIMITER;
 			}
 			// Search for all other tags and print them in the same order like the header.
-			if(SolutionExercises.size() < l.similarities.size()){
+			int quantityExercises = SolutionExercises.size();
+			if(staticEnabled){
+				quantityExercises = quantityExercises + 1;
+			}
+			if(quantityExercises < l.similarities.size()){
 				System.out.println("Warning there are more tags in the submisson than in the solution: " +l.filePath);
 			}else{
 				for(int i = 0; i < SolutionExercises.size(); i++){
