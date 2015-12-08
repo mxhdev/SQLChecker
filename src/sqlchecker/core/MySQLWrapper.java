@@ -31,7 +31,7 @@ public class MySQLWrapper {
 	 */
 	protected String dbpw = "";
 
-	private static final boolean AUTOCOMMIT = false;
+	private static boolean autocommit = false;
 	
 	/**
 	 * Initialize the SQL wrapper class
@@ -64,7 +64,11 @@ public class MySQLWrapper {
 	 * @return True iff Auto-Commit is enabled
 	 */
 	protected boolean isAutoCommitEnabled() {
-		return this.AUTOCOMMIT;
+		return this.autocommit;
+	}
+	
+	public void setAutoCommit(boolean b) {
+		this.autocommit = b;
 	}
 	
 
@@ -90,7 +94,7 @@ public class MySQLWrapper {
 	protected void rollback(Connection conn) {
 		try {
 			if (conn != null) {
-				if (!AUTOCOMMIT) {
+				if (!autocommit) {
 					if (!conn.isClosed()) {
 						System.out.println("calling rollback!");
 						conn.rollback();
@@ -112,7 +116,7 @@ public class MySQLWrapper {
 		try {
 			if (ac != null) {
 				// Also commit the connection (if autoCommit=false)
-				if ( (!AUTOCOMMIT) && (ac instanceof Connection)) {
+				if ( (!autocommit) && (ac instanceof Connection)) {
 					((Connection) ac).commit();
 				}
 				ac.close();
@@ -167,7 +171,7 @@ public class MySQLWrapper {
 		// close the result set
 		close(rs);
 		
-		
+		/*
 		System.out.println("- - -  - rstor (start)  - - - - - ");
 		
 		for (int i = 0; i < rtable.size(); i++) {
@@ -175,7 +179,7 @@ public class MySQLWrapper {
 		}
 		
 		System.out.println("- - -  - rstor (end)  - - - - -\n\n ");
-		
+		*/
 		
 		return rtable;
 	}

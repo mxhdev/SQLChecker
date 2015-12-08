@@ -83,7 +83,7 @@ public class SubmissionReader extends AbstractFileReader {
 			// use (already found) tag
 			if (pos < 0) {
 				// no tag found yet
-				System.out.println("WARNING: Did not find initial tag for \"" + line + "\", trying again");
+				//System.out.println("WARNING: Did not find initial tag for \"" + line + "\", trying again");
 				return;
 			}
 			// append at proper position

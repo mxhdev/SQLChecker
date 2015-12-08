@@ -160,7 +160,7 @@ public class SubmissionExecuter {
 		//PrintWriter out = new PrintWriter(System.out, false);
 		// host, user, pw, dbname
 		String[] connProps = sr.getConnectionProperties();
-		
+		System.out.println("[SubmissionExecuter] Properties: \n\thost=" + connProps[0] + "\n\tdb=" + connProps[1] + "\n\tuser=" + connProps[2] + "\n\tpw=" + connProps[3] + "\n\tscript=" + resetScript);
 		
 		csvLines.add(IOUtil.generateCSVHeader(sr.getTagMap()));
 		
@@ -169,7 +169,7 @@ public class SubmissionExecuter {
 			
 
 			// reset the database first
-			System.out.println("Executing reset with values \n\thost=" + connProps[0] + "\n\tdb=" + connProps[1] + "\n\tuser=" + connProps[2] + "\n\tpw=" + connProps[3] + "\n\tscript=" + resetScript);;
+			// -System.out.println("Executing reset with values \n\thost=" + connProps[0] + "\n\tdb=" + connProps[1] + "\n\tuser=" + connProps[2] + "\n\tpw=" + connProps[3] + "\n\tscript=" + resetScript);;
 			
 			ScriptReader resetter = new ScriptReader(resetScript, ScriptReader.DEFAULT_DELIM, connProps);
 			resetter.loadFile();
@@ -205,7 +205,7 @@ public class SubmissionExecuter {
 			ResultStorage staticRs = null;
 			
 			if (staticEnabled) {
-				System.out.println("\n> Starting to execute the " + staticQueries.size() + " > STATIC < queries\n");
+				System.out.println("\n> Starting to execute the " + staticQueries.size() + " > STATIC < queries of the current student submission\n");
 				String staticString = SubmissionReader.generateStaticHTML(connProps, staticQueries);
 				// Execute via DBFit facade
 				try {
@@ -251,6 +251,15 @@ public class SubmissionExecuter {
 			csvLines.add(rs.getCSVLine());
 			// add log entry
 			logContent.add(rs.getLogEntry());
+			
+			
+			// wait a view seconds after executing a submission
+			try {
+				Thread.currentThread().sleep(3000);
+			} catch (Exception e) {
+				e.printStackTrace(System.err);
+			}
+			
 		}
 		
 		/*
@@ -333,8 +342,8 @@ public class SubmissionExecuter {
 		String agnPath = "data/assignment3/";
 		String resetPath = "data/assignment2/airportReset.sql";
 		
-		agnPath = "private/kh_b2Test/";
-		resetPath = "private/kh_b2/b2_reset.sql";
+		agnPath = "private/kh_b2/test/";
+		resetPath = "private/kh_b2/test/b2_reset.sql";
 		
 		SubmissionExecuter se = new SubmissionExecuter(agnPath, resetPath, allowStatic);
 		se.runCheck();

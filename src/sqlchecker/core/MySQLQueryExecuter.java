@@ -64,6 +64,7 @@ public class MySQLQueryExecuter extends MySQLWrapper {
 	}
 	
 	
+	
 	/**
 	 * Executes a list of (My)SQL queries
 	 * @param queryList
@@ -129,7 +130,7 @@ public class MySQLQueryExecuter extends MySQLWrapper {
 			// try to undo everything!
 			rollback(conn);
 			System.out.println(sql);
-			sqle.printStackTrace(System.out);
+			sqle.printStackTrace(System.err);
 		} finally {
 			// close statement object
 			close(stmt);
