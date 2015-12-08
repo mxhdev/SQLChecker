@@ -107,6 +107,7 @@ public class SubmissionExecuter {
 		ArrayList<String> studentIds = new ArrayList<String>();
 		
 		// read the lines of the meta data of this submission
+		rawMd = rawMd.replace(" ", "");
 		String[] mdLines = rawMd.split("\n");
 		for (String md : mdLines) {
 			String[] data = md.split(IOUtil.CSV_DELIMITER);
@@ -332,7 +333,7 @@ public class SubmissionExecuter {
 		String agnPath = "data/assignment3/";
 		String resetPath = "data/assignment2/airportReset.sql";
 		
-		agnPath = "private/kh_b2/";
+		agnPath = "private/kh_b2Test/";
 		resetPath = "private/kh_b2/b2_reset.sql";
 		
 		SubmissionExecuter se = new SubmissionExecuter(agnPath, resetPath, allowStatic);
