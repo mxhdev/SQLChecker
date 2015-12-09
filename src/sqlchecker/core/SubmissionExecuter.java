@@ -253,12 +253,6 @@ public class SubmissionExecuter {
 			logContent.add(rs.getLogEntry());
 			
 			
-			// wait a view seconds after executing a submission
-			try {
-				Thread.currentThread().sleep(3000);
-			} catch (Exception e) {
-				e.printStackTrace(System.err);
-			}
 			
 		}
 		

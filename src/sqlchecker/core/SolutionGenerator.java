@@ -306,7 +306,7 @@ public class SolutionGenerator {
 		String outPath = wsPath + "solution.txt";
 		String samplePath = wsPath + "sample_b2.sql";
 		String resetPath = wsPath + "b2_reset.sql";
-		String[] cProps = new String[]{"localhost", "root", "", "krankenhaus"};
+		String[] cProps = new String[]{"localhost", "root", "start", "krankenhaus"};
 		
 		SolutionGenerator sg = new SolutionGenerator(inPath, outPath, samplePath, resetPath, cProps);
 		sg.generate();
