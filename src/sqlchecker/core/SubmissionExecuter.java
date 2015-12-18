@@ -332,12 +332,14 @@ public class SubmissionExecuter {
 	
 	public static void main(String[] args) {
 		
-		boolean allowStatic = true;
+		// allow static queries in student submissions
+		boolean allowStatic = false;
+		
 		String agnPath = "data/assignment3/";
 		String resetPath = "data/assignment2/airportReset.sql";
 		
-		agnPath = "private/kh_b2/test/";
-		resetPath = "private/kh_b2/test/b2_reset.sql";
+		agnPath = "private/kh_b3/";
+		resetPath = "private/kh_b3/b3_reset.sql";
 		
 		SubmissionExecuter se = new SubmissionExecuter(agnPath, resetPath, allowStatic);
 		se.runCheck();

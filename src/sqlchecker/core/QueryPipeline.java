@@ -474,6 +474,9 @@ public class QueryPipeline extends MySQLWrapper {
 				// determine which command should be used
 				String command = IOUtil.getDBFitCommand(query);
 				
+				System.out.println("> QUERY:\n" + query);
+				System.out.println("> COMMAND:\n" + command);
+				
 				// Print the header with the command
 				// and the query or its corresponding tag
 				if (isStatic) {

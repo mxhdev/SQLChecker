@@ -58,6 +58,8 @@ public class DBFitFacade {
 	 */
 	public ResultStorage runSubmission(String sqlhtml, ArrayList<String> name, ArrayList<String> matrikelnummer) throws SQLException {
 		
+		// System.out.println("* IN_START* \n\n" + sqlhtml + "\n \n* IN_END * \n\n");
+		
 		MySqlTest tester = null;
 
 		ResultStorage rs = null;
@@ -68,12 +70,15 @@ public class DBFitFacade {
 			// parse & execute the submission 
 			Parse target = new Parse(sqlhtml);
 			tester.doTables(target);
+
 			
 			
 			System.out.println("\n* * * RESULTS * * *");
 			
 			
 			String result = getParseResult(target);
+			
+			// System.out.println("* OUT_START* \n\n" + result + "\n \n* OUT_END * \n\n");
 			
 			rs = new ResultStorage(filePath, name, matrikelnummer, result
 					, tester.counts.right, tester.counts.wrong

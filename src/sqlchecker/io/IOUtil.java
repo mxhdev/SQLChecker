@@ -8,6 +8,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.function.Predicate;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -240,8 +242,40 @@ public class IOUtil {
 	 * @return
 	 */
 	public static String getDBFitCommand(String sql) {
+		
+		// 1st step: remove comments from the sql statement
+		String newSQL = sql;
+		
+		
+		// the following code was taken from SubmissionReader.afterReading()
+		
+		String comment = "";
+		StringBuffer cleanedSQL = new StringBuffer();
+		//Get Text(SQL and comments) of exercise
+		Pattern p = Pattern.compile("(?m)(?:#|--).*|(/\\*[\\w\\W]*?(?=\\*/)\\*/)");
+		//find all comments which have the tags '#' or '--' or '/* Comment */'
+		Matcher mComment = p.matcher(newSQL);
+		
+		while (mComment.find()) {
+			comment = comment + mComment.group();
+		}
+		//Extract all the comments
+		Matcher mSQL = p.matcher(newSQL);
+		
+		while(mSQL.find()){
+			mSQL.appendReplacement(cleanedSQL, "");
+		}
+		//Extract the SQL Statement without the comments
+		mSQL.appendTail(cleanedSQL);
+		//System.out.println("[c]> " + Arrays.toString(content));
+		newSQL = cleanedSQL.toString();
+		
+		// - end of code CommentExtraction -
+		
+		
+		
 		// determine dbfit command
-		String queryLower = sql.toLowerCase().trim();
+		String queryLower = newSQL.toLowerCase().trim();
 		// determine which command should be used
 		
 		String command = "Execute";

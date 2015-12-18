@@ -300,12 +300,12 @@ public class SolutionGenerator {
 		
 		String wsPath = "data/assignment3/";
 		
-		wsPath = "private/kh_b2/";
+		wsPath = "private/kh_b3/";
 		
-		String inPath = wsPath + "b2_raw.sql";
+		String inPath = wsPath + "b3_raw.sql";
 		String outPath = wsPath + "solution.txt";
-		String samplePath = wsPath + "sample_b2.sql";
-		String resetPath = wsPath + "b2_reset.sql";
+		String samplePath = wsPath + "sample_b3.sql";
+		String resetPath = wsPath + "b3_reset.sql";
 		String[] cProps = new String[]{"localhost", "root", "start", "krankenhaus"};
 		
 		SolutionGenerator sg = new SolutionGenerator(inPath, outPath, samplePath, resetPath, cProps);
