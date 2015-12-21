@@ -327,6 +327,16 @@ public class ResultStorage {
 		logRaw += "\n\n-------------------- Detailed results for " 
 				+ filePath + " --------------------\n";
 		
+		
+		/*
+		 * as a test, show the complete dbfit html (annotated) result
+		 */
+		logRaw += this.raw + "\n\n";
+		
+		if (!errorExpected) return logRaw;
+		
+		// - end of test code -
+		
 		// todo: submission number!
 		if (isPassed()) {
 			logRaw += "No problems, everything is correct!";
