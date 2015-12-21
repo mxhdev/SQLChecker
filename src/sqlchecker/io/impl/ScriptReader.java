@@ -127,14 +127,11 @@ public class ScriptReader extends AbstractFileReader {
 		// Do not select a database, because the database which
 		// has to be changed will probably be droped in the first
 		// step
-		System.out.println("\n> [ScriptReader] Starting to execute the queries\n");
 		
 		MySQLQueryExecuter exec = new MySQLQueryExecuter(conn);
 		exec.setIgnoreFK(true); // make sure to ignore fk, to avoid errors
 		exec.setAutoCommit(true);
 		exec.runSQL(queryList);
-		
-		System.out.println("\n> F[ScriptReader] inished executing the queries\n");
 	}
 	
 	

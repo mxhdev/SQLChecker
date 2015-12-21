@@ -331,7 +331,6 @@ public class SubmissionExecuter {
 	 */
 	
 	public static void main(String[] args) {
-		
 		// allow static queries in student submissions
 		boolean allowStatic = false;
 		

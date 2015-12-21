@@ -63,6 +63,9 @@ public class DBFitFacade {
 		MySqlTest tester = null;
 
 		ResultStorage rs = null;
+		
+		String errStr = "";
+		
 		try {
 			// init connection
 			tester = init();
@@ -89,13 +92,25 @@ public class DBFitFacade {
 			System.out.println("Counts(2):\n\t" + Arrays.toString(rs.getCounts()));
 			// System.out.println("RESULT:\n"+result);
 			
-		} catch (FitParseException fpe) {
-			fpe.printStackTrace();
-		} catch (SQLException sqle) {
-			sqle.printStackTrace();
+		} catch (Exception e) {
+			// fpe.printStackTrace();
+			
+			// store stack trace
+			errStr += "\n[DBFitFacade] Exception \n" + e.getMessage() + "\n";
+			for (StackTraceElement ste : e.getStackTrace()) {
+				errStr += ste + "\n";
+			}
+			errStr += "\n\n";
 		} finally {
 			// close connection
 			if (tester != null) tester.close();
+		}
+		
+		// a stacktrace was thrown
+		if (rs == null) {
+			rs = new ResultStorage(filePath, name, matrikelnummer, errStr
+					, 0, 0
+					, 0, sqlhtml.split("<table>").length);
 		}
 		
 		return rs;
