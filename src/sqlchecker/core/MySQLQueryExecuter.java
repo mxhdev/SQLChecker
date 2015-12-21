@@ -99,12 +99,21 @@ public class MySQLQueryExecuter extends MySQLWrapper {
 				stmtfk0.close();
 			} 
 			
-			stmt = conn.createStatement();
+			// stmt = conn.createStatement();
 
 			// run every SQL statement
+			// one statement per query
 			for (int i = 0; i < queryList.size(); i++) {
+				stmt = conn.createStatement();
+				
 				sql = queryList.get(i);
-				stmt.execute(sql);
+				
+				try {
+					stmt.execute(sql);
+				} finally {
+					close(stmt);
+				}
+				
 				statusList[i] = true;
 			}
 			
@@ -133,7 +142,7 @@ public class MySQLQueryExecuter extends MySQLWrapper {
 			sqle.printStackTrace(System.err);
 		} finally {
 			// close statement object
-			close(stmt);
+			//close(stmt);
 			// commit & close the connection
 			close(conn);
 		}
