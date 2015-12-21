@@ -91,7 +91,7 @@ public class DBFitFacade {
 			System.out.println("Counts(1):\n\t" + tester.counts);
 			System.out.println("Counts(2):\n\t" + Arrays.toString(rs.getCounts()));
 			
-			System.out.println("RESULT: \n" + result + "\n");
+			//System.out.println("RESULT: \n" + result + "\n");
 			
 		} catch (Exception e) {
 			// fpe.printStackTrace();
