@@ -340,6 +340,9 @@ public class SubmissionExecuter {
 		agnPath = "private/kh_b3/";
 		resetPath = "private/kh_b3/b3_reset.sql";
 		
+		agnPath = "private/kh_b3_mail23122015/";
+		resetPath = "private/kh_b3_mail23122015/b3_reset.sql";
+		
 		SubmissionExecuter se = new SubmissionExecuter(agnPath, resetPath, allowStatic);
 		se.runCheck();
 	}
