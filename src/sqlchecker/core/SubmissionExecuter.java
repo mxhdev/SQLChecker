@@ -65,8 +65,8 @@ public class SubmissionExecuter {
 	 */
 	public SubmissionExecuter(String assignmentPath, String resetPath, boolean allowStatic) {
 		this.agnPath = assignmentPath;
-		this.submPath = assignmentPath + "/submissions/";
-		this.solPath = assignmentPath + "/solution.txt";
+		this.submPath = assignmentPath + "submissions/";
+		this.solPath = assignmentPath + "solution.txt";
 		
 		this.resetScript = resetPath;
 		
@@ -339,9 +339,6 @@ public class SubmissionExecuter {
 		
 		agnPath = "private/kh_b3/";
 		resetPath = "private/kh_b3/b3_reset.sql";
-		
-		agnPath = "private/kh_b3_mail23122015/";
-		resetPath = "private/kh_b3_mail23122015/b3_reset.sql";
 		
 		SubmissionExecuter se = new SubmissionExecuter(agnPath, resetPath, allowStatic);
 		se.runCheck();

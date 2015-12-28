@@ -1,20 +1,14 @@
 package sqlchecker.io;
 
 import java.io.File;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
-
-import sqlchecker.core.ResultStorage;
-import fit.Parse;
 
 
 /**
@@ -77,12 +71,12 @@ public class IOUtil {
 		
 		// replace all non-ASCII characters
 		tmpLine = tmpLine.replaceAll("[^\\x00-\\x7F]", "");
-
+		
 		// either tag prefix or suffix is incorrect
 		if (((!tmpLine.startsWith(TAG_PREFIX)) || (!tmpLine.endsWith(TAG_SUFFIX)))) {
 			return -1;
 		}
-		
+
 		for (int i = 0; i < tags.length; i++) {
 			String tag = tags[i];
 			if (tmpLine.equalsIgnoreCase(TAG_PREFIX + tag + TAG_SUFFIX)) {
@@ -175,7 +169,7 @@ public class IOUtil {
 	
 	/**
 	 * Replaces each tag with it's respective SQL query
-	 * @param solutionHTML The html code in which the replacements
+	 * @param solutionHTML The HTML code in which the replacements
 	 * should be done
 	 * @param mapping The mapping (tag->SQL)
 	 * @return HTML code in which all tags were replaced with it's 

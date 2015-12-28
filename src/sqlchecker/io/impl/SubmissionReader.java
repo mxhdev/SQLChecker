@@ -1,7 +1,6 @@
 package sqlchecker.io.impl;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -144,7 +143,6 @@ public class SubmissionReader extends AbstractFileReader {
 			tagMappings.set(i, content);
 		}
 
-
 		// fill staticMapping list
 		staticMappings.clear();
 		ArrayList<String[]> newMapping = new ArrayList<String[]>();
@@ -161,6 +159,7 @@ public class SubmissionReader extends AbstractFileReader {
 		// re-fill normal mapping list
 		tagMappings.clear();
 		tagMappings.addAll(newMapping);
+		
 	}
 
 	

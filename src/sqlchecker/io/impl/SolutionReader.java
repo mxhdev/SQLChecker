@@ -69,7 +69,12 @@ public class SolutionReader extends AbstractFileReader {
 
 	@Override
 	protected void onReadLine(String line) {
-		if (line.startsWith("tags=")) {
+		// make sure invisible characters cant screw with the
+		// tag detection!
+		// Strip non-ASCII characters from line for comparison 
+		String tmpLine = line.replaceAll("[^\\x00-\\x7F]", "");
+		
+		if (tmpLine.startsWith("tags=")) {
 			// parse tag-list and store it in IOUtil
 			line = line.substring(line.indexOf("=") + 1).replace(" ", "");
 			String[] rawTags = line.split(",");
@@ -79,7 +84,6 @@ public class SolutionReader extends AbstractFileReader {
 			for (int i = 0; i < rawTags.length; i++) {
 				IOUtil.tags[i+1] = rawTags[i];
 			}
-			// System.out.println("tag-array:\"" + Arrays.toString(IOUtil.tags) + "\"");
 		} else {
 			htmlCode.append("\n" + line);
 			
