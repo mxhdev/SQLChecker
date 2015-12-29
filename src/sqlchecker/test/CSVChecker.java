@@ -95,7 +95,6 @@ public class CSVChecker {
 					// do string comparison
 					boolean isEqual = si.equals(sj);
 					if (!isEqual) {
-						System.out.println("[ " + li + " ]");
 						if (!diff.isEmpty()) diff += ", ";
 						diff += String.valueOf(li);
 					}
