@@ -2,6 +2,7 @@ package sqlchecker.test;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import sqlchecker.io.IOUtil;
 import sqlchecker.io.impl.SimpleFileReader;
@@ -94,13 +95,18 @@ public class CSVChecker {
 					// do string comparison
 					boolean isEqual = si.equals(sj);
 					if (!isEqual) {
+						System.out.println("[ " + li + " ]");
 						if (!diff.isEmpty()) diff += ", ";
-						diff += li;
+						diff += String.valueOf(li);
 					}
 					
 				}
 				
-				int diffCount = diff.split(",").length;
+				int diffCount = 0;
+				
+				if (!diff.isEmpty())
+					diffCount = diff.split(",").length;
+				
 				System.out.println("Found " + diffCount + " difference(s):");
 				System.out.println(diff);
 				
@@ -120,6 +126,7 @@ public class CSVChecker {
 		
 		CSVChecker csvc = new CSVChecker(path);
 		csvc.start();
+		
 	}
 
 }
