@@ -302,8 +302,6 @@ public class SolutionGenerator {
 		
 		wsPath = "private/kh_b3/";
 		
-		wsPath = "private/kh_b3_mail23122015/";
-		
 		String inPath = wsPath + "b3_raw.sql";
 		String outPath = wsPath + "solution.txt";
 		String samplePath = wsPath + "sample_b3.sql";
