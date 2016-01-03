@@ -28,7 +28,7 @@ public class IOUtil {
 	 * Default connection properties, in case something went wrong 
 	 * at parsing those
 	 */
-	public static final String[] DEFAULT_PROPS = new String[]{"localhost", "root", "", "dbfit"};
+	public static final String[] DEFAULT_PROPS = new String[]{"localhost", "root", "start", ""};
 	
 	/**
 	 * Prefix of a tag
