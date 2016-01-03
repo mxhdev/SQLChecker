@@ -67,6 +67,7 @@ public class DBFitFacade {
 		try {
 			// init connection
 			tester = init();
+			System.out.println(sqlhtml);
 			
 			// parse & execute the submission 
 			Parse target = new Parse(sqlhtml);
