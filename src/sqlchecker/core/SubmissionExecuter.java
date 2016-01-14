@@ -171,8 +171,8 @@ public class SubmissionExecuter {
 			// reset the database first
 			// -System.out.println("Executing reset with values \n\thost=" + connProps[0] + "\n\tdb=" + connProps[1] + "\n\tuser=" + connProps[2] + "\n\tpw=" + connProps[3] + "\n\tscript=" + resetScript);;
 			
-			//ScriptReader resetter = new ScriptReader(resetScript, ScriptReader.DEFAULT_DELIM, connProps);
-			//resetter.loadFile();
+			ScriptReader resetter = new ScriptReader(resetScript, ScriptReader.DEFAULT_DELIM, connProps);
+			resetter.loadFile();
 			
 			
 			
@@ -337,8 +337,8 @@ public class SubmissionExecuter {
 		String agnPath = "data/assignment3/";
 		String resetPath = "data/assignment2/airportReset.sql";
 		
-		agnPath = "private/kh_b3Test/";
-		resetPath = "private/kh_b3Test/b3_reset.sql";
+		agnPath = "private/kh_b3/";
+		resetPath = "private/kh_b3/b3_reset.sql";
 		
 		SubmissionExecuter se = new SubmissionExecuter(agnPath, resetPath, allowStatic);
 		se.runCheck();
