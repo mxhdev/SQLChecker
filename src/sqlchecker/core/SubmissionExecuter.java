@@ -325,24 +325,34 @@ public class SubmissionExecuter {
 				exercises.add(tags.get(o));
 			}
 		}
-		ArrayList<String> resLis = PlagiatTest.extractComments(subCom, exercises, staticEnabled);
-
-		// generate unique filename of duplicate report
-		String fname = this.agnPath + "PlagiatReport.csv";
-		fname = OutputWriter.makeUnique(fname);
+		ArrayList<ArrayList<String>> reports = PlagiatTest.extractComments(subCom, exercises, staticEnabled);
+		ArrayList<String> plagiat = reports.get(1);
+		ArrayList<String> comment = reports.get(0);
 		
-		System.out.println("Writing content to > PlagiatReport < file: \n \n \t"+fname);
+		// generate unique filename of duplicate report
+		String fnamePlagiat = this.agnPath + "PlagiatReport.csv";
+		fnamePlagiat = OutputWriter.makeUnique(fnamePlagiat);
+		
+		String fnameComment = this.agnPath + "CommentReport.csv";
+		fnameComment = OutputWriter.makeUnique(fnameComment);
+		
+		System.out.println("Writing content to > PlagiatReport < file: \n \n \t"+fnamePlagiat);
 		// write report file 
 		try {
-			OutputWriter plagiatWriter = new OutputWriter(fname, resLis);
+			OutputWriter plagiatWriter = new OutputWriter(fnamePlagiat, plagiat);
 			plagiatWriter.writeLines();
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 		}
 		
-		
-		
-		
+		System.out.println("\n Writing content to > CommentReport < file: \n \n \t"+fnameComment);
+		// write report file 
+		try {
+			OutputWriter commentWriter = new OutputWriter(fnameComment, comment);
+			commentWriter.writeLines();
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		}
 	}
 	
 	

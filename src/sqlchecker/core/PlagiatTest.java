@@ -181,6 +181,58 @@ public final class PlagiatTest {
 		return resultListStringArray;
 	}
 	
+	public static ArrayList<String> generateCommentReport (ArrayList<PlagiatTest> com, ArrayList<String> SolutionExercises, boolean staticEnabled) {
+		
+		ArrayList<String> commentReport = new ArrayList<String>();
+		String header = "";
+		String body = "";
+		header = "Name" + IOUtil.CSV_DELIMITER + "Matrikelnummer" + IOUtil.CSV_DELIMITER + "Submission" + IOUtil.CSV_DELIMITER;
+		if(staticEnabled){
+			header = header + "static" + IOUtil.CSV_DELIMITER;
+		}
+		for(int i = 0; i < SolutionExercises.size(); i++){
+			header = header + SolutionExercises.get(i).toString() + IOUtil.CSV_DELIMITER;
+		}
+		commentReport.add(header);
+		
+		for(PlagiatTest p: com){
+			String studentIDs = "";
+			String names = "";
+			for(int n = 0; n < p.getName().size(); n++){
+				if(n > 0){
+					names = names + ", ";
+				}
+				names = names + p.getName().get(n).toString();
+			}
+			
+			for(int n = 0; n < p.getMatrikelnummer().size(); n++){
+				if(n > 0){
+					studentIDs = studentIDs + ", ";
+				}
+				studentIDs = studentIDs + p.getMatrikelnummer().get(n).toString();
+			}
+			
+			
+			body = "";
+			body = body + names + IOUtil.CSV_DELIMITER + studentIDs + IOUtil.CSV_DELIMITER + p.getFilePath() + IOUtil.CSV_DELIMITER;
+			for(int i = 0; i < SolutionExercises.size(); i++){
+				String exerciseNameList = SolutionExercises.get(i).toString();
+				
+				for(int j = 0; j < p.comments.size(); j++){
+					String[] exerciseComment = p.comments.get(j);
+					if(exerciseNameList.equals(exerciseComment[0])){
+						String comment = exerciseComment[2];
+						comment = comment.replaceAll("(;|\n)", " ");
+						body = body + comment + IOUtil.CSV_DELIMITER;
+					}
+				}
+			}
+			
+			commentReport.add(body);
+		}
+		return commentReport;
+	}
+	
 	/**
 	 * Gets the List of submissions and exercises transform each submission to
 	 * a PlagiatTest object by getting the name, the studentID, and the solution
@@ -191,7 +243,7 @@ public final class PlagiatTest {
 	 * @param exer ArrayList<String> of exercises
 	 * @return ArrayList<String> 
 	 */
-	public static ArrayList<String> extractComments (ArrayList<SubmissionReader> subs, ArrayList<String> exer, boolean staticEnabled){
+	public static ArrayList<ArrayList<String>> extractComments (ArrayList<SubmissionReader> subs, ArrayList<String> exer, boolean staticEnabled){
 		
 		ArrayList<String[]> exercises = new ArrayList<String[]>();
 		ArrayList<String[]> staticSQLs = new ArrayList<String[]>();
@@ -213,8 +265,12 @@ public final class PlagiatTest {
 			PlagiatTest sub = new PlagiatTest(matrikelnummer, name, exercises, filePath);
 			subsExtracted.add(sub);
 		}
+		ArrayList<ArrayList<String>> reports = new ArrayList<ArrayList<String>>();
 		
-		return generatePlagiatList(subsExtracted, exer, staticEnabled);
+		reports.add(generateCommentReport(subsExtracted, exer, staticEnabled));
+		reports.add(generatePlagiatList(subsExtracted, exer, staticEnabled));
+		
+		return reports;
 	}
 	
 	public static void main(String[] args) {
