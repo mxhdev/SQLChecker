@@ -46,6 +46,10 @@ public class SubmissionReader extends AbstractFileReader {
 	 */
 	private ArrayList<String> name;
 
+	/**
+	 * List of student email addresses for every student who contributed to this submission
+	 */
+	private ArrayList<String> studentMails = new ArrayList<String>();
 	
 	/**
 	 * Create a submission reader class, store the given path
@@ -214,6 +218,17 @@ public class SubmissionReader extends AbstractFileReader {
 		this.name = name;
 	}
 
+	
+	public void setEMails(ArrayList<String> emails) {
+		this.studentMails.clear();
+		this.studentMails.addAll(emails);
+	}
+	
+	
+	public ArrayList<String> getEMails() {
+		return this.studentMails;
+	}
+	
 	
 	
 	public static String generateStaticHTML(String[] connProps, ArrayList<String> queries) {

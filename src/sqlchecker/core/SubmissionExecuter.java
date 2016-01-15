@@ -102,25 +102,32 @@ public class SubmissionExecuter {
 			}
 		}
 		
-		// initialize name and student id list
+		// initialize name, student id and emails list
 		ArrayList<String> names = new ArrayList<String>();
 		ArrayList<String> studentIds = new ArrayList<String>();
+		ArrayList<String> emails = new ArrayList<String>();
 		
 		// read the lines of the meta data of this submission
-		rawMd = rawMd.replace(" ", "");
 		String[] mdLines = rawMd.split("\n");
 		for (String md : mdLines) {
-			String[] data = md.split(IOUtil.CSV_DELIMITER);
-			// if there is a name AND a studentId
-			if (data.length > 1) {
-				names.add(data[0]);
-				studentIds.add(data[1]);
+			if (md.contains("@")) {
+				// parse email
+				emails.add(md.trim());
+			} else {
+				// parse name / studentId
+				String[] data = md.split(IOUtil.CSV_DELIMITER);
+				// if there is a name AND a studentId
+				if (data.length > 1) {
+					names.add(data[0].trim());
+					studentIds.add(data[1].trim());
+				}
 			}
 		}
 		
 		// store the meta data
 		sr.setMatrikelnummer(studentIds);
 		sr.setName(names);
+		sr.setEMails(emails);
 		
 		// return new version of this object
 		return sr;
@@ -139,6 +146,8 @@ public class SubmissionExecuter {
 		// log (contains errors for each submission)
 		ArrayList<String> logContent = new ArrayList<String>();
 		
+		// store all mail addresses
+		ArrayList<String> allMails = new ArrayList<String>();
 		
 		// show info
 		System.out.println("Solution: \n\t" + solPath);
@@ -187,6 +196,8 @@ public class SubmissionExecuter {
 			
 			// Set Name and Matrikelnummer of Submission
 			subr = generateMetadata(subr);
+			
+			allMails.addAll(subr.getEMails());
 			
 			//add submission to submission list for duplicate check
 			subCom.add(subr);
@@ -256,6 +267,17 @@ public class SubmissionExecuter {
 			
 		}
 		
+		String mailList = "";
+		int mailCount = allMails.size();
+		System.out.println("\n\nFound " + mailCount + " email adresses\n");
+		// Show all email addresses
+		for (int i = 0; i < mailCount; i++) {
+			if (i > 0) mailList += ", ";
+			mailList += allMails.get(i);
+		}
+		logContent.add(mailList);
+		
+		
 		/*
 		 * write/show content
 		 */
@@ -317,6 +339,9 @@ public class SubmissionExecuter {
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 		}
+		
+		
+		
 		
 	}
 	
