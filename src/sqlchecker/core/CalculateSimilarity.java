@@ -11,7 +11,7 @@ import org.simmetrics.tokenizers.Tokenizers;
 public class CalculateSimilarity {
 	
 	/**
-	 * Calculate the similarity of two strings. At the moment Levenshtein 
+	 * Calculate the similarity of two strings. At the moment Cosine 
 	 * distance is used for that. The returned float value is limited to
 	 * 0 all characters different and 1 all are the same. -1 is returned if
 	 * stringA is empty. 

@@ -274,6 +274,18 @@ public final class PlagiatTest {
 	}
 	
 	public static void main(String[] args) {
+		
+		String eins = "Das ist ein Teststring.";
+		String zwei = "Das ist ein";
+		
+		System.out.println("String: " + eins);
+		System.out.println("String: " + zwei + "\n");
+		
+		System.out.println("Ähnlichkeit Cosin:" +CalculateSimilarity.similarityStringsCosine(eins, zwei) );
+		System.out.println("Ähnlichkeit Levenshtein:" +CalculateSimilarity.similarityStringsLevenshstein(eins, zwei) );
+		
+		System.out.println("Ähnlichkeit Cosin:" +CalculateSimilarity.similarityStringsCosine(zwei, eins) );
+		System.out.println("Ähnlichkeit Levenshtein:" +CalculateSimilarity.similarityStringsLevenshstein(zwei, eins) );
 	}
 
 }
