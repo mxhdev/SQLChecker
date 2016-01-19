@@ -372,8 +372,8 @@ public class SubmissionExecuter {
 		String agnPath = "data/assignment3/";
 		String resetPath = "data/assignment2/airportReset.sql";
 		
-		agnPath = "private/kh_b3/";
-		resetPath = "private/kh_b3/b3_reset.sql";
+		agnPath = "private/kh_b3Test2/";
+		resetPath = "private/kh_b3Test2/b3_reset.sql";
 		
 		SubmissionExecuter se = new SubmissionExecuter(agnPath, resetPath, allowStatic);
 		se.runCheck();
