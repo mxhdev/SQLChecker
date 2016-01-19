@@ -6,6 +6,8 @@ import java.util.Arrays;
 
 import dbfit.MySqlTest;
 import fit.Parse;
+import sqlchecker.io.impl.ScriptReader;
+import sqlchecker.io.impl.SolutionReader;
 
 
 /**
@@ -187,6 +189,23 @@ public class DBFitFacade {
 
 	}
 	
-
+	public static void main(String[] args){
+		String html = "private/kh_b4/abgabe.txt";
+		SolutionReader abgabe = new SolutionReader(html);
+		abgabe.loadFile();
+		DBFitFacade tester = new DBFitFacade(html, abgabe.getConnectionProperties());
+		
+		ScriptReader resetter = new ScriptReader("private/kh_b4/b4_reset.sql", ScriptReader.DEFAULT_DELIM, abgabe.getConnectionProperties());
+		resetter.loadFile();
+		
+		try {
+			ResultStorage rs = tester.runSubmission(abgabe.getHTML().toString(), new ArrayList<String>(), new ArrayList<String>());
+			System.out.println(rs.getLogEntry());
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
 	
 }
