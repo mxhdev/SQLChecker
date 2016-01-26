@@ -257,6 +257,9 @@ public class SubmissionExecuter {
 				continue;
 			}
 			
+			// The result set is NOT null
+			rs.setFormatError(subr.getFormatError());
+			
 			if (staticRs != null)  {
 				rs.setStaticResults(staticRs, staticQueries.size());
 			}

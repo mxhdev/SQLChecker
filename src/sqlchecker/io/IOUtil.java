@@ -146,6 +146,7 @@ public class IOUtil {
 		String csvHead = "Name(s)" + IOUtil.CSV_DELIMITER
 				+ "Student ID(s)" + IOUtil.CSV_DELIMITER
 				+ "Submission" + IOUtil.CSV_DELIMITER
+				+ "Format Error" + IOUtil.CSV_DELIMITER
 				+ staticHeader
 				+ "Right" + IOUtil.CSV_DELIMITER
 				+ "Wrong" + IOUtil.CSV_DELIMITER

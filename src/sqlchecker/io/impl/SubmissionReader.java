@@ -51,6 +51,9 @@ public class SubmissionReader extends AbstractFileReader {
 	 */
 	private ArrayList<String> studentMails = new ArrayList<String>();
 	
+	private boolean formatError = false;
+	
+	
 	/**
 	 * Create a submission reader class, store the given path
 	 * and init the mapping by using the given tags
@@ -147,11 +150,16 @@ public class SubmissionReader extends AbstractFileReader {
 			tagMappings.set(i, content);
 		}
 
-		// extract the proper sql statements
-		// ommit the meta data tag mapping for authors
+		// extract the proper SQL statements
+		// omit the meta data tag mapping for authors
 		for (int i = 1; i < tagMappings.size(); i++) {
 			String[] m = tagMappings.get(i);
-			m[1] = extractSQL(m[1]);
+			String newSQL = extractSQL(m[1]);
+			// check for format error!
+			if (!newSQL.equals(m[1])) {
+				m[1] = newSQL;
+				formatError = true;
+			}
 			// apply changes!
 			tagMappings.set(i, m);
 		}
@@ -285,6 +293,9 @@ public class SubmissionReader extends AbstractFileReader {
 	}
 
 
+	public boolean getFormatError() {
+		return this.formatError;
+	}
 
 	/**
 	 * For receiving the mapping which was extracted from the

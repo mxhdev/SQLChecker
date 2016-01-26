@@ -52,6 +52,8 @@ public class ResultStorage {
 	 */
 	private ArrayList<String> matrikelnummer = null;
 	
+	private boolean formatError = false;
+	
 	private String csv_name = "";
 	private String csv_matrikelnummer = "";
 	
@@ -201,6 +203,14 @@ public class ResultStorage {
 	public void setMatrikelnummer(ArrayList<String> matrikelnummer) {
 		this.matrikelnummer = matrikelnummer;
 	}
+	
+	
+	public void setFormatError(boolean fe) {
+		this.formatError = fe;
+		updateOutput(true, false);
+	}
+	
+	
 
 	/**
 	 * This function is part of the initialization routine of this
@@ -239,6 +249,7 @@ public class ResultStorage {
 		String csvLine = csv_name + IOUtil.CSV_DELIMITER
 				+ csv_matrikelnummer + IOUtil.CSV_DELIMITER
 				+ filePath + IOUtil.CSV_DELIMITER
+				+ formatError + IOUtil.CSV_DELIMITER
 				+ staticCSV;
 		
 		
