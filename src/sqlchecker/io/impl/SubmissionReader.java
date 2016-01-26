@@ -238,7 +238,14 @@ public class SubmissionReader extends AbstractFileReader {
 			// check for the type
 			if (startType.equals("function") || startType.equals("procedure")) {
 				// use END
+				// watch out for endif and end if
+				rawSQL.replace("end if", "exx if");
+				rawSQL.replace("endif", "exxif");
+				
 				end = rawSQL.indexOf("end") + 3;
+				
+				rawSQL.replace("exx if", "end if");
+				rawSQL.replace("exxif", "endif");
 			} else {
 				end = rawSQL.indexOf(";") + 1;
 				// use ;
