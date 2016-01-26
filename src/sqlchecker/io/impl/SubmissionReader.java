@@ -210,7 +210,7 @@ public class SubmissionReader extends AbstractFileReader {
 		}
 
 		// for sub-queries!!
-		if (start > 0) {
+		if ((start > 0) && (!isCreate)) {
 			String prefix = sql.substring(0, start-1);
 			start = Math.max(0, prefix.lastIndexOf(";") + 1);
 		}
@@ -469,6 +469,19 @@ public class SubmissionReader extends AbstractFileReader {
 				"UNION \n" +
 				"(SELECT * from test2); \n" +
 				"SELECT * from patienten;";
+		System.out.println("\n> TEST = \n" + testStr);
+		
+		out = SubmissionReader.extractSQL(testStr);
+		System.out.println("\n> OUT = \n" + out);
+		
+		System.out.println("\n\n - - - - - \n\n");
+		
+		
+		testStr = "DELIMITER $$\n" +
+				"use krankenhaus $$ \n" +
+				"CREATE FUNCTION \n" +
+				"(SELECT * from test2); \n" +
+				"END$$";
 		System.out.println("\n> TEST = \n" + testStr);
 		
 		out = SubmissionReader.extractSQL(testStr);
