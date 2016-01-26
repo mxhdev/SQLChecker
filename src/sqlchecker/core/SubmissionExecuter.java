@@ -52,6 +52,8 @@ public class SubmissionExecuter {
 	 */
 	private boolean staticEnabled = false;
 	
+	protected static int resultLimit = 100;
+	
 	/**
 	 * Creates a SubmissionExecuter class and stores the
 	 * given parameters
@@ -63,7 +65,7 @@ public class SubmissionExecuter {
 	 * @param allowStatic True iff there are static tags allowed in 
 	 * student submissions
 	 */
-	public SubmissionExecuter(String assignmentPath, String resetPath, boolean allowStatic) {
+	public SubmissionExecuter(String assignmentPath, String resetPath, boolean allowStatic, int maxResults) {
 		this.agnPath = assignmentPath;
 		this.submPath = assignmentPath + "submissions/";
 		this.solPath = assignmentPath + "solution.txt";
@@ -71,6 +73,7 @@ public class SubmissionExecuter {
 		this.resetScript = resetPath;
 		
 		this.staticEnabled = allowStatic;
+		this.resultLimit = maxResults;
 	}
 	
 	
@@ -368,6 +371,7 @@ public class SubmissionExecuter {
 	public static void main(String[] args) {
 		// allow static queries in student submissions
 		boolean allowStatic = false;
+		int resultLimit = 100;
 		
 		String agnPath = "data/assignment3/";
 		String resetPath = "data/assignment2/airportReset.sql";
@@ -375,7 +379,8 @@ public class SubmissionExecuter {
 		agnPath = "private/kh_b4/";
 		resetPath = "private/kh_b4/b4_reset.sql";
 		
-		SubmissionExecuter se = new SubmissionExecuter(agnPath, resetPath, allowStatic);
+		
+		SubmissionExecuter se = new SubmissionExecuter(agnPath, resetPath, allowStatic, resultLimit);
 		se.runCheck();
 	}
 

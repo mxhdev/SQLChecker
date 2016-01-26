@@ -169,7 +169,10 @@ public class DBFitFacade {
 	 * @see https://github.com/unclebob/fitnesse/blob/master/src/fit/Parse.java
 	 */
 	private void printParseStr(Parse p, int iter) {
-		 
+		if(iter > SubmissionExecuter.resultLimit) {
+			storage+= "\n reached threshhold";
+			return;
+		}
 		storage += p.leader; 
 		storage += p.tag;
 
