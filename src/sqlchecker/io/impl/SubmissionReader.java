@@ -209,6 +209,11 @@ public class SubmissionReader extends AbstractFileReader {
 			start = 0;
 		}
 
+		// for sub-queries!!
+		if (start > 0) {
+			String prefix = sql.substring(0, start-1);
+			start = Math.max(0, prefix.lastIndexOf(";") + 1);
+		}
 		
 		if (isCreate) {
 			
@@ -446,6 +451,19 @@ public class SubmissionReader extends AbstractFileReader {
 				"SELECT * FROM TEST \n" +
 				"END IF; \n" +
 				"END\n" +
+				"SELECT * from patienten;";
+		System.out.println("\n> TEST = \n" + testStr);
+		
+		out = SubmissionReader.extractSQL(testStr);
+		System.out.println("\n> OUT = \n" + out);
+		
+		System.out.println("\n\n - - - - - \n\n");
+		
+		
+		testStr = "use krankenhaus;\n" +
+				"(SELECT * from test1) \n" +
+				"UNION \n" +
+				"(SELECT * from test2); \n" +
 				"SELECT * from patienten;";
 		System.out.println("\n> TEST = \n" + testStr);
 		
