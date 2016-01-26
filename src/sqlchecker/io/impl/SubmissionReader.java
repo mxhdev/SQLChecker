@@ -148,7 +148,8 @@ public class SubmissionReader extends AbstractFileReader {
 		}
 
 		// extract the proper sql statements
-		for (int i = 0; i < tagMappings.size(); i++) {
+		// ommit the meta data tag mapping for authors
+		for (int i = 1; i < tagMappings.size(); i++) {
 			String[] m = tagMappings.get(i);
 			m[1] = extractSQL(m[1]);
 			// apply changes!
