@@ -67,7 +67,7 @@ public class IOUtil {
 	 */
 	public static int getTagPos(String line) {
 		
-		// sample tags: /*2b*/, /* 2B*/
+		// sample tags: /*a2b*/, /* a2B*/
 		
 		String tmpLine = line.replace(" ", "");
 		
@@ -81,27 +81,9 @@ public class IOUtil {
 
 		for (int i = 0; i < tags.length; i++) {
 			String tag = tags[i];
-			String authors = SolutionReader.METADATA_TAG;
-			if(!tag.equals(authors)){
-				// replace all non numeric characters to get only the number of the exercise
-				String tagNumber = tag.replaceAll("[^\\d.]", "");
-				// get the index of the first occurrence of this number
-				int numberIndex = tmpLine.indexOf(tagNumber);
-				if(numberIndex >= 0){
-					int endIndex = tags[i].length() + numberIndex;
-					String probTag = tmpLine.substring(numberIndex, endIndex);
-					if (probTag.equalsIgnoreCase(tag)) {
-						return i;
-					}
-				}
-			}else{
-				if(tmpLine.startsWith(TAG_PREFIX + "a") && tmpLine.endsWith(TAG_SUFFIX) && tmpLine.length() <= 14){
-					return i;
-				}else if(tmpLine.startsWith(TAG_PREFIX + "A") && tmpLine.endsWith(TAG_SUFFIX) && tmpLine.length() <= 14){
-					return i;
-				}
+			if (tmpLine.equalsIgnoreCase(TAG_PREFIX + tag + TAG_SUFFIX)) {
+				return i;
 			}
-			
 		}
 		
 		// no tags were matching
