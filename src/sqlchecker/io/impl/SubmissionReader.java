@@ -240,13 +240,13 @@ public class SubmissionReader extends AbstractFileReader {
 			if (startType.equals("function") || startType.equals("procedure")) {
 				// use END
 				// watch out for endif and end if
-				rawSQL.replace("end if", "exx if");
-				rawSQL.replace("endif", "exxif");
+				rawSQL = rawSQL.replace("end if", "exx if");
+				rawSQL = rawSQL.replace("endif", "exxif");
 				
 				end = rawSQL.indexOf("end") + 3;
 				
-				rawSQL.replace("exx if", "end if");
-				rawSQL.replace("exxif", "endif");
+				rawSQL = rawSQL.replace("exx if", "end if");
+				rawSQL = rawSQL.replace("exxif", "endif");
 			} else {
 				if (rawSQL.indexOf(";") < 0) {
 					end = rawSQL.length();
@@ -437,6 +437,23 @@ public class SubmissionReader extends AbstractFileReader {
 		System.out.println("\n> OUT = \n" + out);
 		
 		System.out.println("\n\n - - - - - \n\n");
+		
+		
+		testStr = "use krankenhaus;\n" +
+				"DROP PROCEDURE IF EXISTS warenwert;\n" +
+				"CREATE PROCEDURE warenwert(int xy) ;\n" +
+				"begin \n" +
+				"SELECT * FROM TEST \n" +
+				"END IF; \n" +
+				"END\n" +
+				"SELECT * from patienten;";
+		System.out.println("\n> TEST = \n" + testStr);
+		
+		out = SubmissionReader.extractSQL(testStr);
+		System.out.println("\n> OUT = \n" + out);
+		
+		System.out.println("\n\n - - - - - \n\n");
+		
 		
 	}
 
