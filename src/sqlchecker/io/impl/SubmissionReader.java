@@ -147,6 +147,14 @@ public class SubmissionReader extends AbstractFileReader {
 			tagMappings.set(i, content);
 		}
 
+		// extract the proper sql statements
+		for (int i = 0; i < tagMappings.size(); i++) {
+			String[] m = tagMappings.get(i);
+			m[1] = extractSQL(m[1]);
+			// apply changes!
+			tagMappings.set(i, m);
+		}
+		
 		// fill staticMapping list
 		staticMappings.clear();
 		ArrayList<String[]> newMapping = new ArrayList<String[]>();
@@ -167,6 +175,91 @@ public class SubmissionReader extends AbstractFileReader {
 	}
 
 	
+	public static String extractSQL(String sql) {
+		final String[] START_TRIGGERS = new String[]{"create", "select", "insert into", "alter", "update"};
+		final String[] CREATE_TRIGGERS = new String[]{"function", "procedure", "view", "table"};
+		
+		int start = sql.length() - 1;
+		int end = sql.length() - 1;
+		
+		String sqlOut = "";
+		
+		String rawSQL = sql.toLowerCase();
+		
+		boolean isCreate = false;
+		boolean wasUpdated = false;
+		for (String trigger : START_TRIGGERS) {
+			// stop as soon as one of the triggers was found
+			// the keyword at the top-most position will be chosen
+			if (rawSQL.contains(trigger)) {
+				int startNew = rawSQL.indexOf(trigger);
+				// take the minimum
+				if (startNew < start) {
+					start = startNew;
+					// check for create!
+					isCreate = trigger.equals("create");
+					wasUpdated = true;
+				}
+			}
+		}
+		
+		// if no start was found, start at position 0
+		if (!wasUpdated) {
+			start = 0;
+		}
+
+		
+		if (isCreate) {
+			
+			int posMin = sql.length();
+			String startType = "";
+
+			// cut the strings so everything before the start is away
+			sqlOut = sql.substring(start);
+			rawSQL = rawSQL.substring(start);
+
+			for (String trigger : CREATE_TRIGGERS) {
+				if (rawSQL.contains(trigger)) {
+					// distance in amount of lines
+					int newPos = rawSQL.indexOf(trigger);
+					if (newPos > -1) {
+						// the trigger occurs AFTER the start
+						if (newPos < posMin) {
+							posMin = newPos;
+							startType = trigger;
+						}
+					}
+				}
+			}
+			
+			
+			
+			
+			// check for the type
+			if (startType.equals("function") || startType.equals("procedure")) {
+				// use END
+				end = rawSQL.indexOf("end") + 3;
+			} else {
+				end = rawSQL.indexOf(";") + 1;
+				// use ;
+			}
+			
+			return sqlOut.substring(0, end);
+		} else {
+			// select or insert into or something which does
+			// never end with the "END" keyword
+			
+			sqlOut = sql.substring(start);
+			end = sqlOut.indexOf(";") + 1;
+			
+			return sqlOut.substring(0, end);
+		}
+		
+		
+	}
+
+
+
 	/**
 	 * For receiving the mapping which was extracted from the
 	 * given file
@@ -268,11 +361,66 @@ public class SubmissionReader extends AbstractFileReader {
 
 
 	public static void main(String[] args) {
-		String fpath = "data/assignment2/submissions/AA_Musterloesung.sql";
+		/*String fpath = "data/assignment2/submissions/AA_Musterloesung.sql";
 		fpath = "data/assignment3/submissions/utf8Bug.txt";
 		String[] tags = new String[]{"1a", "1b", "1c", "1d"}; 
 		SubmissionReader sr = new SubmissionReader(fpath, tags);
 		sr.loadFile();
+		*/
+		
+		String testStr = "use krankenhaus;\n" +
+				"DROP TABLE IF EXISTS pfleger;\n" +
+				"CREATE VIEW verschreibt;\n" +
+				"DROP VIEW IF EXISTS verschreibt;";
+		System.out.println("\n> TEST = \n" + testStr);
+		
+		String out = SubmissionReader.extractSQL(testStr);
+		System.out.println("\n> OUT = \n" + out);
+		
+		System.out.println("\n\n - - - - - \n\n");
+		
+		
+		testStr = "use krankenhaus;\n" +
+				"DROP PROCEDURE IF EXISTS warenwert;\n" +
+				"CREATE PROCEDURE warenwert(int xy) ;\n" +
+				"begin \n" +
+				"SELECT * FROM TEST \n" +
+				"END\n" +
+				"DROP PROCEDURE IF EXISTS warenwert;";
+		System.out.println("\n> TEST = \n" + testStr);
+		
+		out = SubmissionReader.extractSQL(testStr);
+		System.out.println("\n> OUT = \n" + out);
+		
+		System.out.println("\n\n - - - - - \n\n");
+		
+		
+		testStr = "use krankenhaus;\n" +
+				"DROP PROCEDURE IF EXISTS warenwert;\n" +
+				"CREATE PROCEDURE warenwert(int xy) ;\n" +
+				"begin \n" +
+				"SELECT * FROM TEST \n" +
+				"END\n" +
+				"SELECT * from patienten;";
+		System.out.println("\n> TEST = \n" + testStr);
+		
+		out = SubmissionReader.extractSQL(testStr);
+		System.out.println("\n> OUT = \n" + out);
+		
+		System.out.println("\n\n - - - - - \n\n");
+		
+		
+		testStr = "use krankenhaus;\n" +
+				"DROP PROCEDURE IF EXISTS warenwert;\n" +
+				"SELECT * FROM warenwert(2); \n" +
+				"CREATE TABLE test values ();";
+		System.out.println("\n> TEST = \n" + testStr);
+		
+		out = SubmissionReader.extractSQL(testStr);
+		System.out.println("\n> OUT = \n" + out);
+		
+		System.out.println("\n\n - - - - - \n\n");
+		
 	}
 
 
