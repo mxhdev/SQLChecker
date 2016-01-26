@@ -251,7 +251,7 @@ public class SubmissionExecuter {
 			}
 			
 			if (rs == null) {
-				// some sql exception occurred
+				// some SQL exception occurred
 				logContent.add("Error for file " + fpath);
 				csvLines.add(fpath + IOUtil.CSV_DELIMITER + "?");
 				continue;

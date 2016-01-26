@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import sqlchecker.core.CalculateSimilarity;
 import sqlchecker.io.AbstractFileReader;
 import sqlchecker.io.IOUtil;
 
@@ -51,7 +52,7 @@ public class SubmissionReader extends AbstractFileReader {
 	 */
 	private ArrayList<String> studentMails = new ArrayList<String>();
 	
-	private boolean formatError = false;
+	private String formatError = "";
 	
 	
 	/**
@@ -152,17 +153,19 @@ public class SubmissionReader extends AbstractFileReader {
 
 		// extract the proper SQL statements
 		// omit the meta data tag mapping for authors
+		float maxChange = 1;
 		for (int i = 1; i < tagMappings.size(); i++) {
 			String[] m = tagMappings.get(i);
 			String newSQL = extractSQL(m[1]);
 			// check for format error!
 			if (!newSQL.equals(m[1])) {
 				m[1] = newSQL;
-				formatError = true;
+				maxChange = Math.min(maxChange, CalculateSimilarity.similarityStringsCosine(newSQL, m[1]));
 			}
 			// apply changes!
 			tagMappings.set(i, m);
 		}
+		this.formatError = String.valueOf((1 - maxChange));
 		
 		// fill staticMapping list
 		staticMappings.clear();
@@ -293,7 +296,7 @@ public class SubmissionReader extends AbstractFileReader {
 	}
 
 
-	public boolean getFormatError() {
+	public String getFormatError() {
 		return this.formatError;
 	}
 

@@ -52,7 +52,7 @@ public class ResultStorage {
 	 */
 	private ArrayList<String> matrikelnummer = null;
 	
-	private boolean formatError = false;
+	private String formatError = "0.0";
 	
 	private String csv_name = "";
 	private String csv_matrikelnummer = "";
@@ -205,7 +205,7 @@ public class ResultStorage {
 	}
 	
 	
-	public void setFormatError(boolean fe) {
+	public void setFormatError(String fe) {
 		this.formatError = fe;
 		updateOutput(true, false);
 	}
