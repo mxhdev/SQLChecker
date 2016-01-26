@@ -248,7 +248,11 @@ public class SubmissionReader extends AbstractFileReader {
 				rawSQL.replace("exx if", "end if");
 				rawSQL.replace("exxif", "endif");
 			} else {
-				end = rawSQL.indexOf(";") + 1;
+				if (rawSQL.indexOf(";") < 0) {
+					end = rawSQL.length();
+				} else {
+					end = rawSQL.indexOf(";") + 1;
+				}
 				// use ;
 			}
 			
@@ -258,7 +262,12 @@ public class SubmissionReader extends AbstractFileReader {
 			// never end with the "END" keyword
 			
 			sqlOut = sql.substring(start);
-			end = sqlOut.indexOf(";") + 1;
+			
+			if (sqlOut.indexOf(";") < 0) {
+				end = sqlOut.length();
+			} else {
+				end = sqlOut.indexOf(";") + 1;
+			}
 			
 			return sqlOut.substring(0, end);
 		}
