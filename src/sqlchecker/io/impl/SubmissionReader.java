@@ -159,8 +159,8 @@ public class SubmissionReader extends AbstractFileReader {
 			String newSQL = extractSQL(m[1]);
 			// check for format error!
 			if (!newSQL.equals(m[1])) {
-				m[1] = newSQL;
 				maxChange = Math.min(maxChange, CalculateSimilarity.similarityStringsCosine(newSQL, m[1]));
+				m[1] = newSQL;
 			}
 			// apply changes!
 			tagMappings.set(i, m);
