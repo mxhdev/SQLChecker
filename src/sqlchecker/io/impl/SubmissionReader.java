@@ -248,7 +248,11 @@ public class SubmissionReader extends AbstractFileReader {
 				rawSQL = rawSQL.replace("end if", "exx if");
 				rawSQL = rawSQL.replace("endif", "exxif");
 				
-				end = rawSQL.indexOf("end") + 3;
+				if (rawSQL.contains("end")) {
+					end = rawSQL.indexOf("end") + 3;
+				} else {
+					end = rawSQL.indexOf(";");
+				}
 				
 				rawSQL = rawSQL.replace("exx if", "end if");
 				rawSQL = rawSQL.replace("exxif", "endif");
