@@ -54,6 +54,8 @@ public class ResultStorage {
 	
 	private String formatError = "0.0";
 	
+	private boolean tagMistake = false;
+	
 	private String csv_name = "";
 	private String csv_matrikelnummer = "";
 	
@@ -210,6 +212,11 @@ public class ResultStorage {
 		updateOutput(true, false);
 	}
 	
+	public void setTagMistake(boolean tm) {
+		this.tagMistake = tm;
+		updateOutput(true, false);
+	}
+	
 	
 
 	/**
@@ -250,6 +257,7 @@ public class ResultStorage {
 				+ csv_matrikelnummer + IOUtil.CSV_DELIMITER
 				+ filePath + IOUtil.CSV_DELIMITER
 				+ formatError + IOUtil.CSV_DELIMITER
+				+ tagMistake + IOUtil.CSV_DELIMITER
 				+ staticCSV;
 		
 		
