@@ -81,8 +81,32 @@ public class IOUtil {
 
 		for (int i = 0; i < tags.length; i++) {
 			String tag = tags[i];
-			if (tmpLine.equalsIgnoreCase(TAG_PREFIX + tag + TAG_SUFFIX)) {
-				return i;
+			String authors = SolutionReader.METADATA_TAG;
+			if(!tag.equals(authors)){
+				// comment must be longer than characters of tag + pre- suffix + 9 ('Aufgabe.)')
+				int tagLength = tag.length() + 4 + 9;
+				// to check if a comment in one line which includes a number isn't recognized as a tag
+				if(tmpLine.length() <= tagLength){
+					// replace all non numeric characters to get only the number of the exercise
+					String tagNumber = tag.replaceAll("[^\\d.]", "");
+					
+					// get the index of the first occurrence of this number
+					int numberIndex = tmpLine.indexOf(tagNumber);
+					
+					if(numberIndex >= 0){
+						int endIndex = tags[i].length() + numberIndex;
+						String probTag = tmpLine.substring(numberIndex, endIndex);
+						if (probTag.equalsIgnoreCase(tag)) {
+							return i;
+						}
+					}
+				}else return -1;
+			}else{
+				if(tmpLine.startsWith(TAG_PREFIX + "aut") && tmpLine.endsWith(TAG_SUFFIX) && tmpLine.length() <= 14){
+					return i;
+				}else if(tmpLine.startsWith(TAG_PREFIX + "Aut") && tmpLine.endsWith(TAG_SUFFIX) && tmpLine.length() <= 14){
+					return i;
+				}
 			}
 		}
 		
