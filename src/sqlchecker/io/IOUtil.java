@@ -58,8 +58,6 @@ public class IOUtil {
 	 */
 	public static String[] tags = new String[0];
 	
-	private static boolean tagMistake = false;
-	
 	
 	/**
 	 * Checks if a tag was found
@@ -85,7 +83,6 @@ public class IOUtil {
 		for (int i = 0; i < tags.length; i++) {
 			String tag = tags[i];
 			String authors = SolutionReader.METADATA_TAG;
-			String tagLine = TAG_PREFIX + tag + TAG_SUFFIX;
 			if(!tag.equals(authors)){
 				// comment must be longer than characters of tag + pre- suffix + 9 ('Aufgabe.)')
 				int tagLength = tag.length() + 4 + 9;
@@ -100,9 +97,6 @@ public class IOUtil {
 					if(numberIndex >= 0){
 						int endIndex = tags[i].length() + numberIndex;
 						String probTag = tmpLine.substring(numberIndex, endIndex);
-						if (!tmpLine.equals(tagLine)) {
-							tagMistake =  true;
-						}
 						if (probTag.equalsIgnoreCase(tag)) {
 							return i;
 						}
@@ -110,14 +104,8 @@ public class IOUtil {
 				}else return -1;
 			}else{
 				if(tmpLine.startsWith(TAG_PREFIX + "aut") && tmpLine.endsWith(TAG_SUFFIX) && tmpLine.length() <= 14){
-					if (!tmpLine.equals(tagLine)) {
-						tagMistake = true;
-					}
 					return i;
 				}else if(tmpLine.startsWith(TAG_PREFIX + "Aut") && tmpLine.endsWith(TAG_SUFFIX) && tmpLine.length() <= 14){
-					if (!tmpLine.equals(tagLine)) {
-						tagMistake = true;
-					}
 					return i;
 				}
 			}
@@ -125,10 +113,6 @@ public class IOUtil {
 		
 		// no tags were matching
 		return -1;
-	}
-	
-	public static boolean getTagMistake(){
-		return tagMistake;
 	}
 	
 	

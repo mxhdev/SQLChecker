@@ -54,6 +54,8 @@ public class SubmissionReader extends AbstractFileReader {
 	
 	private String formatError = "";
 	
+	private int tagMistakes = 0;
+	
 	
 	/**
 	 * Create a submission reader class, store the given path
@@ -82,6 +84,9 @@ public class SubmissionReader extends AbstractFileReader {
 		if (tmpPos >= 0) {
 			// new tag found!
 			pos = tmpPos;
+			if(!line.equals(IOUtil.TAG_PREFIX + IOUtil.tags[tmpPos] + IOUtil.TAG_SUFFIX)){
+				tagMistakes++;
+			}
 		} else if (line.equals(IOUtil.TAG_PREFIX + "static" + IOUtil.TAG_SUFFIX)) {
 			// static tag, add an empty map
 			tagMappings.add(new String[]{"static", "", ""});
@@ -298,6 +303,10 @@ public class SubmissionReader extends AbstractFileReader {
 
 	public String getFormatError() {
 		return this.formatError;
+	}
+	
+	public int getTagMistakes(){
+		return this.tagMistakes;
 	}
 
 	/**

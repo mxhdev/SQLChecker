@@ -260,7 +260,7 @@ public class SubmissionExecuter {
 			// The result set is NOT null
 			rs.setFormatError(subr.getFormatError());
 			
-			rs.setTagMistake(IOUtil.getTagMistake());
+			rs.setTagMistakes(subr.getTagMistakes());
 			
 			if (staticRs != null)  {
 				rs.setStaticResults(staticRs, staticQueries.size());
@@ -381,8 +381,8 @@ public class SubmissionExecuter {
 		String agnPath = "data/assignment3/";
 		String resetPath = "data/assignment2/airportReset.sql";
 		
-		agnPath = "private/kh_b4Test/";
-		resetPath = "private/kh_b4Test/b4_reset.sql";
+		agnPath = "private/kh_b4/";
+		resetPath = "private/kh_b4/b4_reset.sql";
 		
 		
 		SubmissionExecuter se = new SubmissionExecuter(agnPath, resetPath, allowStatic, resultLimit);
