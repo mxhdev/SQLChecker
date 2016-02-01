@@ -76,7 +76,7 @@ public class IOUtil {
 		tmpLine = tmpLine.replaceAll("[^\\x00-\\x7F]", "");
 		
 		// either tag prefix or suffix is incorrect
-		if (((!tmpLine.startsWith(TAG_PREFIX)) || (!tmpLine.endsWith(TAG_SUFFIX)))) {
+		if ((!tmpLine.startsWith(TAG_PREFIX)) || (!tmpLine.endsWith(TAG_SUFFIX))) {
 			return -1;
 		}
 

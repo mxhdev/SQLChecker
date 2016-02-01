@@ -80,14 +80,15 @@ public class SubmissionReader extends AbstractFileReader {
 	@Override
 	protected void onReadLine(String line) {
 		// check if it is a task tag
+		String checkLine = line.replaceAll("[^\\x00-\\x7F]", "");
 		int tmpPos = IOUtil.getTagPos(line);
 		if (tmpPos >= 0) {
 			// new tag found!
 			pos = tmpPos;
-			if(!line.equals(IOUtil.TAG_PREFIX + IOUtil.tags[tmpPos] + IOUtil.TAG_SUFFIX)){
+			if(!checkLine.equals(IOUtil.TAG_PREFIX + IOUtil.tags[tmpPos] + IOUtil.TAG_SUFFIX)){
 				tagMistakes++;
 			}
-		} else if (line.equals(IOUtil.TAG_PREFIX + "static" + IOUtil.TAG_SUFFIX)) {
+		} else if (checkLine.equals(IOUtil.TAG_PREFIX + "static" + IOUtil.TAG_SUFFIX)) {
 			// static tag, add an empty map
 			tagMappings.add(new String[]{"static", "", ""});
 			pos = tagMappings.size() - 1;
