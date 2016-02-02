@@ -274,6 +274,11 @@ public class SubmissionReader extends AbstractFileReader {
 				// watch out for endif and end if
 				rawSQL = rawSQL.replace("end if", "exx if");
 				rawSQL = rawSQL.replace("endif", "exxif");
+				rawSQL = rawSQL.replace("end loop", "exx loop");
+				rawSQL = rawSQL.replace("end case", "exx case");
+				rawSQL = rawSQL.replace("end repeat", "exx repeat");
+				rawSQL = rawSQL.replace("end while", "exx while");
+				rawSQL = rawSQL.replace("end while", "exx while");
 				
 				if (rawSQL.contains("end")) {
 					end = rawSQL.indexOf("end") + 3;
@@ -281,8 +286,14 @@ public class SubmissionReader extends AbstractFileReader {
 					end = rawSQL.indexOf(";");
 				}
 				
+				/*
+				 * Not required because the output will be generated
+				 * from the sqlOut string
+				 * Index should be finde as long as the letter count
+				 * does not change
 				rawSQL = rawSQL.replace("exx if", "end if");
 				rawSQL = rawSQL.replace("exxif", "endif");
+				*/
 			} else {
 				if (rawSQL.indexOf(";") < 0) {
 					end = rawSQL.length();
