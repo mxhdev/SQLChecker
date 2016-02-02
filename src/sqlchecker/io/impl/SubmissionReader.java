@@ -162,6 +162,7 @@ public class SubmissionReader extends AbstractFileReader {
 		float maxChange = 1;
 		for (int i = 1; i < tagMappings.size(); i++) {
 			String[] m = tagMappings.get(i);
+			m[1] = m[1].replace("<", "&lt;").replace(">", "&gt;");
 			String newSQL = extractSQL(m[1]);
 			// check for format error!
 			if (!newSQL.equals(m[1])) {
@@ -204,6 +205,8 @@ public class SubmissionReader extends AbstractFileReader {
 		
 		String rawSQL = sql.toLowerCase();
 		
+		rawSQL = rawSQL.replace("&lt;", "&lt_").replace("&gt;", "&gt_");
+		
 		boolean isCreate = false;
 		boolean wasUpdated = false;
 		for (String trigger : START_TRIGGERS) {
@@ -232,14 +235,21 @@ public class SubmissionReader extends AbstractFileReader {
 			start = Math.max(0, prefix.lastIndexOf(";") + 1);
 		}
 		
+		
+
+
+		// cut the strings so everything before the start is away
+		sqlOut = sql.substring(start);
+		rawSQL = rawSQL.substring(start);
+
+
+					
 		if (isCreate) {
 			
 			int posMin = sql.length();
 			String startType = "";
 
-			// cut the strings so everything before the start is away
-			sqlOut = sql.substring(start);
-			rawSQL = rawSQL.substring(start);
+			
 
 			for (String trigger : CREATE_TRIGGERS) {
 				if (rawSQL.contains(trigger)) {
@@ -287,12 +297,11 @@ public class SubmissionReader extends AbstractFileReader {
 			// select or insert into or something which does
 			// never end with the "END" keyword
 			
-			sqlOut = sql.substring(start);
 			
-			if (sqlOut.indexOf(";") < 0) {
-				end = sqlOut.length();
+			if (rawSQL.indexOf(";") < 0) {
+				end = rawSQL.length();
 			} else {
-				end = sqlOut.indexOf(";") + 1;
+				end = rawSQL.indexOf(";") + 1;
 			}
 			
 			return sqlOut.substring(0, end);
