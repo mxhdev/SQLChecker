@@ -63,4 +63,9 @@ This log contains one entry per submission. If a submission contains a query whi
 then this statement will be written to the log. This consists of the query, which is called, the command, the
 expected results and any Exceptions.
 
+## License
+
+[GNU GENERAL PUBLIC LICENSE Version 3](http://www.gnu.org/licenses/gpl-3.0.txt)
+
+
 
