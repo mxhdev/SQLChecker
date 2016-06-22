@@ -10,6 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import sqlchecker.core.ResultStorage;
+import sqlchecker.core.SQLCallable;
 import sqlchecker.io.impl.SolutionReader;
 
 
@@ -243,15 +244,15 @@ public class IOUtil {
 		
 		if (isFunction) {
 			// function
-			status = 0;
+			status = SQLCallable.TYPE_FUNCTION;
 			System.out.println("Marked as \"FUNCTION\"");
 		} else if (isProcedure) {
 			// procedure
-			status = 1;
+			status = SQLCallable.TYPE_PROCEDURE;
 			System.out.println("Marked as \"PROCEDURE\"");
 		} else {
 			// neither function, nor procedure
-			status = 2;
+			status = SQLCallable.TYPE_OTHER;
 			System.out.println("Marked as \"OTHER\"");
 		}
 		return status;

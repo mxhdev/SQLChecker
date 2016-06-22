@@ -11,6 +11,11 @@ import sqlchecker.io.IOUtil;
 
 public class SQLCallable {
 
+	
+	public static final int TYPE_FUNCTION = 0;
+	public static final int TYPE_PROCEDURE = 1;
+	public static final int TYPE_OTHER = 2;
+	
 	private String rawsql = "";
 	private String name = "?";
 	/**
@@ -132,11 +137,11 @@ public class SQLCallable {
 	}
 
 	public boolean isFunction() {
-		return (this.type == 0);
+		return (this.type == TYPE_FUNCTION);
 	}
 	
 	public boolean isProcedure() {
-		return (this.type == 1);
+		return (this.type == TYPE_PROCEDURE);
 	}
 	
 	/**
