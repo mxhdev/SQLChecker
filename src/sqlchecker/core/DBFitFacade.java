@@ -59,7 +59,6 @@ public class DBFitFacade {
 	public ResultStorage runSubmission(String sqlhtml, ArrayList<String> name, ArrayList<String> matrikelnummer) throws SQLException {
 		
 		//System.out.println("* IN_START* \n\n" + sqlhtml + "\n \n* IN_END * \n\n");
-		
 		MySqlTest tester = null;
 
 		ResultStorage rs = null;
@@ -69,14 +68,10 @@ public class DBFitFacade {
 		try {
 			// init connection
 			tester = init();
-			//System.out.println(sqlhtml);
 			
 			// parse & execute the submission 
 			Parse target = new Parse(sqlhtml);
 			tester.doTables(target);
-
-			
-			//System.out.println("\n\n\n\n" + sqlhtml + "\n\n\n xyxyxyxy \n\n\n");
 			
 			System.out.println("\n* * * RESULTS * * *");
 			
@@ -92,17 +87,11 @@ public class DBFitFacade {
 			System.out.println("Counts(1):\n\t" + tester.counts);
 			System.out.println("Counts(2):\n\t" + Arrays.toString(rs.getCounts()));
 			
-			//System.out.println("RESULT: \n" + result + "\n");
-			
-			// this one is not sql exception!
+			// this one is not a SQL exception!
 		} catch (Exception e) {
-			// fpe.printStackTrace();
-			// store stack trace
-			errStr += "\n[DBFitFacade] Exception \n" + e.getMessage() + "\n";
-			for (StackTraceElement ste : e.getStackTrace()) {
-				errStr += ste + "\n";
-			}
-			errStr += "\n\n";
+			//print stack trace
+			e.printStackTrace(System.out);
+			
 		} finally {
 			// close connection
 			if (tester != null) tester.close();

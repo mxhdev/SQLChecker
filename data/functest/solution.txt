@@ -1,0 +1,120 @@
+tags=1a
+
+
+<table>
+	<tr>
+		<td>dbfit.MySqlTest</td>
+	</tr>
+</table>
+
+<table> <tr> <td>Connect</td> <td>localhost</td> <td>root</td> <td>start</td> <td>dbfit</td> </tr> </table>
+
+
+<table>
+	<tr>
+		<td>Execute</td>
+		<td>drop function if exists sumab</td>
+	</tr>
+</table>
+
+
+
+<table>
+	<tr>
+		<td>Execute</td>
+		<td>create function sumab(a decimal(16, 4), b decimal(16, 4))
+returns decimal(16, 4)
+deterministic return a + b;</td>
+	</tr>
+</table>
+
+
+
+<table>
+	<tr>
+		<td>Query</td>
+		<td>SELECT sumab(150, 4)</td>
+	</tr>
+	<tr>
+		<td>sumab(150, 4)</td>
+	</tr>
+	<tr>
+		<td>154.0000</td>
+	</tr>
+</table>
+
+
+
+<table>
+	<tr>
+		<td>Query</td>
+		<td>SELECT sumab(9, 6)</td>
+	</tr>
+	<tr>
+		<td>sumab(9, 6)</td>
+	</tr>
+	<tr>
+		<td>15.0000</td>
+	</tr>
+</table>
+
+
+
+<table>
+	<tr>
+		<td>Query</td>
+		<td>SELECT sumab(40, 2)</td>
+	</tr>
+	<tr>
+		<td>sumab(40, 2)</td>
+	</tr>
+	<tr>
+		<td>42.0000</td>
+	</tr>
+</table>
+
+
+
+<table>
+	<tr>
+		<td>Query</td>
+		<td>SELECT sumab(400, 2)</td>
+	</tr>
+	<tr>
+		<td>sumab(400, 2)</td>
+	</tr>
+	<tr>
+		<td>402.0000</td>
+	</tr>
+</table>
+
+
+
+<table>
+	<tr>
+		<td>Query</td>
+		<td>SELECT sumab(123, 9)</td>
+	</tr>
+	<tr>
+		<td>sumab(123, 9)</td>
+	</tr>
+	<tr>
+		<td>132.0000</td>
+	</tr>
+</table>
+
+
+
+
+<table>
+	<tr>
+		<td>Query</td>
+		<td>SELECT /*1a*/</td>
+	</tr>
+	<tr>
+		<td>sumab(5, 6)</td>
+	</tr>
+	<tr>
+		<td>11.0000</td>
+	</tr>
+</table>

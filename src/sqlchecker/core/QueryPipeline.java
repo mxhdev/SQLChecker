@@ -210,15 +210,25 @@ public class QueryPipeline extends MySQLWrapper {
 		String[] data = SQLCallable.parseCallData(sql);
 		if (call.isFunction()) {
 			// Function, easy part
+			
+			// print result (including header)
+			for (int i = 0; i < result.size(); i++) {
+				String[] row = result.get(i);
+				html += "\n\t<tr>";
+				for (String r : row) {
+					html += "\n\t\t<td>" + r + "</td>";
+				}
+				html += "\n\t</tr>";
+			}
+			
+			/*
 			// print input
 			html += "\n\t<tr>";
 			for (int i = 0; i < data.length; i++) {
 				html += "\n\t\t<td>" + data[i] + "</td>"; 
 				// html += "| " + data[i];
 			}
-			/* for (String d : data) {
-				html += "| " + d;
-			} */
+
 			// Result of running a function is always ONE value
 			// Look at: Second row, First field
 			String output = "unknown";
@@ -226,7 +236,7 @@ public class QueryPipeline extends MySQLWrapper {
 			html += "\n\t\t<td>" + output + "</td>"; 
 			// html += "| " + output + " |";
 			html += "\n\t</tr>"; // TODO=></table>
-			
+			*/
 		} else if (call.isProcedure()) {
 			// Stored Procedure
 			if ( (!call.isOutOrInout()) ) {
@@ -523,20 +533,18 @@ public class QueryPipeline extends MySQLWrapper {
 				// Print function call header already, because
 				// successive function calls are merged into
 				// one table in the solution.txt file
-				if (sqlc.isFunction()) {
+				/*if (sqlc.isFunction()) {
 					// functions are put in "one" table
+					html += "\n\n<table>"
+							+ "\n\t<tr>"
+							+ "\n\t\t<td>Execute</td>";
+					// write to complete call or just the tag
 					if (isStatic)
-						html += "\n\n<table>"
-								+ "\n\t<tr>"
-								+ "\n\t\t<td>Execute Procedure</td>"
-								+ "\n\t\t<td>" + sqlc.getName() + "</td>"
-								+ "\n\t</tr>";
+						html += "\n\t\t<td>SELECT " + sqlc.getName() + " AS `" + sqlc.getName() + "`</td>";
 					else
-						html += "\n\n<table>"
-								+ "\n\t<tr>"
-								+ "\n\t\t<td>Execute Procedure</td>"
-								+ "\n\t\t<td>" + IOUtil.TAG_PREFIX + qtag + IOUtil.TAG_SUFFIX + "</td>"
-								+ "\n\t</tr>";
+						html += "\n\t\t<td>SELECT " + IOUtil.TAG_PREFIX + qtag + IOUtil.TAG_SUFFIX + " AS `" + sqlc.getName() + "`</td>";
+					html += "\n\t</tr>";
+					
 					// print header!!
 					html += "\n\t<tr>";
 					for (String hCol : headerCols) {
@@ -547,7 +555,7 @@ public class QueryPipeline extends MySQLWrapper {
 					}
 					html += "\n\t</tr>";
 					// html += "!| Execute Procedure | " + sqlc.getName() + " |\n";
-				}
+				}*/
 				// this is the list of all calls in the current mapping element
 				for (int j = 0; j < qlist.length; j++) {
 					// generate a plan with SET and SELECT statements
@@ -570,6 +578,34 @@ public class QueryPipeline extends MySQLWrapper {
 						System.out.println("> " + stmt.getUpdateCount() + " rows affected!");
 					}
 					
+					// create function header
+					if (sqlc.isFunction()) {
+						// functions are put in "one" table
+						html += "\n\n<table>"
+								+ "\n\t<tr>"
+								+ "\n\t\t<td>Query</td>";
+						// write to complete call or just the tag
+						// NOTE: "...AS" renaming doesn't work here due to the generateQueryList implementation
+						if (isStatic)
+							html += "\n\t\t<td>SELECT " + q + "</td>";
+						else
+							html += "\n\t\t<td>SELECT " + IOUtil.TAG_PREFIX + qtag + IOUtil.TAG_SUFFIX + "</td>";
+						html += "\n\t</tr>";
+						
+						// print header!!
+						/*
+						html += "\n\t<tr>";
+						for (String hCol : headerCols) {
+							if (!hCol.equals("@"))
+								html += "\n\t\t<td>" + hCol + "</td>";
+							else
+								html += "\n\t\t<td>?</td>";
+						}
+						html += "\n\t</tr>";
+						*/
+						// html += "!| Execute Procedure | " + sqlc.getName() + " |\n";
+					}
+					
 					// Build result
 					// One Callable = 1 line
 					// Contains a dump of the result (1st line is headers)
@@ -579,9 +615,10 @@ public class QueryPipeline extends MySQLWrapper {
 					// for debugging, save the complete plan
 					queryList.addAll(planTmp);
 					
+					if (sqlc.isFunction()) 
+						html += "</table>\n\n";
 				}
-				if (sqlc.isFunction()) 
-					html += "\n</table>\n\n";
+				
 				// Add a blank line between every test case
 				html += "\n";
 				

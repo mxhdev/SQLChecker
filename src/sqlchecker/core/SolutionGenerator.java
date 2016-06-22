@@ -234,14 +234,15 @@ public class SolutionGenerator {
 					
 		// apply the solution mapping
 		String checkStr = IOUtil.applyMapping(htmlStr, mapping);
-		
+		System.out.println("Checking...");
+		System.out.println(checkStr);
 		DBFitFacade checker = new DBFitFacade(outputFile, connProps);
 		ResultStorage rs = null;
 		try {
 			rs = checker.runSubmission(checkStr, null, null);
 		} catch (SQLException sqle) {
 			// unable to close connection
-			sqle.printStackTrace();
+			sqle.printStackTrace(System.out);
 		}
 		
 		if (rs == null) {
@@ -300,13 +301,13 @@ public class SolutionGenerator {
 		
 		String wsPath = "data/assignment3/";
 		
-		wsPath = "private/kh_b5/";
+		wsPath = "data/functest/";
 		
-		String inPath = wsPath + "b5_raw.sql";
+		String inPath = wsPath + "raw.sql";
 		String outPath = wsPath + "solution.txt";
-		String samplePath = wsPath + "sample_b5.sql";
-		String resetPath = wsPath + "b5_reset.sql";
-		String[] cProps = new String[]{"localhost", "root", "start", "krankenhaus"};
+		String samplePath = wsPath + "ftsample.sql";
+		String resetPath = wsPath + "reset.sql";
+		String[] cProps = new String[]{"localhost", "root", "start", "dbfit"};
 		
 		SolutionGenerator sg = new SolutionGenerator(inPath, outPath, samplePath, resetPath, cProps);
 		sg.generate();
