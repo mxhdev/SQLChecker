@@ -209,7 +209,8 @@ public class QueryPipeline extends MySQLWrapper {
 		// all the arguments of the call
 		String[] data = SQLCallable.parseCallData(sql);
 		if (call.isFunction()) {
-			// Function, easy part
+			// Function, just print the result set as a HTML table
+			// The first array of the result set list contains the table header
 			
 			// print result (including header)
 			for (int i = 0; i < result.size(); i++) {
@@ -221,22 +222,7 @@ public class QueryPipeline extends MySQLWrapper {
 				html += "\n\t</tr>";
 			}
 			
-			/*
-			// print input
-			html += "\n\t<tr>";
-			for (int i = 0; i < data.length; i++) {
-				html += "\n\t\t<td>" + data[i] + "</td>"; 
-				// html += "| " + data[i];
-			}
-
-			// Result of running a function is always ONE value
-			// Look at: Second row, First field
-			String output = "unknown";
-			if (result.size() > 1) output = result.get(1)[0];
-			html += "\n\t\t<td>" + output + "</td>"; 
-			// html += "| " + output + " |";
-			html += "\n\t</tr>"; // TODO=></table>
-			*/
+			
 		} else if (call.isProcedure()) {
 			// Stored Procedure
 			if ( (!call.isOutOrInout()) ) {
@@ -278,7 +264,6 @@ public class QueryPipeline extends MySQLWrapper {
 								+ "\n\t\t<td>Query</td>"
 								+ "\n\t\t<td>call " + IOUtil.TAG_PREFIX + mcurrent[1] + IOUtil.TAG_SUFFIX + "</td>"
 								+ "\n\t</tr>";
-					// html += "!| Query | call " + sql + " |\n";
 					
 					// There might be some result
 					// If there is no result then the following loop will
@@ -530,32 +515,7 @@ public class QueryPipeline extends MySQLWrapper {
 				SQLCallable sqlc = calls.get(idx);
 				String[] qlist = query.split("\n");
 				
-				// Print function call header already, because
-				// successive function calls are merged into
-				// one table in the solution.txt file
-				/*if (sqlc.isFunction()) {
-					// functions are put in "one" table
-					html += "\n\n<table>"
-							+ "\n\t<tr>"
-							+ "\n\t\t<td>Execute</td>";
-					// write to complete call or just the tag
-					if (isStatic)
-						html += "\n\t\t<td>SELECT " + sqlc.getName() + " AS `" + sqlc.getName() + "`</td>";
-					else
-						html += "\n\t\t<td>SELECT " + IOUtil.TAG_PREFIX + qtag + IOUtil.TAG_SUFFIX + " AS `" + sqlc.getName() + "`</td>";
-					html += "\n\t</tr>";
-					
-					// print header!!
-					html += "\n\t<tr>";
-					for (String hCol : headerCols) {
-						if (!hCol.equals("@"))
-							html += "\n\t\t<td>" + hCol + "</td>";
-						else
-							html += "\n\t\t<td>?</td>";
-					}
-					html += "\n\t</tr>";
-					// html += "!| Execute Procedure | " + sqlc.getName() + " |\n";
-				}*/
+				
 				// this is the list of all calls in the current mapping element
 				for (int j = 0; j < qlist.length; j++) {
 					// generate a plan with SET and SELECT statements
@@ -592,18 +552,6 @@ public class QueryPipeline extends MySQLWrapper {
 							html += "\n\t\t<td>SELECT " + IOUtil.TAG_PREFIX + qtag + IOUtil.TAG_SUFFIX + "</td>";
 						html += "\n\t</tr>";
 						
-						// print header!!
-						/*
-						html += "\n\t<tr>";
-						for (String hCol : headerCols) {
-							if (!hCol.equals("@"))
-								html += "\n\t\t<td>" + hCol + "</td>";
-							else
-								html += "\n\t\t<td>?</td>";
-						}
-						html += "\n\t</tr>";
-						*/
-						// html += "!| Execute Procedure | " + sqlc.getName() + " |\n";
 					}
 					
 					// Build result
