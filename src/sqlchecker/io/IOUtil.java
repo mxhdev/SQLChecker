@@ -305,13 +305,15 @@ public class IOUtil {
 		
 		if (queryLower.startsWith("select")) {
 			
+			command = "Query";
+			/*
 			// check for ordered query
 			if (queryLower.contains("order by") 
 					|| queryLower.contains("group by")) {
 				command = "Ordered Query";
 			} else {
 				command = "Query";
-			}
+			}*/
 			
 		} else {
 			// some other kind of query, probably a DDL / DML
