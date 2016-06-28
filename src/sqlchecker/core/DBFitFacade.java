@@ -87,8 +87,16 @@ public class DBFitFacade {
 			System.out.println("Counts(1):\n\t" + tester.counts);
 			System.out.println("Counts(2):\n\t" + Arrays.toString(rs.getCounts()));
 			
+			
 			// this one is not a SQL exception!
 		} catch (Exception e) {
+			// store stack trace
+			errStr += "\n[DBFitFacade] Exception \n" + e.getMessage() + "\n";
+			for (StackTraceElement ste : e.getStackTrace()) {
+				errStr += ste + "\n";
+			}
+			errStr += "\n\n";
+			
 			//print stack trace
 			e.printStackTrace(System.out);
 			
