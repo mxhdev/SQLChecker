@@ -3,6 +3,11 @@ package sqlchecker.core;
 import java.util.Comparator;
 
 public class SortSimilarity implements Comparator<PlagiatTest>{
+	
+	
+	/**
+	 * Compares two PlagiatTest objects regarding their similarity.
+	 */
 	@Override
 	public int compare(PlagiatTest a1, PlagiatTest a2) {
 		float sim1 = a1.getSimilarity();

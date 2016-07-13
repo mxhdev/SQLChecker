@@ -321,10 +321,7 @@ public class SubmissionExecuter {
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 		}
-		/*
-		 * perform plagiat check+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-		 * 
-		 */
+		
 		ArrayList<String> tags = sr.getTagMap();
 		ArrayList<String> exercises = new ArrayList<String>();
 		int qnum = tags.size();
@@ -333,6 +330,7 @@ public class SubmissionExecuter {
 				exercises.add(tags.get(o));
 			}
 		}
+		// run plagiarism check and get the reports
 		ArrayList<ArrayList<String>> reports = PlagiatTest.extractComments(subCom, exercises, staticEnabled);
 		ArrayList<String> plagiat = reports.get(1);
 		ArrayList<String> comment = reports.get(0);
