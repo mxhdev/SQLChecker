@@ -5,7 +5,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-import sqlchecker.io.IOUtil;
+import sqlchecker.config.Config;
+
 
 public class MySQLQueryExecuter extends MySQLWrapper {
 
@@ -21,26 +22,29 @@ public class MySQLQueryExecuter extends MySQLWrapper {
 	
 	private String errorString = "";
 	
+	
+	
 	/**
 	 * Initialize this class, which allows executing a list of mysql
 	 * queries
-	 * @param connProps Connection properties in the following order: <br>
-	 * host (default:localhost) <br>
-	 * dbUser (default:root) <br>
-	 * dbUserPw (default:) <br>
-	 * dbName (default:dbfit) <br>
+	 * @param connProps Connection properties as configuration object
 	 */
-	public MySQLQueryExecuter(String[] connProps) {
+	public MySQLQueryExecuter(Config dbconf) {
 		// connection properties
-		super(connProps[0], connProps[1], connProps[2], connProps[3]);
+		this(dbconf.getHost(), dbconf.getUser(), dbconf.getPw(), dbconf.getDbName());
+		//super(dbconf.getHost(), dbconf.getUser(), dbconf.getPw(), dbconf.getDbName());
 	}
 
 	
 	/**
-	 * Makes this class use the default connection properties
+	 * @param host database host name (e.g. localhost)
+	 * @param user database user 
+	 * @param pw database user password
+	 * @param dbName database name (empty = default)
+	 * 
 	 */
-	public MySQLQueryExecuter() {
-		this(IOUtil.DEFAULT_PROPS);
+	public MySQLQueryExecuter(String host, String user, String pw, String dbName) {
+		super(host, user, pw, dbName);
 	}
 	
 	

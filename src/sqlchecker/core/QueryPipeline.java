@@ -1,17 +1,16 @@
 package sqlchecker.core;
 
-import java.sql.CallableStatement;
+
 import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ParameterMetaData;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import sqlchecker.config.Config;
 import sqlchecker.io.IOUtil;
+
 
 public class QueryPipeline extends MySQLWrapper {
 
@@ -32,16 +31,12 @@ public class QueryPipeline extends MySQLWrapper {
 	 * @param sqlmapping The (tag, SQL) mapping list
 	 * @param sqlcallables List of all stores procedures and functions
 	 * that can be called
-	 * @param connProps Connection properties in the following order: <br>
-	 * host (default:localhost) <br>
-	 * dbUser (default:root) <br>
-	 * dbUserPw (default:) <br>
-	 * dbName (default:dbfit) <br>
+	 * @param connProps Connection properties as configuration object
 	 */
-	public QueryPipeline(ArrayList<String[]> sqlmapping, ArrayList<SQLCallable> sqlcallables, String[] connProps) {
+	public QueryPipeline(ArrayList<String[]> sqlmapping, ArrayList<SQLCallable> sqlcallables, Config conf) {
 		
 		// connection properties
-		super(connProps[0], connProps[1], connProps[2], connProps[3]);
+		super(conf.getHost(), conf.getUser(), conf.getPw(), conf.getDbName());
 
 		// store the mapping
 		mapping.clear();
@@ -61,9 +56,9 @@ public class QueryPipeline extends MySQLWrapper {
 	 * @param sqlcallables List of all stores procedures and functions
 	 * that can be called
 	 */
-	public QueryPipeline(ArrayList<String[]> sqlmapping, ArrayList<SQLCallable> sqlcallables) {
-		this(sqlmapping, sqlcallables, IOUtil.DEFAULT_PROPS);
-	}
+	/*public QueryPipeline(ArrayList<String[]> sqlmapping, ArrayList<SQLCallable> sqlcallables) {
+		this(sqlmapping, sqlcallables, new Config());
+	}*/
 	
 	
 

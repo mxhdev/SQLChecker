@@ -2,6 +2,7 @@ package sqlchecker.test;
 
 import java.util.ArrayList;
 
+import sqlchecker.config.Config;
 import sqlchecker.core.DBFitFacade;
 import sqlchecker.io.impl.SimpleFileReader;
 
@@ -10,16 +11,16 @@ public class DBFitFacadeTest {
 	
 	private String fileName = "";
 	
-	private String[] cProps = new String[0];
+	private Config cProps;
 	
 	private ArrayList<String> names = new ArrayList<String>();
 	
 	private ArrayList<String> mnr = new ArrayList<String>();
 	
-	public DBFitFacadeTest(String fileName, String[] connProps, ArrayList<String> names, ArrayList<String> mnr) {
+	public DBFitFacadeTest(String fileName, Config connProps, ArrayList<String> names, ArrayList<String> mnr) {
 		this.fileName = fileName;
 		
-		this.cProps = connProps.clone();
+		this.cProps = connProps;
 		
 		this.names.clear();
 		this.names.addAll(names);
@@ -51,7 +52,7 @@ public class DBFitFacadeTest {
 	
 
 	public static void main(String[] args) {
-		String[] connProps = new String[]{"localhost", "root", "start", "krankenhaus"};
+		//String[] connProps = new String[]{"localhost", "root", "start", "krankenhaus"};
 		
 		ArrayList<String> name = new ArrayList<String>();
 		name.add("TestName");
@@ -66,7 +67,9 @@ public class DBFitFacadeTest {
 		 * Execute the test
 		 */
 		
-		DBFitFacadeTest tester = new DBFitFacadeTest(fname, connProps, name, mnr);
+		Config conf = new Config("root", "", "localhost", "krankenhaus");
+		
+		DBFitFacadeTest tester = new DBFitFacadeTest(fname, conf, name, mnr);
 		tester.runTest();
 		
 	}

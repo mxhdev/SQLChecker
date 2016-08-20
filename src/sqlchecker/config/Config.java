@@ -13,13 +13,20 @@ public class Config {
 	
 
 	public Config() {
-		// Default values
+		// Use default values
 		this.dbUser = "root";
 		this.dbPw = "";
 		this.dbHost = "localhost";
 		this.dbName = "";
 	}
 	
+	
+	/**
+	 * @param user Database user 
+	 * @param pw Database user password
+	 * @param host Database host name (e.g. localhost)
+	 * @param db Database name (empty = default)
+	 */
 	public Config(String user, String pw, String host, String db) {
 
 		this.dbUser = user;

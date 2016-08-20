@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import sqlchecker.config.Config;
 import sqlchecker.core.CalculateSimilarity;
 import sqlchecker.io.AbstractFileReader;
 import sqlchecker.io.IOUtil;
@@ -394,7 +395,7 @@ public class SubmissionReader extends AbstractFileReader {
 	
 	
 	
-	public static String generateStaticHTML(String[] connProps, ArrayList<String> queries) {
+	public static String generateStaticHTML(Config connProps, ArrayList<String> queries) {
 		String dbfit = "";
 		
 		// generate header

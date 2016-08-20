@@ -2,6 +2,7 @@ package sqlchecker.io.impl;
 
 import java.util.ArrayList;
 
+import sqlchecker.config.Config;
 import sqlchecker.io.AbstractFileReader;
 import sqlchecker.io.IOUtil;
 
@@ -52,7 +53,7 @@ public class SolutionReader extends AbstractFileReader {
 	/**
 	 * Connection properties parsed from the solution
 	 */
-	private String[] connProps = new String[4];
+	private Config connProps;
 	
 	
 	
@@ -91,8 +92,15 @@ public class SolutionReader extends AbstractFileReader {
 				// cut prefix & suffix
 				String connLine = line.substring(line.indexOf(CONN_PREFIX) + CONN_PREFIX.length());
 				connLine = connLine.substring(0, connLine.indexOf(CONN_SUFFIX));
+				
 				// parse connect parameters
-				this.connProps = connLine.split("</td> <td>").clone();
+				String[] connArray = connLine.split("</td> <td>").clone();
+				String host = connArray[0];
+				String user = connArray[1];
+				String pw = connArray[2];
+				String dbName = connArray[3];
+				this.connProps = new Config(user, pw, host, dbName);
+				
 			}
 			// build tag-map
 			if (line.startsWith("<table>")) {
@@ -124,7 +132,7 @@ public class SolutionReader extends AbstractFileReader {
 		// clear tag map
 		tagMap.clear();
 		// default connection properties
-		connProps = IOUtil.DEFAULT_PROPS.clone();
+		connProps = new Config();
 	}
 
 	@Override
@@ -153,17 +161,11 @@ public class SolutionReader extends AbstractFileReader {
 	
 	/**
 	 * 
-	 * @return Returns the parsed connection properties in
-	 * the following order: <br>
-	 * host (default:localhost) <br>
-	 * dbUser (default:root) <br>
-	 * dbUserPw (default:) <br>
-	 * dbName (default:dbfit) <br>
-	 * Those values are also used when the parser failed at parsing
+	 * @return Returns the parsed connection properties as configuration object
 	 * those parameters from the solution file
 	 */
-	public String[] getConnectionProperties() {
-		return this.connProps.clone();
+	public Config getConnectionProperties() {
+		return this.connProps;
 	}
 	
 	

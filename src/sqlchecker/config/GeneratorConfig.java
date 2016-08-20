@@ -101,5 +101,6 @@ public class GeneratorConfig extends Config {
 		return this.samplePath;
 	}
 	
+	
 
 }

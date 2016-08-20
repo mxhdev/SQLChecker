@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import sqlchecker.config.Config;
 import sqlchecker.config.ExecuterConfig;
 import sqlchecker.io.IOUtil;
 import sqlchecker.io.OutputWriter;
@@ -185,7 +186,7 @@ public class SubmissionExecuter {
 		// Define output writer
 		//PrintWriter out = new PrintWriter(System.out, false);
 		// host, user, pw, dbname
-		String[] connProps = sr.getConnectionProperties();
+		Config connProps = sr.getConnectionProperties();
 		//System.out.println("[SubmissionExecuter] Properties: \n\thost=" + connProps[0] + "\n\tdb=" + connProps[1] + "\n\tuser=" + connProps[2] + "\n\tpw=" + connProps[3] + "\n\tscript=" + resetScript);
 		
 		csvLines.add(IOUtil.generateCSVHeader(sr.getTagMap()));

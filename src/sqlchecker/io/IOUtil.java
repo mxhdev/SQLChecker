@@ -9,7 +9,7 @@ import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import sqlchecker.core.ResultStorage;
+import sqlchecker.config.Config;
 import sqlchecker.core.SQLCallable;
 import sqlchecker.io.impl.SolutionReader;
 
@@ -332,15 +332,11 @@ public class IOUtil {
 	 * Generates a dbfit html header. This header contains 2 html tables.
 	 * The first table contains the driver name (here:dbfit.MySqlTest), 
 	 * the second table contains the connection properties
-	 * @param connProps Connection properties in the following order: <br>
-	 * host (default:localhost) <br>
-	 * dbUser (default:root) <br>
-	 * dbUserPw (default:) <br>
-	 * dbName (default:dbfit) <br>
+	 * @param connProps Connection properties as configuration object
 	 * @return The html header tables
 	 */
-	public static String generateDBFitHeader(String[] connProps) {
-		return generateDBFitHeader(connProps, "dbfit.MySqlTest");
+	public static String generateDBFitHeader(Config conf) {
+		return generateDBFitHeader(conf, "dbfit.MySqlTest");
 	}
 	
 	
@@ -348,15 +344,10 @@ public class IOUtil {
 	 * Generates a dbfit html header. This header contains 2 html tables.
 	 * The first table contains the driver name, the second table
 	 * contains the connection properties
-	 * @param connProps Connection properties in the following order: <br>
-	 * host (default:localhost) <br>
-	 * dbUser (default:root) <br>
-	 * dbUserPw (default:) <br>
-	 * dbName (default:dbfit) <br>
-	 * @param driverName The driver name (Default: dbfit.MySqlTest)
+	 * @param connProps Connection properties as configuration object
 	 * @return The html header tables
 	 */
-	public static String generateDBFitHeader(String[] connProps, String driverName) {
+	public static String generateDBFitHeader(Config conf, String driverName) {
 		String header = "";
 		
 		// driver, i.e. dbfit.MySqlTest
@@ -374,10 +365,10 @@ public class IOUtil {
 	 * dbName (default:dbfit) <br>
 	 */
 		header += "\n<table> <tr> <td>Connect</td> "
-				+ "<td>" + connProps[0] + "</td> "
-				+ "<td>" + connProps[1] + "</td> "
-				+ "<td>" + connProps[2] + "</td> "
-				+ "<td>" + connProps[3] + "</td> </tr> </table>\n";
+				+ "<td>" + conf.getHost() + "</td> "
+				+ "<td>" + conf.getUser() + "</td> "
+				+ "<td>" + conf.getPw() + "</td> "
+				+ "<td>" + conf.getDbName() + "</td> </tr> </table>\n";
 		
 		return header;
 	}

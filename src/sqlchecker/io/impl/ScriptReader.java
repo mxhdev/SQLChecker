@@ -2,9 +2,9 @@ package sqlchecker.io.impl;
 
 import java.util.ArrayList;
 
+import sqlchecker.config.Config;
 import sqlchecker.core.MySQLQueryExecuter;
 import sqlchecker.io.AbstractFileReader;
-import sqlchecker.io.IOUtil;
 
 
 
@@ -31,20 +31,22 @@ public class ScriptReader extends AbstractFileReader {
 	 */
 	private ArrayList<String> queryList = new ArrayList<String>();
 	
-	/**
-	 * Connection properties which should be used for
-	 * executing the script after reading it.<br>
+	
+	/*
 	 * It is recommended to leave the "db" (database name) field 
 	 * empty, because the database which has to be changed will 
 	 * probably be dropped by one of the first queries. Afterwards, 
-	 * the selected database would no longer exist. <br>
-	 * The connection properties are stored in the following order:<br>
-	 * host (default:localhost) <br>
-	 * dbUser (default:root) <br>
-	 * dbUserPw (default:) <br>
-	 * dbName (default:dbfit) <br>
+	 * the selected database would no longer exist.
 	 */
-	private String[] conn = new String[4];
+	
+	/**
+	 * Connection properties which should be used for
+	 * executing the script after reading it.<br>
+	 * Instead of using the supplied database name, this module
+	 * will always use an empty "" database name 
+	 */
+	private Config dbConf;
+	
 	
 	/**
 	 * @param sPath Path leading to the script file
@@ -52,13 +54,9 @@ public class ScriptReader extends AbstractFileReader {
 	 * start of a new SQL query. Examples:<br>
 	 * ; <br>
 	 * static-tag <br>
-	 * @param connProps Connection properties in the following order: <br>
-	 * host (default:localhost) <br>
-	 * dbUser (default:root) <br>
-	 * dbUserPw (default:) <br>
-	 * dbName (default:dbfit) <br>
+	 * @param connProps Connection properties as configuration object
 	 */
-	public ScriptReader(String sPath, String delimiter, String[] connProps) {
+	public ScriptReader(String sPath, String delimiter, Config connProps) {
 		// store path
 		super(sPath);
 		
@@ -66,9 +64,10 @@ public class ScriptReader extends AbstractFileReader {
 		this.delim = delimiter;
 		
 		// save connection properties
-		this.conn = connProps.clone();
+		this.dbConf = connProps;
+		//this.dbconf = connProps.clone();
 		// dbname has to be empty!
-		this.conn[3] = "";
+		//this.conn[3] = "";
 	}
 	
 	
@@ -80,10 +79,10 @@ public class ScriptReader extends AbstractFileReader {
 	 * ; <br>
 	 * static-tag <br>
 	 */
-	public ScriptReader(String sPath, String delimiter) {
+	/*public ScriptReader(String sPath, String delimiter) {
 		this(sPath, delimiter, IOUtil.DEFAULT_PROPS);
 	}
-	
+	*/
 
 
 	@Override
@@ -125,10 +124,10 @@ public class ScriptReader extends AbstractFileReader {
 		
 		// Run Script with database=""
 		// Do not select a database, because the database which
-		// has to be changed will probably be droped in the first
+		// has to be changed will probably be dropped in the first
 		// step
 		
-		MySQLQueryExecuter exec = new MySQLQueryExecuter(conn);
+		MySQLQueryExecuter exec = new MySQLQueryExecuter(dbConf.getHost(), dbConf.getUser(), dbConf.getPw(), dbConf.getDbName());
 		exec.setIgnoreFK(true); // make sure to ignore fk, to avoid errors
 		exec.setAutoCommit(true);
 		exec.runSQL(queryList);
@@ -150,6 +149,7 @@ public class ScriptReader extends AbstractFileReader {
 		String path = "data/reset.sql";
 		String delim = "/*static*/";
 		
+		/*
 		String[] connProps = new String[4];
 		connProps[0] = "localhost";
 		connProps[1] = "root";
@@ -157,8 +157,12 @@ public class ScriptReader extends AbstractFileReader {
 		// IMPORTANT for index 3: DONT SELECT A DATABASE! 
 		// default="dbfit";
 		connProps[3] = ""; 
+		*/
 		
-		ScriptReader sr = new ScriptReader(path, delim, connProps);
+		Config dbconf = new Config("root", "", "localhost", "");
+		
+		
+		ScriptReader sr = new ScriptReader(path, delim, dbconf);
 		sr.loadFile();
 	}
 }

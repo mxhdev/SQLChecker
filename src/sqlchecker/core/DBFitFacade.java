@@ -6,6 +6,7 @@ import java.util.Arrays;
 
 import dbfit.MySqlTest;
 import fit.Parse;
+import sqlchecker.config.Config;
 import sqlchecker.io.impl.ScriptReader;
 import sqlchecker.io.impl.SolutionReader;
 
@@ -27,7 +28,7 @@ public class DBFitFacade {
 	 * Connection properties in the following order:
 	 *  (host, user, pw, dbname)
 	 */
-	private String[] connProps = new String[0];
+	private Config conf;
 	
 	/**
 	 * Temporary storage for the results of a submission
@@ -38,12 +39,12 @@ public class DBFitFacade {
 	/**
 	 * Initialize a DBFit facade object
 	 * @param fPath Path of the submission that should be checked
-	 * @param cProps Connection properties in the following order:
+	 * @param dbConf Connection properties in the following order:
 	 *  (host, user, pw, dbname)
 	 */
-	public DBFitFacade(String fPath, String[] cProps) {
+	public DBFitFacade(String fPath, Config dbConf) {
 		this.filePath = fPath;
-		this.connProps = cProps.clone();
+		this.conf = dbConf;
 	}
 	
 	
@@ -126,10 +127,10 @@ public class DBFitFacade {
 	private MySqlTest init() throws SQLException {
 		// Initialize test
 
-		String host = connProps[0];
-		String db = connProps[3];
-		String dbuser = connProps[1];
-		String dbpw = connProps[2];
+		String host = conf.getHost();
+		String db = conf.getDbName();
+		String dbuser = conf.getUser();
+		String dbpw = conf.getPw();
 		
 		System.out.println("Connection with values \n\thost=" + host + "\n\tdb=" + db + "\n\tuser=" + dbuser + "\n\tpw=" + dbpw);
 		
@@ -202,7 +203,6 @@ public class DBFitFacade {
 			ResultStorage rs = tester.runSubmission(abgabe.getHTML().toString(), new ArrayList<String>(), new ArrayList<String>());
 			System.out.println(rs.getLogEntry());
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		

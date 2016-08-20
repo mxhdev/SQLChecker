@@ -5,23 +5,22 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import dbfit.MySqlTest;
-import fit.Parse;
-import fit.exception.FitParseException;
+import sqlchecker.config.GeneratorConfig;
 import sqlchecker.io.IOUtil;
 import sqlchecker.io.OutputWriter;
 import sqlchecker.io.impl.RawSolutionReader;
 import sqlchecker.io.impl.ScriptReader;
 
+
 public class SolutionGenerator {
 
-	
+	/*
 	private String inputFile = "";
 	
 	private String outputFile = "";
 	
 	private String samplePath = "";
-	
+	*/
 	/**
 	 * Connection properties in the following order: <br>
 	 * host (default:localhost) <br>
@@ -29,9 +28,13 @@ public class SolutionGenerator {
 	 * dbUserPw (default:) <br>
 	 * dbName (default:dbfit) <br>
 	 */
-	private String[] connProps = new String[4];
+	/*private String[] connProps = new String[4];
 	
 	private String resetScript = "";
+	*/
+	
+	private GeneratorConfig conf;
+	
 	
 	/**
 	 * Constructor
@@ -57,10 +60,6 @@ public class SolutionGenerator {
 		this.connProps = cProps.clone();
 	}*/
 	
-	public SolutionGenerator(GeneratorConfig genConf) {
-		//derp
-	}
-	
 	
 	/**
 	 * Constructor using the default connection properties
@@ -71,11 +70,15 @@ public class SolutionGenerator {
 	 * @param resetPath The path to the reset script which should
 	 * be executed before the solution gets generated
 	 */
-	public SolutionGenerator(String inPath, String outPath, String submPath, String resetPath) {
+	/*public SolutionGenerator(String inPath, String outPath, String submPath, String resetPath) {
 		// Use default connection properties!
 		this(inPath, outPath, submPath, resetPath, IOUtil.DEFAULT_PROPS);
-	}
+	}*/
 	
+	
+	public SolutionGenerator(GeneratorConfig confIn) {
+		this.conf = confIn;
+	}
 	
 	
 	private ArrayList<SQLCallable> generateCallables(ArrayList<String[]> mapping) {
@@ -116,12 +119,17 @@ public class SolutionGenerator {
 	
 	public void generate() {
 		
+		
+		String outputFile = conf.getOutputPath();
+		String samplePath = conf.getSamplePath();
+		
+		
 		// step 0, reset the database
-		ScriptReader sr = new ScriptReader(resetScript, ScriptReader.DEFAULT_DELIM, connProps);
+		ScriptReader sr = new ScriptReader(conf.getResetPath(), ScriptReader.DEFAULT_DELIM, conf);
 		sr.loadFile();
 		
 		// step 1, Generate tag->query mapping
-		RawSolutionReader rsr = new RawSolutionReader(inputFile);
+		RawSolutionReader rsr = new RawSolutionReader(conf.getInputPath());
 		rsr.loadFile();
 		
 		// extract callables
@@ -147,7 +155,7 @@ public class SolutionGenerator {
 		html += "tags=" + tagStr + "\n\n";
 		
 		// !HEADER! driver name & connection props
-		html += IOUtil.generateDBFitHeader(connProps);
+		html += IOUtil.generateDBFitHeader(conf);
 		
 		
 		System.out.println("HEADER:");
@@ -157,7 +165,7 @@ public class SolutionGenerator {
 		
 		
 		// step 2, Execute each query
-		QueryPipeline qp = new QueryPipeline(mapping, callables, connProps);
+		QueryPipeline qp = new QueryPipeline(mapping, callables, conf);
 		html += qp.run();
 		
 		
@@ -231,9 +239,13 @@ public class SolutionGenerator {
 	private void verify(String htmlStr, ArrayList<String[]> mapping) {
 
 		// reset the database first
-		System.out.println("Executing reset with values \n\thost=" + connProps[0] + "\n\tdb=" + connProps[1] + "\n\tuser=" + connProps[2] + "\n\tpw=" + connProps[3] + "\n\tscript=" + resetScript);;
+		System.out.println("Executing reset with values \n\thost=" + conf.getHost() 
+			+ "\n\tdb=" + conf.getDbName() 
+			+ "\n\tuser=" + conf.getUser() 
+			+ "\n\tpw="  + conf.getPw()
+			+ "\n\tscript=" + conf.getResetPath());
 
-		ScriptReader resetter = new ScriptReader(resetScript, ScriptReader.DEFAULT_DELIM, connProps);
+		ScriptReader resetter = new ScriptReader(conf.getResetPath(), ScriptReader.DEFAULT_DELIM, conf);
 		resetter.loadFile();
 
 					
@@ -241,7 +253,7 @@ public class SolutionGenerator {
 		String checkStr = IOUtil.applyMapping(htmlStr, mapping);
 		System.out.println("Checking...");
 		System.out.println(checkStr);
-		DBFitFacade checker = new DBFitFacade(outputFile, connProps);
+		DBFitFacade checker = new DBFitFacade(conf.getOutputPath(), conf);
 		ResultStorage rs = null;
 		try {
 			rs = checker.runSubmission(checkStr, null, null);
@@ -312,9 +324,17 @@ public class SolutionGenerator {
 		String outPath = wsPath + "solution.txt";
 		String samplePath = wsPath + "ftsample.sql";
 		String resetPath = wsPath + "reset.sql";
-		String[] cProps = new String[]{"localhost", "root", "start", "dbfit"};
+		//String[] cProps = new String[]{"localhost", "root", "start", "dbfit"};
 		
-		SolutionGenerator sg = new SolutionGenerator(inPath, outPath, samplePath, resetPath, cProps);
+		/*
+		 * public GeneratorConfig(String inputPath
+			, String outputPath, String samplePath, String resetPath, String user
+			, String pw, String host, String db) {
+		 */
+		GeneratorConfig genConf = new GeneratorConfig(inPath, outPath, samplePath, resetPath, "root", "start", "localhost", "dbfit");
+		
+		//SolutionGenerator sg = new SolutionGenerator(inPath, outPath, samplePath, resetPath, cProps);
+		SolutionGenerator sg = new SolutionGenerator(genConf);
 		sg.generate();
 	}
 
