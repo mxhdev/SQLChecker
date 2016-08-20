@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import sqlchecker.config.ExecutorConfig;
+import sqlchecker.config.ExecuterConfig;
 import sqlchecker.io.IOUtil;
 import sqlchecker.io.OutputWriter;
 import sqlchecker.io.impl.ScriptReader;
@@ -44,7 +44,7 @@ public class SubmissionExecuter {
 	 */
 	//private String resetScript = "";
 	
-	private ExecutorConfig conf;
+	private ExecuterConfig conf;
 	
 	/**
 	 * True iff there are static tags allowed in 
@@ -80,7 +80,7 @@ public class SubmissionExecuter {
 	}*/
 	
 	
-	public SubmissionExecuter(ExecutorConfig confIn) {
+	public SubmissionExecuter(ExecuterConfig confIn) {
 		this.conf = confIn;
 	}
 	
@@ -395,7 +395,7 @@ public class SubmissionExecuter {
 		String submissionPath = agnPath + "submissions/";
 		String solPath = agnPath + "solution.txt";
 		
-		ExecutorConfig exconf = new ExecutorConfig(submissionPath, solPath, agnPath, allowStatic, resetPath);
+		ExecuterConfig exconf = new ExecuterConfig(submissionPath, solPath, agnPath, allowStatic, resetPath);
 		
 		
 		//SubmissionExecuter se = new SubmissionExecuter(agnPath, resetPath, allowStatic, resultLimit);

@@ -115,9 +115,9 @@ exec.allowstatic=false
 		
 		
 		
-		if (type.equals(ExecutorConfig.class)) {
+		if (type.equals(ExecuterConfig.class)) {
 			boolean staticAllowed = Boolean.parseBoolean(settings.get(EXECUTOR_ALLOW_STATIC));
-			conf = type.cast(new ExecutorConfig(settings.get(EXECUTOR_SUBMISSIONS)
+			conf = type.cast(new ExecuterConfig(settings.get(EXECUTOR_SUBMISSIONS)
 					, settings.get(EXECUTOR_SOLUTION)
 					, settings.get(EXECUTOR_OUTPATH)
 					, staticAllowed

@@ -48,14 +48,19 @@ public class SolutionGenerator {
 	 * dbName (default:dbfit) <br>
 	 * 
 	 */
-	public SolutionGenerator(String inPath, String outPath, String submPath, String resetPath, String[] cProps) {
+	/*public SolutionGenerator(String inPath, String outPath, String submPath, String resetPath, String[] cProps) {
 		this.inputFile = inPath;
 		outputFile = OutputWriter.makeUnique(outPath);
 		samplePath = OutputWriter.makeUnique(submPath);
 		this.resetScript = resetPath;
 		// use the setting given
 		this.connProps = cProps.clone();
+	}*/
+	
+	public SolutionGenerator(GeneratorConfig genConf) {
+		//derp
 	}
+	
 	
 	/**
 	 * Constructor using the default connection properties

@@ -1,6 +1,6 @@
 package sqlchecker.config;
 
-public class ExecutorConfig {
+public class ExecuterConfig extends Config {
 
 	/**
 	 * The folder in which the submissions can be found
@@ -45,8 +45,10 @@ public class ExecutorConfig {
 	 * a submission
 	 * 
 	 */
-	public ExecutorConfig(String submPath, String solPath, String agnPath
+	public ExecuterConfig(String submPath, String solPath, String agnPath
 			, boolean staticEnabled, String resetPath) {
+		
+		super();
 		
 		// make sure the assignment path ends with /
 		if (!agnPath.endsWith("/")) {

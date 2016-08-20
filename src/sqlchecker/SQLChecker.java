@@ -1,7 +1,7 @@
 package sqlchecker;
 
 import sqlchecker.config.ConfigReader;
-import sqlchecker.config.ExecutorConfig;
+import sqlchecker.config.ExecuterConfig;
 import sqlchecker.config.GeneratorConfig;
 import sqlchecker.core.SolutionGenerator;
 import sqlchecker.core.SubmissionExecuter;
@@ -61,7 +61,7 @@ public class SQLChecker {
 			
 			if (args[0].equals("exec")) {
 				// Initialize the configuration container
-				ExecutorConfig execconf = reader.getConfig(ExecutorConfig.class);
+				ExecuterConfig execconf = reader.getConfig(ExecuterConfig.class);
 				// run the submission executor and check 
 				// the submissions
 				SubmissionExecuter se = new SubmissionExecuter(execconf);
