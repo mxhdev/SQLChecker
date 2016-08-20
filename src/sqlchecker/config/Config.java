@@ -10,24 +10,18 @@ public class Config {
 	protected String dbHost = "localhost";
 
 	protected String dbName = "defaultdb";
+	
 
-	protected String resetPath = "";
-
-	public Config(String user, String pw, String host, String db, String resetPath) {
+	public Config(String user, String pw, String host, String db) {
 
 		this.dbUser = user;
 		this.dbPw = pw;
 
 		this.dbHost = host;
 		this.dbName = db;
-
-		this.resetPath = resetPath;
 	}
-
-
-	public String getResetPath() {
-		return this.resetPath;
-	}
+	
+	
 
 	public String getUser() {
 		return this.dbUser;

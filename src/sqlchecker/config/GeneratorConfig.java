@@ -19,6 +19,13 @@ public class GeneratorConfig extends Config {
 	 * solution file (e.g. data/tmp/sample.sql)
 	 */
 	private String samplePath = "";
+
+	/**
+	 * Path leading to the reset file. This file is important for
+	 * making sure that the database is always in the same state before checking
+	 * a submission
+	 */
+	private String resetPath = "";
 	
 	
 	/**
@@ -28,23 +35,25 @@ public class GeneratorConfig extends Config {
 	 * @param outputPath The path of the output solution file (e.g. data/tmp/solution.txt)
 	 * @param samplePath The path of the output sample submission for the created 
 	 * solution file (e.g. data/tmp/sample.sql)
+	 * @param resetPath Path leading to the reset file. This file is important for
+	 * making sure that the database is always in the same state before checking
+	 * a submission
 	 * @param user database user 
 	 * @param pw database user password
 	 * @param host database host name (e.g. localhost)
 	 * @param db database name (empty = default)
-	 * @param resetPath Path leading to the reset file. This file is important for
-	 * making sure that the database is always in the same state before checking
-	 * a submission
+	 * 
 	 */
 	public GeneratorConfig(String inputPath
-			, String outputPath, String samplePath, String user
-			, String pw, String host, String db, String resetPath) {
+			, String outputPath, String samplePath, String resetPath, String user
+			, String pw, String host, String db) {
 		
-		super(user, pw, host, db, resetPath);
+		super(user, pw, host, db);
 		
 		this.inPath = inputPath;
 		this.outPath = outputPath;
 		this.samplePath = samplePath;
+		this.resetPath = resetPath;
 	}
 	
 	
@@ -52,6 +61,16 @@ public class GeneratorConfig extends Config {
 	 * Getters
 	 */
 	
+	
+	
+	/**
+	 * @return Path leading to the reset file. This file is important for
+	 * making sure that the database is always in the same state before checking
+	 * a submission
+	 */
+	public String getResetPath() {
+		return this.resetPath;
+	}
 	
 	
 	/**

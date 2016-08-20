@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import sqlchecker.config.ExecutorConfig;
 import sqlchecker.io.IOUtil;
 import sqlchecker.io.OutputWriter;
 import sqlchecker.io.impl.ScriptReader;
@@ -26,22 +27,24 @@ public class SubmissionExecuter {
 	 * (Relative) Path to the folder which stores all the submissions
 	 * which should be checked
 	 */
-	private String submPath = "";
+	//private String submPath = "";
 	
 	/**
 	 * (Relative) Path to the file which contains the solution
 	 */
-	private String solPath = "";
+	//private String solPath = "";
 	
 	/**
 	 * Path for this assignment (e.g. data/assignment1/)
 	 */
-	private String agnPath = "";
+	//private String agnPath = "";
 	
 	/**
 	 * Path leading to the reset script
 	 */
-	private String resetScript = "";
+	//private String resetScript = "";
+	
+	private ExecutorConfig conf;
 	
 	/**
 	 * True iff there are static tags allowed in 
@@ -50,7 +53,7 @@ public class SubmissionExecuter {
 	 * current student submission, before trying to apply
 	 * the mapping to the DBFit solution file
 	 */
-	private boolean staticEnabled = false;
+	//private boolean staticEnabled = false;
 	
 	protected static int resultLimit = 100;
 	
@@ -65,7 +68,7 @@ public class SubmissionExecuter {
 	 * @param allowStatic True iff there are static tags allowed in 
 	 * student submissions
 	 */
-	public SubmissionExecuter(String assignmentPath, String resetPath, boolean allowStatic, int maxResults) {
+	/*public SubmissionExecuter(String assignmentPath, String resetPath, boolean allowStatic, int maxResults) {
 		this.agnPath = assignmentPath;
 		this.submPath = assignmentPath + "submissions/";
 		this.solPath = assignmentPath + "solution.txt";
@@ -74,6 +77,11 @@ public class SubmissionExecuter {
 		
 		this.staticEnabled = allowStatic;
 		this.resultLimit = maxResults;
+	}*/
+	
+	
+	public SubmissionExecuter(ExecutorConfig confIn) {
+		this.conf = confIn;
 	}
 	
 	
@@ -140,11 +148,17 @@ public class SubmissionExecuter {
 	 * Tests all the available submissions
 	 */
 	public void runCheck() {
+		
+		// read parameters
+		String agnPath = conf.getAssignmentPath();
+		String solPath = conf.getSolutionPath();
+		boolean staticEnabled = conf.getStaticEnabled();
+		
 		// get list of all submissions
-		ArrayList<File> submFileList = IOUtil.fetchFiles(submPath);
+		ArrayList<File> submFileList = IOUtil.fetchFiles(conf.getSubmissionPath());
 		File[] submissions = submFileList.toArray(new File[submFileList.size()]);
 		
-		// all lines of the csv file
+		// all lines of the CSV file
 		ArrayList<String> csvLines = new ArrayList<String>();
 		// log (contains errors for each submission)
 		ArrayList<String> logContent = new ArrayList<String>();
@@ -172,7 +186,7 @@ public class SubmissionExecuter {
 		//PrintWriter out = new PrintWriter(System.out, false);
 		// host, user, pw, dbname
 		String[] connProps = sr.getConnectionProperties();
-		System.out.println("[SubmissionExecuter] Properties: \n\thost=" + connProps[0] + "\n\tdb=" + connProps[1] + "\n\tuser=" + connProps[2] + "\n\tpw=" + connProps[3] + "\n\tscript=" + resetScript);
+		//System.out.println("[SubmissionExecuter] Properties: \n\thost=" + connProps[0] + "\n\tdb=" + connProps[1] + "\n\tuser=" + connProps[2] + "\n\tpw=" + connProps[3] + "\n\tscript=" + resetScript);
 		
 		csvLines.add(IOUtil.generateCSVHeader(sr.getTagMap()));
 		
@@ -183,7 +197,7 @@ public class SubmissionExecuter {
 			// reset the database first
 			// -System.out.println("Executing reset with values \n\thost=" + connProps[0] + "\n\tdb=" + connProps[1] + "\n\tuser=" + connProps[2] + "\n\tpw=" + connProps[3] + "\n\tscript=" + resetScript);;
 			
-			ScriptReader resetter = new ScriptReader(resetScript, ScriptReader.DEFAULT_DELIM, connProps);
+			ScriptReader resetter = new ScriptReader(conf.getResetPath(), ScriptReader.DEFAULT_DELIM, connProps);
 			resetter.loadFile();
 			
 			
@@ -290,7 +304,7 @@ public class SubmissionExecuter {
 		 * write/show content
 		 */
 		System.out.println("\n\nWriting content to > CSV < file:\n");
-		String summaryPath = this.agnPath + "summary.csv";
+		String summaryPath = agnPath + "summary.csv";
 		summaryPath = OutputWriter.makeUnique(summaryPath);
 		System.out.println("\t" + summaryPath + "\n");
 		/*
@@ -306,7 +320,7 @@ public class SubmissionExecuter {
 		
 		
 		System.out.println("\n\nWriting content to > LOG < file:\n");
-		String logPath = this.agnPath + "mistakes.log";
+		String logPath = agnPath + "mistakes.log";
 		logPath = OutputWriter.makeUnique(logPath);
 		System.out.println("\t" + logPath + "\n");
 		/*
@@ -336,10 +350,10 @@ public class SubmissionExecuter {
 		ArrayList<String> comment = reports.get(0);
 		
 		// generate unique filename of duplicate report
-		String fnamePlagiat = this.agnPath + "PlagiatReport.csv";
+		String fnamePlagiat = agnPath + "PlagiatReport.csv";
 		fnamePlagiat = OutputWriter.makeUnique(fnamePlagiat);
 		
-		String fnameComment = this.agnPath + "CommentReport.csv";
+		String fnameComment = agnPath + "CommentReport.csv";
 		fnameComment = OutputWriter.makeUnique(fnameComment);
 		
 		System.out.println("Writing content to > PlagiatReport < file: \n \n \t"+fnamePlagiat);
@@ -363,27 +377,29 @@ public class SubmissionExecuter {
 	
 	
 	
-	/*
-	 * HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
-	 * 
-	 * CURRENT MAIN CLASS
-	 * 
-	 * HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
-	 */
+	
+	
+	
 	
 	public static void main(String[] args) {
 		// allow static queries in student submissions
 		boolean allowStatic = false;
-		int resultLimit = 100;
+		//int resultLimit = 100;
 		
 		String agnPath = "data/assignment3/";
 		String resetPath = "data/assignment2/airportReset.sql";
 		
-		agnPath = "private/kh_b5Test/";
-		resetPath = "private/kh_b5Test/b5_reset.sql";
+		agnPath = "data/functest/";
+		
+		resetPath = agnPath + "reset.sql";
+		String submissionPath = agnPath + "submissions/";
+		String solPath = agnPath + "solution.txt";
+		
+		ExecutorConfig exconf = new ExecutorConfig(submissionPath, solPath, agnPath, allowStatic, resetPath);
 		
 		
-		SubmissionExecuter se = new SubmissionExecuter(agnPath, resetPath, allowStatic, resultLimit);
+		//SubmissionExecuter se = new SubmissionExecuter(agnPath, resetPath, allowStatic, resultLimit);
+		SubmissionExecuter se = new SubmissionExecuter(exconf);
 		se.runCheck();
 	}
 
