@@ -24,66 +24,19 @@ import sqlchecker.io.impl.SubmissionReader;
  */
 public class SubmissionExecuter {
 
-	/**
-	 * (Relative) Path to the folder which stores all the submissions
-	 * which should be checked
-	 */
-	//private String submPath = "";
 	
-	/**
-	 * (Relative) Path to the file which contains the solution
-	 */
-	//private String solPath = "";
-	
-	/**
-	 * Path for this assignment (e.g. data/assignment1/)
-	 */
-	//private String agnPath = "";
-	
-	/**
-	 * Path leading to the reset script
-	 */
-	//private String resetScript = "";
 	
 	private ExecuterConfig conf;
 	
-	/**
-	 * True iff there are static tags allowed in 
-	 * student submissions. Setting this to "true" will
-	 * make the class execute all static queries of the
-	 * current student submission, before trying to apply
-	 * the mapping to the DBFit solution file
-	 */
-	//private boolean staticEnabled = false;
 	
 	protected static int resultLimit = 100;
 	
-	/**
-	 * Creates a SubmissionExecuter class and stores the
-	 * given parameters
-	 * @param agnPath The (relative) path to the folder, which
-	 * stores all the assignment-data
-	 * @param resetPath Path to the reset script which should be executed
-	 * before running any of the actual queries. If the given file does 
-	 * not exist, then there will be no reset queries executed
-	 * @param allowStatic True iff there are static tags allowed in 
-	 * student submissions
-	 */
-	/*public SubmissionExecuter(String assignmentPath, String resetPath, boolean allowStatic, int maxResults) {
-		this.agnPath = assignmentPath;
-		this.submPath = assignmentPath + "submissions/";
-		this.solPath = assignmentPath + "solution.txt";
-		
-		this.resetScript = resetPath;
-		
-		this.staticEnabled = allowStatic;
-		this.resultLimit = maxResults;
-	}*/
 	
 	
 	public SubmissionExecuter(ExecuterConfig confIn) {
 		this.conf = confIn;
 	}
+	
 	
 	
 	

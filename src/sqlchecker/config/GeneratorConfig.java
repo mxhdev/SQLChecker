@@ -56,7 +56,6 @@ public class GeneratorConfig extends Config {
 	
 	
 	
-	
 	/**
 	 * 
 	 * @return Path of the "raw" file, from which the final solution file 

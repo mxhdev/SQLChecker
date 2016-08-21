@@ -20,10 +20,13 @@ public class ExecuterConfig extends Config {
 	private String assignmentPath = "";
 
 	
-	
 
 	/**
-	 * Should static queries be allowed in student submissions?
+	 * True iff there are static tags allowed in 
+	 * student submissions. Setting this to "true" will
+	 * make the class execute all static queries of the
+	 * current student submission, before trying to apply
+	 * the mapping to the DBFit solution file
 	 */
 	private boolean staticEnabled = false;
 
@@ -34,7 +37,11 @@ public class ExecuterConfig extends Config {
 	 * @param solPath The path leading to the solution file which should be 
 	 * used for checking submissions
 	 * @param agnPath This is the place where the logs and results files will be created
-	 * @param staticEnabled Should static queries be allowed in student submissions?
+	 * @param staticEnabled True iff there are static tags allowed in 
+	 * student submissions. Setting this to "true" will
+	 * make the class execute all static queries of the
+	 * current student submission, before trying to apply
+	 * the mapping to the DBFit solution file
 	 * @param resetPath Path leading to the reset file. This file is important for
 	 * making sure that the database is always in the same state before checking
 	 * a submission
@@ -53,7 +60,6 @@ public class ExecuterConfig extends Config {
 		this.submissionPath = submPath;
 		this.solutionPath = solPath;
 		this.assignmentPath = agnPath;
-		//this.resetPath = resetPath;
 		this.staticEnabled = staticEnabled;
 	}
 
@@ -93,7 +99,11 @@ public class ExecuterConfig extends Config {
 	
 	/**
 	 * 
-	 * @return Should static queries be allowed in student submissions?
+	 * @return True iff there are static tags allowed in 
+	 * student submissions. Setting this to "true" will
+	 * make the class execute all static queries of the
+	 * current student submission, before trying to apply
+	 * the mapping to the DBFit solution file
 	 */
 	public boolean getStaticEnabled() {
 		return this.staticEnabled;

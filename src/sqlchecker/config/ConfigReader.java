@@ -73,25 +73,6 @@ public class ConfigReader {
 		settings.put(EXECUTOR_OUTPATH, "out/");
 		settings.put(EXECUTOR_ALLOW_STATIC, "false");
 		
-		/*
-		 * default values
-		 * # db.* is only relevant for gen
-db.user=root
-db.pw=
-db.host=localhost
-db.name=
-
-db.resetscript=reset.sql
-
-gen.infile=raw.sql
-gen.outfile=solution.txt
-gen.samplefile=submissions/sample.sql
-
-exec.submissions=submissions/
-exec.solution=solution.txt
-exec.outpath=out/
-exec.allowstatic=false
-		 */
 		
 		// store arguments
 		this.args = args;
@@ -114,7 +95,6 @@ exec.allowstatic=false
 		T conf = null;
 		
 		
-		
 		if (type.equals(ExecuterConfig.class)) {
 			boolean staticAllowed = Boolean.parseBoolean(settings.get(EXECUTOR_ALLOW_STATIC));
 			conf = type.cast(new ExecuterConfig(settings.get(EXECUTOR_SUBMISSIONS)
@@ -124,7 +104,6 @@ exec.allowstatic=false
 					, settings.get(DB_RESETSCRIPT)));
 			
 		} else if (type.equals(GeneratorConfig.class)) {
-			
 			conf = type.cast(new GeneratorConfig(settings.get(GENERATOR_INFILE)
 					, settings.get(GENERATOR_OUTFILE)
 					, settings.get(GENERATOR_SAMPLEFILE)

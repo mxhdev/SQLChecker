@@ -81,6 +81,7 @@ public class SQLChecker {
 				SolutionGenerator sg = new SolutionGenerator(genconf);
 				sg.generate();
 			}
+			
 		} else {
 			System.out.println("ERROR: Not enough arguments given!");
 			showHelp();

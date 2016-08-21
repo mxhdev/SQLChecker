@@ -14,71 +14,17 @@ import sqlchecker.io.impl.ScriptReader;
 
 public class SolutionGenerator {
 
-	/*
-	private String inputFile = "";
 	
-	private String outputFile = "";
-	
-	private String samplePath = "";
-	*/
-	/**
-	 * Connection properties in the following order: <br>
-	 * host (default:localhost) <br>
-	 * dbUser (default:root) <br>
-	 * dbUserPw (default:) <br>
-	 * dbName (default:dbfit) <br>
-	 */
-	/*private String[] connProps = new String[4];
-	
-	private String resetScript = "";
-	*/
 	
 	private GeneratorConfig conf;
 	
-	
-	/**
-	 * Constructor
-	 * @param inPath Path to the (raw) input file
-	 * @param outPath Path to the file which should be generated
-	 * @param submPath Path at which the sample submission should be
-	 * placed
-	 * @param resetPath The path to the reset script which should
-	 * be executed before the solution gets generated
-	 * @param cProps Connection properties in the following order: <br>
-	 * host (default:localhost) <br>
-	 * dbUser (default:root) <br>
-	 * dbUserPw (default:) <br>
-	 * dbName (default:dbfit) <br>
-	 * 
-	 */
-	/*public SolutionGenerator(String inPath, String outPath, String submPath, String resetPath, String[] cProps) {
-		this.inputFile = inPath;
-		outputFile = OutputWriter.makeUnique(outPath);
-		samplePath = OutputWriter.makeUnique(submPath);
-		this.resetScript = resetPath;
-		// use the setting given
-		this.connProps = cProps.clone();
-	}*/
-	
-	
-	/**
-	 * Constructor using the default connection properties
-	 * @param inPath Path to the (raw) input file
-	 * @param outPath Path to the file which should be generated
-	 * @param submPath Path at which the sample submission should be
-	 * placed
-	 * @param resetPath The path to the reset script which should
-	 * be executed before the solution gets generated
-	 */
-	/*public SolutionGenerator(String inPath, String outPath, String submPath, String resetPath) {
-		// Use default connection properties!
-		this(inPath, outPath, submPath, resetPath, IOUtil.DEFAULT_PROPS);
-	}*/
 	
 	
 	public SolutionGenerator(GeneratorConfig confIn) {
 		this.conf = confIn;
 	}
+	
+	
 	
 	
 	private ArrayList<SQLCallable> generateCallables(ArrayList<String[]> mapping) {
