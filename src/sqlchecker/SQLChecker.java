@@ -55,7 +55,13 @@ public class SQLChecker {
 	
 	
 	public static void main(String[] args) {
-		if (args.length >= 2) {
+		
+		// normalize execution type string
+		if (args.length >= 1) args[0] = args[0].toLowerCase();
+		
+		// try to run the selected module
+		if ((args.length >= 2) && 
+				((args[0].equals("gen")) || (args[0].equals("exec")))) {
 			// read arguments
 			ConfigReader reader = new ConfigReader(args);
 			
