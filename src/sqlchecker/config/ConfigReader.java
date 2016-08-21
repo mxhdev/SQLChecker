@@ -107,11 +107,12 @@ public class ConfigReader {
 			conf = type.cast(new GeneratorConfig(settings.get(GENERATOR_INFILE)
 					, settings.get(GENERATOR_OUTFILE)
 					, settings.get(GENERATOR_SAMPLEFILE)
+					, settings.get(DB_RESETSCRIPT)
 					, settings.get(DB_USER)
 					, settings.get(DB_PW)
 					, settings.get(DB_HOST)
 					, settings.get(DB_NAME)
-					, settings.get(DB_RESETSCRIPT)));
+					));
 		} else {
 			System.err.println("Unable to load config for class " + type.getName());
 		}
