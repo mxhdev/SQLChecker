@@ -159,7 +159,7 @@ public class ScriptReader extends AbstractFileReader {
 		connProps[3] = ""; 
 		*/
 		
-		Config dbconf = new Config("root", "", "localhost", "");
+		Config dbconf = new Config("root", "", "localhost", "", path);
 		
 		
 		ScriptReader sr = new ScriptReader(path, delim, dbconf);

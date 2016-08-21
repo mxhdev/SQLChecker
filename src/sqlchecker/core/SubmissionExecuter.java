@@ -185,7 +185,11 @@ public class SubmissionExecuter {
 		
 		// Define output writer
 		//PrintWriter out = new PrintWriter(System.out, false);
-		// host, user, pw, dbname
+		// host, user, pw, dbname, resetscipt 
+		// The resetscript field of this config object contains 
+		// a default value, so it should not be used here. 
+		// Instead, the reset script path should be retrieved from the conf object
+		
 		Config connProps = sr.getConnectionProperties();
 		//System.out.println("[SubmissionExecuter] Properties: \n\thost=" + connProps[0] + "\n\tdb=" + connProps[1] + "\n\tuser=" + connProps[2] + "\n\tpw=" + connProps[3] + "\n\tscript=" + resetScript);
 		

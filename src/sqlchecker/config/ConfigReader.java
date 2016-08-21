@@ -17,13 +17,13 @@ public class ConfigReader {
 	private final Map<String, String> settings = new HashMap<String, String>();
 	
 	
-	private static final String DB_USER = "db.user";
+	private static final String DB_USER = "gen.db.user";
 	
-	private static final String DB_PW = "db.pw";
+	private static final String DB_PW = "gen.db.pw";
 	
-	private static final String DB_NAME = "db.name";
+	private static final String DB_NAME = "gen.db.name";
 	
-	private static final String DB_HOST = "db.host";
+	private static final String DB_HOST = "gen.db.host";
 	
 	private static final String DB_RESETSCRIPT = "db.resetscript";
 	

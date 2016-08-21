@@ -67,7 +67,7 @@ public class DBFitFacadeTest {
 		 * Execute the test
 		 */
 		
-		Config conf = new Config("root", "", "localhost", "krankenhaus");
+		Config conf = new Config("root", "", "localhost", "krankenhaus", "");
 		
 		DBFitFacadeTest tester = new DBFitFacadeTest(fname, conf, name, mnr);
 		tester.runTest();

@@ -19,14 +19,8 @@ public class GeneratorConfig extends Config {
 	 * solution file (e.g. data/tmp/sample.sql)
 	 */
 	private String samplePath = "";
-
-	/**
-	 * Path leading to the reset file. This file is important for
-	 * making sure that the database is always in the same state before checking
-	 * a submission
-	 */
-	private String resetPath = "";
 	
+
 	
 	/**
 	 * 
@@ -48,12 +42,11 @@ public class GeneratorConfig extends Config {
 			, String outputPath, String samplePath, String resetPath, String user
 			, String pw, String host, String db) {
 		
-		super(user, pw, host, db);
+		super(user, pw, host, db, resetPath);
 		
 		this.inPath = inputPath;
 		this.outPath = outputPath;
 		this.samplePath = samplePath;
-		this.resetPath = resetPath;
 	}
 	
 	
@@ -62,15 +55,6 @@ public class GeneratorConfig extends Config {
 	 */
 	
 	
-	
-	/**
-	 * @return Path leading to the reset file. This file is important for
-	 * making sure that the database is always in the same state before checking
-	 * a submission
-	 */
-	public String getResetPath() {
-		return this.resetPath;
-	}
 	
 	
 	/**

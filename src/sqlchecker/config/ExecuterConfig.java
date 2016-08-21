@@ -19,12 +19,7 @@ public class ExecuterConfig extends Config {
 	 */
 	private String assignmentPath = "";
 
-	/**
-	 * Path leading to the reset file. This file is important for
-	 * making sure that the database is always in the same state 
-	 * before checking a submission
-	 */
-	private String resetPath = "";
+	
 	
 
 	/**
@@ -48,7 +43,7 @@ public class ExecuterConfig extends Config {
 	public ExecuterConfig(String submPath, String solPath, String agnPath
 			, boolean staticEnabled, String resetPath) {
 		
-		super();
+		super(resetPath);
 		
 		// make sure the assignment path ends with /
 		if (!agnPath.endsWith("/")) {
@@ -58,7 +53,7 @@ public class ExecuterConfig extends Config {
 		this.submissionPath = submPath;
 		this.solutionPath = solPath;
 		this.assignmentPath = agnPath;
-		this.resetPath = resetPath;
+		//this.resetPath = resetPath;
 		this.staticEnabled = staticEnabled;
 	}
 
@@ -94,15 +89,7 @@ public class ExecuterConfig extends Config {
 		return this.assignmentPath;
 	}
 
-	/**
-	 * 
-	 * @return Path leading to the reset file. This file is important for
-	 * making sure that the database is always in the same state before checking
-	 * a submission
-	 */
-	public String getResetPath() {
-		return this.resetPath;
-	}
+	
 	
 	/**
 	 * 

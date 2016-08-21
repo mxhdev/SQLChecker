@@ -99,7 +99,7 @@ public class SolutionReader extends AbstractFileReader {
 				String user = connArray[1];
 				String pw = connArray[2];
 				String dbName = connArray[3];
-				this.connProps = new Config(user, pw, host, dbName);
+				this.connProps = new Config(user, pw, host, dbName, "reset.sql");
 				
 			}
 			// build tag-map
